@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "567592938140",
+    "project_id": "gdgsucre-events",
+    "storage_bucket": "gdgsucre-events.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567592938140:android:baf8e2941dc9c6387bdb59",
+        "android_client_info": {
+          "package_name": "dev.armandohackcode.app_events"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567592938140-so319en32j6sfg5poagoan7p1n7de1ne.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.armandohackcode.app_events",
+            "certificate_hash": "e3c9d8473fcfb302efcd91952e5f40bdd24a88c6"
+          }
+        },
+        {
+          "client_id": "567592938140-85v3kk00f25286s9rp5b0560aghn8rlr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFmLXwzsJdifnRz24SNntcNtR5-ndN3hI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567592938140-85v3kk00f25286s9rp5b0560aghn8rlr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
