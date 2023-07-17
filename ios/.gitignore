@@ -32,3 +32,6 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# acceso al proyecto de firebse
+ios/Runner/GoogleService-Info.plist
