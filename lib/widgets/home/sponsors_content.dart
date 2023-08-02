@@ -51,6 +51,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                         // ),
                         SizedBox(
                           height: 180,
+                          width: 300,
                           child: FadeInImage(
                               placeholder: const AssetImage(
                                   "assets/img/GoogleIO_Logo.gif"),

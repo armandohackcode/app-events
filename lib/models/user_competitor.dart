@@ -121,7 +121,7 @@ class Friend {
         uuid: json["uuid"],
         name: json["name"],
         token: json["token"] ?? "",
-        photoUrl: json["photoUrl"],
+        photoUrl: json["photoUrl"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {

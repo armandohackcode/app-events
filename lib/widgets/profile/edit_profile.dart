@@ -33,7 +33,7 @@ class _EditProfileState extends State<EditProfile> {
           _aboutme.text = info.aboutMe;
           _profession.text = info.profession;
           for (var element in info.socialNetwork) {
-            if (element.type == "GITGUB") {
+            if (element.type == "GITHUB") {
               _github.text = element.link;
             }
             if (element.type == "FACEBOOK") {
@@ -105,11 +105,11 @@ class _EditProfileState extends State<EditProfile> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Acerca de mi *",
+              "Acerca de mí *",
               style: textStyle(),
             ),
             const Text(
-              "Cuentanos algo sobre tí, tienes que usar como minimo 200 catacteres, para ganar los puntos de esta sección",
+              "Cuentanos algo sobre tí, tienes que usar como mínimo 200 caracteres, para ganar los puntos de esta sección",
             ),
             TextFormField(
               controller: _aboutme,

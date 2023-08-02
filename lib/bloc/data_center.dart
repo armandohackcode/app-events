@@ -102,6 +102,7 @@ class DataCenter with ChangeNotifier {
     }
   }
 
+  /// metodo para escuchar los cambios en la Agenda
   Stream<QuerySnapshot<Map<String, dynamic>>> getListSchedule() async* {
     try {
       var ref = _db.collection('schedule').orderBy('position');
@@ -204,6 +205,25 @@ class DataCenter with ChangeNotifier {
         socialNetwork: [],
         friends: []);
     await _db.collection("competidores").doc(uuid).set(user.toJson());
+    var data = await _db
+        .collection("competidores")
+        .where('uuid', isEqualTo: uuid)
+        .get();
+    if (data.docs.isNotEmpty) {
+      userCompetitor = UserCompetitor.fromJson(data.docs.first.data());
+    }
+  }
+
+  /// trae la información de un usuario con su UUID
+  Future<UserCompetitor?> getUserInfo(String uuid) async {
+    var data = await _db
+        .collection("competidores")
+        .where('uuid', isEqualTo: uuid)
+        .get();
+    if (data.docs.isNotEmpty) {
+      return UserCompetitor.fromJson(data.docs.first.data());
+    }
+    return null;
   }
 
   /// Escuchar información del usuario

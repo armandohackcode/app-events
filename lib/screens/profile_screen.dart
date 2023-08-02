@@ -7,6 +7,8 @@ import 'package:app_events/models/user_competitor.dart';
 import 'package:app_events/screens/home.dart';
 import 'package:app_events/widgets/card_content.dart';
 import 'package:app_events/widgets/profile/edit_profile.dart';
+import 'package:app_events/widgets/profile/modal_qr_identify.dart';
+import 'package:app_events/widgets/profile/profile_friend.dart';
 import 'package:app_events/widgets/profile/profile_public.dart';
 import 'package:app_events/widgets/utils/qr_scan_content.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
@@ -95,11 +97,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
                 if (res != null) {
                   if (context.mounted) {
-                    customSnackbar(context, "Habilitando usuario");
+                    customSnackbar(context, "Habilitando usuario...");
                     await data.addCompetitor(
                         photoUrl: auth.userInfo.photoURL ?? "",
                         name: auth.userInfo.displayName ?? "Anónimo",
                         token: res.code!);
+                    // await data.validateIsAdmin(uuid);
                   }
                 }
               },
@@ -242,10 +245,23 @@ class BodyProfile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
+              width: MediaQuery.of(context).size.width * 0.5,
               child: const Text(
                 'Acerca de mi',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            InkWell(
+              borderRadius: BorderRadius.circular(100),
+              onTap: () async {
+                showDialog(
+                    context: context,
+                    builder: (_) => ModalQrIdentify(
+                        identify: data.userCompetitor!.tokenAutorization));
+              },
+              child: const Icon(
+                Icons.qr_code_outlined,
+                size: 32,
               ),
             ),
             InkWell(
@@ -325,7 +341,7 @@ class BodyProfile extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    "Deja que el mundo te conosca, escrebe algo sobre ti mismo 😊 y gana puntos, completa tu información en la sección de editar Perfi. 📝",
+                    "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝",
                     textAlign: TextAlign.center,
                   ),
                 )
@@ -353,43 +369,61 @@ class CardNetworking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 2,
-          color: AppStyles.fontColor,
+    return InkWell(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (_) => ModalProfileFriend(uuid: friend.uuid));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2,
+            color: AppStyles.fontColor,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Padding(
-          padding:
-              const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-          child: ClipOval(
-            child: Image.network(
-              'https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg',
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width * 0.15,
-              height: MediaQuery.of(context).size.width * 0.15,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+            child: ClipOval(
+              // child: Image.network(
+              //   'https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg',
+              //   fit: BoxFit.cover,
+              //   width: MediaQuery.of(context).size.width * 0.15,
+              //   height: MediaQuery.of(context).size.width * 0.15,
+              // ),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.15,
+                height: MediaQuery.of(context).size.width * 0.15,
+                child: (friend.photoUrl.isEmpty)
+                    ? Image.asset("assets/img/dino-runs.png")
+                    : FadeInImage(
+                        placeholder: const AssetImage(
+                            "assets/img/gitgoogle-loading.gif"),
+                        image: NetworkImage(friend.photoUrl)),
+              ),
             ),
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          width: MediaQuery.of(context).size.width * 0.7,
-          child: Text(
-            friend.name,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppStyles.fontColor),
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: Text(
+              friend.name,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppStyles.fontColor),
+            ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }

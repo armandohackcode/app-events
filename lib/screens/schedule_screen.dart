@@ -71,36 +71,40 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       //       type: 'Conferencia',
       //       hours: '09:00',
       //     ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(15),
-        itemCount: dataCenter.schedule.length,
-        itemBuilder: (BuildContext context, int index) {
-          var item = dataCenter.schedule[index];
-          if (item.type == "Actividad") {
-            return ZoomIn(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(10),
-                alignment: const Alignment(0, 0),
-                decoration: BoxDecoration(
-                  color: AppStyles.colorBaseBlue,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppStyles.fontColor,
-                    width: 1.5,
-                  ),
-                ),
-                child: Text(
-                  item.title.toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            );
-          } else {
-            return ZoomIn(child: CardSchedule(info: item));
-          }
-        },
-      ),
+      body: (dataCenter.schedule.isEmpty)
+          ? Center(
+              child: Image.asset("assets/img/GoogleIO_Logo.gif"),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(15),
+              itemCount: dataCenter.schedule.length,
+              itemBuilder: (BuildContext context, int index) {
+                var item = dataCenter.schedule[index];
+                if (item.type == "Actividad") {
+                  return ZoomIn(
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(10),
+                      alignment: const Alignment(0, 0),
+                      decoration: BoxDecoration(
+                        color: AppStyles.colorBaseBlue,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppStyles.fontColor,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        item.title.toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                } else {
+                  return ZoomIn(child: CardSchedule(info: item));
+                }
+              },
+            ),
     );
   }
 }
