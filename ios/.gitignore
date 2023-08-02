@@ -34,4 +34,4 @@ Runner/GeneratedPluginRegistrant.*
 !default.perspectivev3
 
 # acceso al proyecto de firebse
-ios/Runner/GoogleService-Info.plist
+Runner/GoogleService-Info.plist

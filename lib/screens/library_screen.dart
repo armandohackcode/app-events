@@ -1,7 +1,15 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:any_link_preview/any_link_preview.dart';
+import 'package:app_events/bloc/data_center.dart';
 import 'package:app_events/constants.dart';
+import 'package:app_events/widgets/library_screen/add_resource.dart';
+import 'package:app_events/widgets/utils/utils_app.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -11,72 +19,158 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
+  final _paramSearch = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final data = Provider.of<DataCenter>(context, listen: false);
+      data.getResources();
+      data.cleanTag();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _paramSearch.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final dataCenter = Provider.of<DataCenter>(context);
     return Scaffold(
       appBar: AppBar(title: SvgPicture.asset('assets/img/logo.svg')),
-      body: ListView(
-        padding: const EdgeInsets.all(15),
-        children: [
-          const Text(
-            'Biblioteca de recursos',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Buscar contenido',
-              suffixIcon: Icon(
-                Icons.search,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await dataCenter.getResources();
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(15),
+          children: [
+            const Text(
+              'Biblioteca de recursos',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            TextFormField(
+              controller: _paramSearch,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: 'Buscar contenido',
+                suffixIcon: (_paramSearch.text.isNotEmpty)
+                    ? IconButton(
+                        onPressed: () {
+                          dataCenter.getResources();
+                          _paramSearch.clear();
+                        },
+                        icon: const Icon(Icons.clear))
+                    : const Icon(
+                        Icons.search,
+                        size: 32,
+                      ),
+              ),
+              onFieldSubmitted: (value) async {
+                await dataCenter.searchResource(param: value);
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ButtonLibrary(
+                  color: AppStyles.colorBaseBlue,
+                  active: dataCenter.activeWeb,
+                  text: 'Web',
+                  onPressed: () async {
+                    dataCenter.activeWeb = !dataCenter.activeWeb;
+
+                    await dataCenter.searchResource(param: _paramSearch.text);
+                  },
+                ),
+                ButtonLibrary(
+                  active: dataCenter.activeMobile,
+                  color: AppStyles.colorBaseGreen,
+                  text: 'Mobile',
+                  onPressed: () async {
+                    dataCenter.activeMobile = !dataCenter.activeMobile;
+
+                    await dataCenter.searchResource(param: _paramSearch.text);
+                  },
+                ),
+                ButtonLibrary(
+                  active: dataCenter.activeCloud,
+                  color: AppStyles.colorBaseRed,
+                  text: 'Cloud',
+                  onPressed: () async {
+                    dataCenter.activeCloud = !dataCenter.activeCloud;
+
+                    await dataCenter.searchResource(param: _paramSearch.text);
+                  },
+                ),
+                ButtonLibrary(
+                  active: dataCenter.activeIA,
+                  color: AppStyles.colorBaseYellow,
+                  text: 'IA',
+                  onPressed: () async {
+                    dataCenter.activeIA = !dataCenter.activeIA;
+                    await dataCenter.searchResource(param: _paramSearch.text);
+                  },
+                ),
+              ],
+            ),
+            // Container(
+            //   margin: const EdgeInsets.only(bottom: 10),
+            //   child: CardLibrary(
+            //     width: MediaQuery.of(context).size.width,
+            //     link: 'https://www.youtube.com/watch?v=6FoKDYDJ4V8',
+            //     title: "Mongo con node JS",
+            //     color: AppStyles.colorBaseRed,
+            //   ),
+            // ),
+            for (var item in dataCenter.resources)
+              ZoomIn(
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: CardLibrary(
+                    key: UniqueKey(),
+                    width: MediaQuery.of(context).size.width,
+                    link: item.link,
+                    title: item.title,
+                    color: _getColor(item.type),
+                  ),
+                ),
+              )
+          ],
+        ),
+      ),
+      floatingActionButton: (dataCenter.isAdmin)
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(context,
+                    CupertinoPageRoute(builder: (_) => const AddResource()));
+              },
+              child: const Icon(
+                Icons.note_add_outlined,
                 size: 32,
               ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ButtonLibrary(
-                color: AppStyles.colorBaseBlue,
-                text: 'Web',
-                onPressed: () {},
-              ),
-              ButtonLibrary(
-                color: AppStyles.colorBaseGreen,
-                text: 'Mobile',
-                onPressed: () {},
-              ),
-              ButtonLibrary(
-                color: AppStyles.colorBaseRed,
-                text: 'Cloud',
-                onPressed: () {},
-              ),
-              ButtonLibrary(
-                color: AppStyles.colorBaseYellow,
-                text: 'IA',
-                onPressed: () {},
-              ),
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: CardLibrary(
-              width: MediaQuery.of(context).size.width,
-              link: 'https://www.youtube.com/watch?v=6FoKDYDJ4V8',
-              title: "Mongo con node JS",
-              color: AppStyles.colorBaseRed,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: CardLibrary(
-              width: MediaQuery.of(context).size.width,
-              link: 'https://flutter.dev/',
-              title: "Documentación Oficial de Flutter",
-              color: AppStyles.colorBaseGreen,
-            ),
-          ),
-        ],
-      ),
+            )
+          : null,
     );
+  }
+
+  Color _getColor(String area) {
+    switch (area) {
+      case "Web":
+        return AppStyles.colorBaseBlue;
+      case "Mobile":
+        return AppStyles.colorBaseGreen;
+      case "Cloud":
+        return AppStyles.colorBaseRed;
+      case "IA":
+        return AppStyles.colorBaseYellow;
+      default:
+        return AppStyles.colorBaseBlue;
+    }
   }
 }
 
@@ -100,53 +194,78 @@ class CardLibrary extends StatelessWidget {
     return Stack(
       alignment: const Alignment(0, -0.96),
       children: [
-        Container(
-          padding: const EdgeInsets.only(top: 10),
-          decoration: BoxDecoration(
-            border: Border.all(width: 1, color: AppStyles.fontColor),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          width: width ?? MediaQuery.of(context).size.width * 0.45,
-          child: Column(
-            children: [
-              // Container(
-              //     padding: const EdgeInsets.all(10),
-              //     width: width,
-              //     child: Text(
-              //       title,
-              //       textAlign: TextAlign.center,
-              //       style: const TextStyle(fontWeight: FontWeight.w500),
-              //     )),
-              Container(
-                padding: const EdgeInsets.all(1),
-                height: 80,
-                child: AnyLinkPreview(
-                  link: link,
-                  displayDirection: UIDirection.uiDirectionHorizontal,
-                  showMultimedia: true,
-                  bodyMaxLines: 5,
-                  bodyTextOverflow: TextOverflow.ellipsis,
-                  titleStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+        InkWell(
+          onTap: () async {
+            print("click");
+            await laucherUrlInfo(link);
+          },
+          child: Container(
+            padding: const EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: AppStyles.fontColor),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: width ?? MediaQuery.of(context).size.width * 0.45,
+            child: Column(
+              children: [
+                Container(
+                    padding: const EdgeInsets.all(10),
+                    width: width,
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    )),
+                Container(
+                  padding: const EdgeInsets.all(1),
+                  height: 60,
+                  child: AnyLinkPreview(
+                    urlLaunchMode: LaunchMode.externalApplication,
+                    placeholderWidget: Center(
+                      child: LoadingAnimationWidget.stretchedDots(
+                        color: AppStyles.colorBaseBlue,
+                        size: 40,
+                      ),
+                    ),
+                    link: link,
+                    previewHeight: 1,
+                    displayDirection: UIDirection.uiDirectionHorizontal,
+                    showMultimedia: true,
+                    bodyMaxLines: 5,
+                    bodyTextOverflow: TextOverflow.ellipsis,
+                    titleStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                    bodyStyle: const TextStyle(color: Colors.grey, fontSize: 9),
+                    errorBody: 'Show my custom error body',
+                    errorTitle: 'Show my custom error title',
+
+                    errorWidget: Row(
+                      children: [
+                        Image.network(
+                          'https://img.icons8.com/?size=512&id=92941&format=png',
+                          width: 60,
+                          height: 60,
+                        ),
+                        Container(
+                          color: Colors.grey[100],
+                          child: Text(title),
+                        ),
+                      ],
+                    ),
+                    errorImage:
+                        "https://img.icons8.com/?size=512&id=92941&format=png",
+                    cache: const Duration(days: 0),
+                    backgroundColor: Colors.grey[100],
+                    borderRadius: 6,
+                    removeElevation: true,
+                    // This disables tap event
                   ),
-                  bodyStyle: const TextStyle(color: Colors.grey, fontSize: 9),
-                  errorBody: 'Show my custom error body',
-                  errorTitle: 'Show my custom error title',
-                  errorWidget: Container(
-                    color: Colors.grey[100],
-                    child: const Text('Oops!'),
-                  ),
-                  errorImage: "https://gdg.community.dev/gdg-sucre/",
-                  cache: const Duration(days: 7),
-                  backgroundColor: Colors.grey[100],
-                  borderRadius: 6,
-                  removeElevation: true,
-                  // This disables tap event
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Stack(
@@ -186,11 +305,13 @@ class ButtonLibrary extends StatefulWidget {
   final Color color;
   final VoidCallback onPressed;
   final String text;
+  final bool active;
   const ButtonLibrary({
     super.key,
     required this.color,
     required this.text,
     required this.onPressed,
+    required this.active,
   });
 
   @override
@@ -198,30 +319,26 @@ class ButtonLibrary extends StatefulWidget {
 }
 
 class _ButtonLibraryState extends State<ButtonLibrary> {
-  bool _active = false;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        backgroundColor: _active ? AppStyles.backgroundColor : widget.color,
+        backgroundColor:
+            widget.active ? AppStyles.backgroundColor : widget.color,
         shape: RoundedRectangleBorder(
           side: const BorderSide(color: AppStyles.fontColor, width: 1),
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
+      onPressed: widget.onPressed,
       child: Text(
         widget.text,
         style: TextStyle(
-          color: _active ? AppStyles.fontColor : AppStyles.backgroundColor,
+          color:
+              widget.active ? AppStyles.fontColor : AppStyles.backgroundColor,
         ),
       ),
-      onPressed: () {
-        setState(() {
-          _active = !_active;
-        });
-        widget.onPressed;
-      },
     );
   }
 }

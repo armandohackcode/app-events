@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_events/bloc/sign_in_social_network.dart';
 import 'package:app_events/constants.dart';
 import 'package:flutter/material.dart';
@@ -25,62 +27,75 @@ class SignInScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.85,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(8),
-                      elevation: 0,
-                      backgroundColor: AppStyles.backgroundColor,
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(color: AppStyles.fontColor),
-                        borderRadius: BorderRadius.circular(10.0),
+              if (auth.loadingAuth)
+                const Center(
+                  child: CircularProgressIndicator(),
+                )
+              else
+                Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(8),
+                            elevation: 0,
+                            backgroundColor: AppStyles.backgroundColor,
+                            shape: RoundedRectangleBorder(
+                              side:
+                                  const BorderSide(color: AppStyles.fontColor),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await auth.googleAuth();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SvgPicture.asset('assets/img/icon-google.svg',
+                                  width: 32, height: 32),
+                              const Text(
+                                "Iniciar sesión con Google",
+                                style: TextStyle(color: AppStyles.fontColor),
+                              )
+                            ],
+                          )),
+                    ),
+                    const SizedBox(height: 20),
+                    if (Platform.isIOS)
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(8),
+                            elevation: 0,
+                            backgroundColor: AppStyles.fontColor,
+                            shape: RoundedRectangleBorder(
+                              side:
+                                  const BorderSide(color: AppStyles.fontColor),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await auth.appleAuth();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SvgPicture.asset('assets/img/icon-apple.svg',
+                                  width: 32, height: 32),
+                              const Text(
+                                "Iniciar sesión con Apple",
+                                style:
+                                    TextStyle(color: AppStyles.backgroundColor),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: () async {
-                      await auth.googleAuth();
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        SvgPicture.asset('assets/img/icon-google.svg',
-                            width: 32, height: 32),
-                        const Text(
-                          "Iniciar sesión con Google",
-                          style: TextStyle(color: AppStyles.fontColor),
-                        )
-                      ],
-                    )),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.85,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(8),
-                    elevation: 0,
-                    backgroundColor: AppStyles.fontColor,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: AppStyles.fontColor),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  onPressed: () async {
-                    await auth.appleAuth();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SvgPicture.asset('assets/img/icon-apple.svg',
-                          width: 32, height: 32),
-                      const Text(
-                        "Iniciar sesión con Apple",
-                        style: TextStyle(color: AppStyles.backgroundColor),
-                      )
-                    ],
-                  ),
+                  ],
                 ),
-              ),
             ],
           ),
           Image.asset('assets/img/bottom_login_img.png')

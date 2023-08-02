@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:app_events/firebase_options.dart';
+// import 'package:app_events/firebase_options.dart';
 import 'package:crypto/crypto.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';

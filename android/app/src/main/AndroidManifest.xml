@@ -1,7 +1,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.armandohackcode.app_events">
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+     <queries>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<category android:name="android.intent.category.BROWSABLE" />
+			<data android:scheme="https" />
+		</intent>
+		<intent>
+			<action android:name="android.intent.action.DIAL" />
+			<data android:scheme="tel" />
+		</intent>
+		<intent>
+			<action android:name="android.intent.action.SENDTO" />
+			<data android:scheme="smsto" android:host="*" />
+		</intent>
+		<!-- If your app sends emails -->
+		<intent>
+			<action android:name="android.intent.action.SEND" />
+			<data android:mimeType="*/*" />
+		</intent>
+	</queries>
+
    <application
-        android:label="app_events"
+        android:label="GDG Sucre"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

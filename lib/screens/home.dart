@@ -1,16 +1,23 @@
+import 'package:app_events/bloc/data_center.dart';
 import 'package:app_events/constants.dart';
 import 'package:app_events/screens/schedule_screen.dart';
 import 'package:app_events/widgets/button_activity.dart';
 import 'package:app_events/widgets/card_content.dart';
+import 'package:app_events/widgets/home/sponsors_content.dart';
+import 'package:app_events/widgets/utils/qr_scan_content.dart';
+import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final dataCenter = Provider.of<DataCenter>(context);
     return Scaffold(
       appBar: AppBar(title: SvgPicture.asset('assets/img/logo.svg')),
       body: ListView(
@@ -26,31 +33,65 @@ class Home extends StatelessWidget {
           ButtonActivity(
             icon: SvgPicture.asset('assets/img/icon-discord.svg'),
             text: 'Unete al canal de Discord',
-            onPressed: () {},
+            onPressed: () async {
+              await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
+            },
           ),
-          const SizedBox(height: 10),
-          ButtonActivity(
-            icon: SvgPicture.asset('assets/img/icon-kahoot.svg'),
-            text: 'Juega en Kahoot con Nosotros',
-            onPressed: () {},
-          ),
+          // const SizedBox(height: 10),
+          // ButtonActivity(
+          //   icon: SvgPicture.asset('assets/img/icon-kahoot.svg'),
+          //   text: 'Juega en Kahoot con Nosotros',
+          //   onPressed: () {},
+          // ),
           const SizedBox(height: 10),
           ButtonActivity(
             icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
             text: 'Unete a la comunidad',
-            onPressed: () {},
+            onPressed: () async {
+              await laucherUrlInfo(
+                  "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
+            },
           ),
+          const SponsorsContent()
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppStyles.colorBaseBlue,
-        child: const Icon(
-          Icons.qr_code_scanner,
-          size: 32,
-        ),
-        onPressed: () {},
-      ),
+      floatingActionButton:
+          (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
       // bottomNavigationBar: const BottonCustomNavApp(),
+    );
+  }
+}
+
+class ButtonScan extends StatelessWidget {
+  const ButtonScan({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      backgroundColor: AppStyles.colorBaseBlue,
+      child: const Icon(
+        Icons.qr_code_scanner,
+        size: 32,
+      ),
+      onPressed: () async {
+        final dataCenter = Provider.of<DataCenter>(context, listen: false);
+        var res = await Navigator.of(context).push<Barcode?>(MaterialPageRoute(
+          builder: (context) => const QRScanContent(
+            msg: "Scanea el código QR de tu nuevo amigo",
+          ),
+        ));
+        if (res != null) {
+          var info = await dataCenter.addNewFriend(res.code!);
+          if (info != null && context.mounted) {
+            customSnackbar(context, "Añadiste a un nuevo amigo");
+          } else {
+            customSnackbar(context, "QR no válido",
+                color: AppStyles.colorBaseRed);
+          }
+        }
+      },
     );
   }
 }

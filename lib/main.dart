@@ -8,13 +8,16 @@ import 'package:app_events/screens/sing_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -111,8 +114,14 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final auth =
           Provider.of<SignInSocialNetworkProvider>(context, listen: false);
+      final data = Provider.of<DataCenter>(context, listen: false);
+
       auth.loadingValidate = true;
+      await Permission.camera.request();
       await auth.validateToken();
+      if (auth.isAuth) {
+        await data.validateIsAdmin(auth.userInfo.uid);
+      }
       auth.loadingValidate = false;
     });
     super.initState();

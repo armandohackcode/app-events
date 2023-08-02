@@ -1,9 +1,12 @@
+import 'package:app_events/bloc/data_center.dart';
+import 'package:app_events/bloc/sign_in_social_network.dart';
 import 'package:app_events/constants.dart';
 import 'package:app_events/screens/home.dart';
 import 'package:app_events/screens/library_screen.dart';
 import 'package:app_events/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class BottonCustomNav extends StatefulWidget {
   const BottonCustomNav({super.key});
@@ -23,6 +26,19 @@ class _BottonCustomNavState extends State<BottonCustomNav> {
     //   style: optionStyle,
     // ),
   ];
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final auth =
+          Provider.of<SignInSocialNetworkProvider>(context, listen: false);
+      final data = Provider.of<DataCenter>(context, listen: false);
+      if (data.userCompetitor == null) {
+        await data.validateIsAdmin(auth.userInfo.uid);
+      }
+    });
+    super.initState();
+  }
 
   void _onItemTapped(int index) {
     setState(() {

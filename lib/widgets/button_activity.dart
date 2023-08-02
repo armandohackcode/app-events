@@ -18,7 +18,7 @@ class ButtonActivity extends StatelessWidget {
     return CardContent(
       height: 90,
       child: TextButton(
-        onPressed: () {},
+        onPressed: onPressed,
         child: Padding(
           padding: const EdgeInsets.only(top: 5),
           child: Row(

@@ -49,15 +49,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           // style: TextStyle(color: AppStyles.fontColor),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => const AddSchedule()));
-              },
-              icon: const Icon(
-                Icons.person_add,
-                size: 32,
-              ))
+          if (dataCenter.isAdmin)
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (_) => const AddSchedule()));
+                },
+                icon: const Icon(
+                  Icons.person_add,
+                  size: 32,
+                ))
         ],
       ),
       // CardSchedule(
@@ -76,25 +77,27 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         itemBuilder: (BuildContext context, int index) {
           var item = dataCenter.schedule[index];
           if (item.type == "Actividad") {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(10),
-              alignment: const Alignment(0, 0),
-              decoration: BoxDecoration(
-                color: AppStyles.colorBaseBlue,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: AppStyles.fontColor,
-                  width: 1.5,
+            return ZoomIn(
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(10),
+                alignment: const Alignment(0, 0),
+                decoration: BoxDecoration(
+                  color: AppStyles.colorBaseBlue,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppStyles.fontColor,
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              child: Text(
-                item.title.toUpperCase(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                child: Text(
+                  item.title.toUpperCase(),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             );
           } else {
-            return FadeInUp(child: CardSchedule(info: item));
+            return ZoomIn(child: CardSchedule(info: item));
           }
         },
       ),

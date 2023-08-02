@@ -52,11 +52,19 @@ class CardSchedule extends StatelessWidget {
                 child: Column(
                   children: [
                     ClipOval(
-                      child: Image.network(
-                        info.photoUrl,
-                        fit: BoxFit.cover,
+                      // child: Image.network(
+                      //   info.photoUrl,
+                      //   fit: BoxFit.cover,
+                      //   width: MediaQuery.of(context).size.width * 0.23,
+                      //   height: MediaQuery.of(context).size.width * 0.23,
+                      // ),
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.23,
                         height: MediaQuery.of(context).size.width * 0.23,
+                        child: FadeInImage(
+                            placeholder: const AssetImage(
+                                "assets/img/gitgoogle-loading.gif"),
+                            image: NetworkImage(info.photoUrl)),
                       ),
                     ),
                     Container(
