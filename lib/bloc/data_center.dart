@@ -249,30 +249,32 @@ class DataCenter with ChangeNotifier {
     await _db.collection("resource-library").doc().set(data.toJson());
   }
 
-  /// Habilitar competidor
+  /// Se obtiene la información del competidor como usuario, y si no existe se crea
   Future<void> addCompetitor(
       {required String name,
       required String token,
       required String photoUrl}) async {
     var storage = await SharedPreferences.getInstance();
     var uuid = storage.getString('uid_user') ?? "";
-    var user = UserCompetitor(
-        uuid: uuid,
-        name: name,
-        photoUrl: photoUrl,
-        profession: "",
-        aboutMe: "",
-        tokenAutorization: token,
-        score: 0,
-        socialNetwork: [],
-        friends: []);
-    await _db.collection("competidores").doc(uuid).set(user.toJson());
     var data = await _db
         .collection("competidores")
         .where('uuid', isEqualTo: uuid)
         .get();
     if (data.docs.isNotEmpty) {
       userCompetitor = UserCompetitor.fromJson(data.docs.first.data());
+    } else {
+      var user = UserCompetitor(
+          uuid: uuid,
+          name: name,
+          photoUrl: photoUrl,
+          profession: "",
+          aboutMe: "",
+          tokenAutorization: token,
+          score: 0,
+          socialNetwork: [],
+          friends: []);
+      await _db.collection("competidores").doc(uuid).set(user.toJson());
+      userCompetitor = user;
     }
   }
 

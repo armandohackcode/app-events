@@ -85,10 +85,12 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
         _userInfo = resInfo.user!;
         var storage = await SharedPreferences.getInstance();
         storage.setString('uid_user', resInfo.user!.uid);
+
         await DataCenter().addCompetitor(
             name: _userInfo.displayName ?? "Anónimo",
             token: "",
             photoUrl: _userInfo.photoURL ?? "");
+
         isAuth = true;
       }
       loadingAuth = false;
