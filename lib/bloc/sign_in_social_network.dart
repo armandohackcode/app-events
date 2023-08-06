@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 // import 'package:app_events/firebase_options.dart';
+import 'package:app_events/bloc/data_center.dart';
 import 'package:crypto/crypto.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,11 +85,11 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
         _userInfo = resInfo.user!;
         var storage = await SharedPreferences.getInstance();
         storage.setString('uid_user', resInfo.user!.uid);
+        await DataCenter().addCompetitor(
+            name: _userInfo.displayName ?? "Anónimo",
+            token: "",
+            photoUrl: _userInfo.photoURL ?? "");
         isAuth = true;
-        // var res = await _identifyUser(_userInfo.email!, "GOOGLE");
-        // if (res == true) {
-        //   isAuth = true;
-        // }
       }
       loadingAuth = false;
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:app_events/constants.dart';
 import 'package:app_events/models/speaker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class AddSchedule extends StatefulWidget {
   const AddSchedule({super.key});
@@ -220,6 +221,7 @@ class _AddScheduleState extends State<AddSchedule> {
                   }
                   await dataCenter.addNewShedule(
                     Speaker(
+                      uuid: const Uuid().v1(),
                       title: _title.text,
                       description: _description.text,
                       name: _name.text,

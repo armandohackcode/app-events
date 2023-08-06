@@ -3,12 +3,15 @@ import 'package:app_events/constants.dart';
 import 'package:app_events/screens/schedule_screen.dart';
 import 'package:app_events/widgets/button_activity.dart';
 import 'package:app_events/widgets/card_content.dart';
+import 'package:app_events/widgets/home/organizers_screen.dart';
+import 'package:app_events/widgets/home/ranking_data.dart';
 import 'package:app_events/widgets/home/sponsors_content.dart';
 import 'package:app_events/widgets/utils/qr_scan_content.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -26,37 +29,70 @@ class Home extends StatelessWidget {
           const CardSchedule(),
           const SizedBox(height: 20),
           const Text(
-            "Unete a las actividades",
+            "Únete a las actividades",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           ButtonActivity(
+              onPressed: () {
+                Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (_) => const RankingData()));
+              },
+              text: "Torneo GDG Sucre",
+              icon: Image.asset("assets/img/trofeo.png", height: 60)),
+          const SizedBox(height: 10),
+          ButtonActivity(
+            icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
+            text: 'Conoce a la comunidad',
+            onPressed: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (_) => const OrganizersScreen(),
+                ),
+              );
+              // await laucherUrlInfo(
+              //     "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
+            },
+          ),
+          const SizedBox(height: 10),
+          ButtonActivity(
             icon: SvgPicture.asset('assets/img/icon-discord.svg'),
-            text: 'Unete al canal de Discord',
+            text: 'Únete al canal en Discord',
             onPressed: () async {
               await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
             },
           ),
-          // const SizedBox(height: 10),
-          // ButtonActivity(
-          //   icon: SvgPicture.asset('assets/img/icon-kahoot.svg'),
-          //   text: 'Juega en Kahoot con Nosotros',
-          //   onPressed: () {},
-          // ),
-          const SizedBox(height: 10),
-          ButtonActivity(
-            icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
-            text: 'Unete a la comunidad',
-            onPressed: () async {
-              await laucherUrlInfo(
-                  "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
+          const SponsorsContent(),
+          const SizedBox(height: 20),
+          FutureBuilder(
+            future: PackageInfo.fromPlatform(),
+            builder:
+                (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox();
+              }
+              return Text(
+                "Versión de aplicación: ${snapshot.data?.version ?? ""}",
+                textAlign: TextAlign.center,
+              );
             },
           ),
-          const SponsorsContent()
+          TextButton(
+            style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
+            onPressed: () async {
+              await laucherUrlInfo(
+                  "https://www.linkedin.com/in/armandohackcode/");
+            },
+            child: const Text("Desarrollado por @armandohackcode"),
+          ),
+          const SizedBox(height: 60),
         ],
       ),
-      floatingActionButton:
-          (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
+      floatingActionButton: (dataCenter.userCompetitor != null)
+          ? (dataCenter.userCompetitor!.tokenAutorization.isNotEmpty)
+              ? const ButtonScan()
+              : null
+          : null,
       // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }

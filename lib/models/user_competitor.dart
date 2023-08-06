@@ -66,14 +66,17 @@ class UserCompetitor {
         name: json["name"],
         photoUrl: json["photoUrl"] ?? "",
         profession: json["profession"] ?? "",
-        aboutMe: json["aboutMe"],
-        tokenAutorization: json["tokenAutorization"],
-        score: json["score"],
+        aboutMe: json["aboutMe"] ?? "",
+        tokenAutorization: json["tokenAutorization"] ?? "",
+        score: json["score"] ?? 0,
         scoreProfile: json["scoreProfile"] ?? false,
-        socialNetwork: List<SocialNetwork>.from(
-            json["socialNetwork"].map((x) => SocialNetwork.fromJson(x))),
-        friends:
-            List<Friend>.from(json["friends"].map((x) => Friend.fromJson(x))),
+        socialNetwork: (json["socialNetwork"] == null)
+            ? []
+            : List<SocialNetwork>.from(
+                json["socialNetwork"].map((x) => SocialNetwork.fromJson(x))),
+        friends: (json["friends"] == null)
+            ? []
+            : List<Friend>.from(json["friends"].map((x) => Friend.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

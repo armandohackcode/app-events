@@ -25,7 +25,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final data = Provider.of<DataCenter>(context, listen: false);
-      data.getResources();
+      if (data.resources.isEmpty) {
+        data.getResources();
+      }
       data.cleanTag();
     });
     super.initState();
@@ -46,98 +48,125 @@ class _LibraryScreenState extends State<LibraryScreen> {
         onRefresh: () async {
           await dataCenter.getResources();
         },
-        child: ListView(
-          padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text(
-              'Biblioteca de recursos',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            TextFormField(
-              controller: _paramSearch,
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                hintText: 'Buscar contenido',
-                suffixIcon: (_paramSearch.text.isNotEmpty)
-                    ? IconButton(
-                        onPressed: () {
-                          dataCenter.getResources();
-                          _paramSearch.clear();
-                        },
-                        icon: const Icon(Icons.clear))
-                    : const Icon(
-                        Icons.search,
-                        size: 32,
-                      ),
-              ),
-              onFieldSubmitted: (value) async {
-                await dataCenter.searchResource(param: value);
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ButtonLibrary(
-                  color: AppStyles.colorBaseBlue,
-                  active: dataCenter.activeWeb,
-                  text: 'Web',
-                  onPressed: () async {
-                    dataCenter.activeWeb = !dataCenter.activeWeb;
-
-                    await dataCenter.searchResource(param: _paramSearch.text);
-                  },
-                ),
-                ButtonLibrary(
-                  active: dataCenter.activeMobile,
-                  color: AppStyles.colorBaseGreen,
-                  text: 'Mobile',
-                  onPressed: () async {
-                    dataCenter.activeMobile = !dataCenter.activeMobile;
-
-                    await dataCenter.searchResource(param: _paramSearch.text);
-                  },
-                ),
-                ButtonLibrary(
-                  active: dataCenter.activeCloud,
-                  color: AppStyles.colorBaseRed,
-                  text: 'Cloud',
-                  onPressed: () async {
-                    dataCenter.activeCloud = !dataCenter.activeCloud;
-
-                    await dataCenter.searchResource(param: _paramSearch.text);
-                  },
-                ),
-                ButtonLibrary(
-                  active: dataCenter.activeIA,
-                  color: AppStyles.colorBaseYellow,
-                  text: 'IA',
-                  onPressed: () async {
-                    dataCenter.activeIA = !dataCenter.activeIA;
-                    await dataCenter.searchResource(param: _paramSearch.text);
-                  },
-                ),
-              ],
-            ),
-            // Container(
-            //   margin: const EdgeInsets.only(bottom: 10),
-            //   child: CardLibrary(
-            //     width: MediaQuery.of(context).size.width,
-            //     link: 'https://www.youtube.com/watch?v=6FoKDYDJ4V8',
-            //     title: "Mongo con node JS",
-            //     color: AppStyles.colorBaseRed,
-            //   ),
-            // ),
-            for (var item in dataCenter.resources)
-              ZoomIn(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: CardLibrary(
-                    key: UniqueKey(),
-                    width: MediaQuery.of(context).size.width,
-                    link: item.link,
-                    title: item.title,
-                    color: _getColor(item.type),
+            Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Biblioteca de recursos',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
+                  TextFormField(
+                    controller: _paramSearch,
+                    textInputAction: TextInputAction.search,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar contenido',
+                      suffixIcon: (_paramSearch.text.isNotEmpty)
+                          ? IconButton(
+                              onPressed: () {
+                                dataCenter.getResources();
+                                _paramSearch.clear();
+                              },
+                              icon: const Icon(Icons.clear))
+                          : const Icon(
+                              Icons.search,
+                              size: 32,
+                            ),
+                    ),
+                    onFieldSubmitted: (value) async {
+                      await dataCenter.searchResource(param: value);
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ButtonLibrary(
+                        color: AppStyles.colorBaseBlue,
+                        active: dataCenter.activeWeb,
+                        text: 'Web',
+                        onPressed: () async {
+                          dataCenter.activeWeb = !dataCenter.activeWeb;
+
+                          await dataCenter.searchResource(
+                              param: _paramSearch.text);
+                        },
+                      ),
+                      ButtonLibrary(
+                        active: dataCenter.activeMobile,
+                        color: AppStyles.colorBaseGreen,
+                        text: 'Mobile',
+                        onPressed: () async {
+                          dataCenter.activeMobile = !dataCenter.activeMobile;
+
+                          await dataCenter.searchResource(
+                              param: _paramSearch.text);
+                        },
+                      ),
+                      ButtonLibrary(
+                        active: dataCenter.activeCloud,
+                        color: AppStyles.colorBaseRed,
+                        text: 'Cloud',
+                        onPressed: () async {
+                          dataCenter.activeCloud = !dataCenter.activeCloud;
+
+                          await dataCenter.searchResource(
+                              param: _paramSearch.text);
+                        },
+                      ),
+                      ButtonLibrary(
+                        active: dataCenter.activeIA,
+                        color: AppStyles.colorBaseYellow,
+                        text: 'IA',
+                        onPressed: () async {
+                          dataCenter.activeIA = !dataCenter.activeIA;
+                          await dataCenter.searchResource(
+                              param: _paramSearch.text);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (dataCenter.loadingResource)
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                alignment: Alignment.center,
+                child: Center(
+                  child: LoadingAnimationWidget.twistingDots(
+                    leftDotColor: AppStyles.colorBaseBlue,
+                    rightDotColor: AppStyles.colorBaseYellow,
+                    size: 40,
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(15),
+                  itemCount: dataCenter.resources.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var item = dataCenter.resources[index];
+                    return ZoomIn(
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: CardLibrary(
+                          key: UniqueKey(),
+                          width: MediaQuery.of(context).size.width,
+                          link: item.link,
+                          title: item.title,
+                          color: _getColor(item.type),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               )
           ],
@@ -196,7 +225,6 @@ class CardLibrary extends StatelessWidget {
       children: [
         InkWell(
           onTap: () async {
-            print("click");
             await laucherUrlInfo(link);
           },
           child: Container(
@@ -257,7 +285,7 @@ class CardLibrary extends StatelessWidget {
                     ),
                     errorImage:
                         "https://img.icons8.com/?size=512&id=92941&format=png",
-                    cache: const Duration(days: 0),
+                    cache: const Duration(days: 1),
                     backgroundColor: Colors.grey[100],
                     borderRadius: 6,
                     removeElevation: true,
@@ -325,9 +353,11 @@ class _ButtonLibraryState extends State<ButtonLibrary> {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor:
-            widget.active ? AppStyles.backgroundColor : widget.color,
+            widget.active ? widget.color : AppStyles.backgroundColor,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppStyles.fontColor, width: 1),
+          side: BorderSide(
+              color: widget.active ? AppStyles.fontColor : widget.color,
+              width: 1.2),
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),
@@ -335,8 +365,7 @@ class _ButtonLibraryState extends State<ButtonLibrary> {
       child: Text(
         widget.text,
         style: TextStyle(
-          color:
-              widget.active ? AppStyles.fontColor : AppStyles.backgroundColor,
+          color: widget.active ? AppStyles.backgroundColor : widget.color,
         ),
       ),
     );

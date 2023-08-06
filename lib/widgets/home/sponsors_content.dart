@@ -17,7 +17,9 @@ class _SponsorsContentState extends State<SponsorsContent> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final dataCenter = Provider.of<DataCenter>(context, listen: false);
-      dataCenter.getSponsors();
+      if (dataCenter.sponsors.isEmpty) {
+        dataCenter.getSponsors();
+      }
     });
     super.initState();
   }
@@ -38,41 +40,28 @@ class _SponsorsContentState extends State<SponsorsContent> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                for (var item in dataCenter.sponsors)
-                  InkWell(
-                    onTap: () async {
-                      await laucherUrlInfo(item.link);
-                    },
-                    child: Column(
-                      children: [
-                        // Image.network(
-                        //   item.photoUrl,
-                        //   height: 180,
-                        // ),
-                        SizedBox(
-                          height: 180,
-                          width: 300,
-                          child: FadeInImage(
-                              placeholder: const AssetImage(
-                                  "assets/img/GoogleIO_Logo.gif"),
-                              image: NetworkImage(item.photoUrl)),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: AppStyles.colorBaseYellow,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(width: 1.2)),
-                          child: Text(
-                            item.name,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                Wrap(
+                  children: [
+                    for (var item in dataCenter.sponsors)
+                      Tooltip(
+                        message: item.name,
+                        child: TextButton(
+                          onPressed: () async {
+                            await laucherUrlInfo(item.link);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            width: MediaQuery.of(context).size.width * 0.35,
+                            // height: MediaQuery.of(context).size.width * 0.35,
+                            child: FadeInImage(
+                                placeholder: const AssetImage(
+                                    "assets/img/gitgoogle-loading.gif"),
+                                image: NetworkImage(item.photoUrl)),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  )
+                      )
+                  ],
+                )
               ],
             ),
           )

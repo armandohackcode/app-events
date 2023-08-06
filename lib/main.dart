@@ -131,8 +131,8 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
     if (auth.loadingValidate) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        body: Center(child: Image.asset("assets/img/GoogleIO_Logo.gif")),
       );
     } else {
       if (auth.isAuth) {

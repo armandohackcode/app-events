@@ -9,6 +9,7 @@ Speaker speakerFromJson(String str) => Speaker.fromJson(json.decode(str));
 String speakerToJson(Speaker data) => json.encode(data.toJson());
 
 class Speaker {
+  String uuid;
   String title;
   String description;
   String name;
@@ -23,6 +24,7 @@ class Speaker {
   List<SocialNetwork> socialNetwork;
 
   Speaker({
+    required this.uuid,
     required this.title,
     required this.description,
     required this.name,
@@ -38,6 +40,7 @@ class Speaker {
   });
 
   Speaker copyWith({
+    String? uuid,
     String? title,
     String? description,
     String? name,
@@ -52,6 +55,7 @@ class Speaker {
     List<SocialNetwork>? socialNetwork,
   }) =>
       Speaker(
+        uuid: uuid ?? this.uuid,
         title: title ?? this.title,
         description: description ?? this.description,
         name: name ?? this.name,
@@ -67,6 +71,7 @@ class Speaker {
       );
 
   factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
+        uuid: json["uuis"] ?? "",
         title: json["title"] ?? "",
         description: json["description"] ?? "",
         name: json["name"] ?? "",

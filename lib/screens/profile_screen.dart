@@ -27,15 +27,16 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   StreamSubscription? _sub;
+  // StreamSubscription? _sub2;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("Ejecutando init");
+      // print("Ejecutando init");
       final data = Provider.of<DataCenter>(context, listen: false);
       if (data.userCompetitor != null) {
         _sub = data.streamInfoUser().listen((event) {
-          print("Emitiendo");
-          print(event.data() != null);
+          // print("Emitiendo");
+          // print(event.data() != null);
           if (event.data() != null) {
             data.userCompetitor = UserCompetitor.fromJson(event.data()!);
           }
@@ -48,6 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     _sub?.cancel();
+    // _sub2?.cancel();
     super.dispose();
   }
 
@@ -68,6 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: const Icon(
                 Icons.output,
                 color: AppStyles.fontColor,
+                size: 32,
               )),
         ],
       ),
@@ -77,49 +80,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           HeaderProfile(auth: auth),
           const SizedBox(height: 20),
-          if (data.userCompetitor != null)
-            const BodyProfile()
-          else
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              onPressed: () async {
-                var res = await Navigator.of(context).push<Barcode?>(
-                  MaterialPageRoute(
-                    builder: (context) => const QRScanContent(),
-                  ),
-                );
-                if (res != null) {
-                  if (context.mounted) {
-                    customSnackbar(context, "Habilitando usuario...");
-                    await data.addCompetitor(
-                        photoUrl: auth.userInfo.photoURL ?? "",
-                        name: auth.userInfo.displayName ?? "Anónimo",
-                        token: res.code!);
-                    // await data.validateIsAdmin(uuid);
-                  }
-                }
-              },
-              icon: SvgPicture.asset('assets/img/gamepad-svgrepo-com.svg',
-                  width: 60,
-                  height: 60,
-                  colorFilter:
-                      const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-              label: const Text(
-                "Jugar",
-                style: TextStyle(fontSize: 22),
-              ),
-            ),
+          if (data.userCompetitor != null) const BodyProfile()
         ],
       ),
-      floatingActionButton:
-          (data.userCompetitor != null) ? const ButtonScan() : null,
+      floatingActionButton: (data.userCompetitor != null)
+          ? (data.userCompetitor!.tokenAutorization.isNotEmpty)
+              ? const ButtonScan()
+              : null
+          : null,
       // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }
@@ -247,23 +215,24 @@ class BodyProfile extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: const Text(
-                'Acerca de mi',
+                'Acerca de mí',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            InkWell(
-              borderRadius: BorderRadius.circular(100),
-              onTap: () async {
-                showDialog(
-                    context: context,
-                    builder: (_) => ModalQrIdentify(
-                        identify: data.userCompetitor!.tokenAutorization));
-              },
-              child: const Icon(
-                Icons.qr_code_outlined,
-                size: 32,
+            if (data.userCompetitor!.tokenAutorization.isNotEmpty)
+              InkWell(
+                borderRadius: BorderRadius.circular(100),
+                onTap: () async {
+                  showDialog(
+                      context: context,
+                      builder: (_) => ModalQrIdentify(
+                          identify: data.userCompetitor!.tokenAutorization));
+                },
+                child: const Icon(
+                  Icons.qr_code_outlined,
+                  size: 32,
+                ),
               ),
-            ),
             InkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () async {
@@ -349,6 +318,41 @@ class BodyProfile extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 20),
+        if (data.userCompetitor!.tokenAutorization.isEmpty)
+          Center(
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              onPressed: () async {
+                var res = await Navigator.of(context).push<Barcode?>(
+                  MaterialPageRoute(
+                    builder: (context) => const QRScanContent(),
+                  ),
+                );
+                if (res != null) {
+                  if (context.mounted) {
+                    customSnackbar(context, "Habilitando usuario...");
+                    await data.updateToken(res.code!);
+                  }
+                }
+              },
+              icon: SvgPicture.asset('assets/img/gamepad-svgrepo-com.svg',
+                  width: 60,
+                  height: 60,
+                  colorFilter:
+                      const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+              label: const Text(
+                "Empezar a Jugar",
+                style: TextStyle(fontSize: 22),
+              ),
+            ),
+          ),
         if (data.userCompetitor!.friends.isNotEmpty)
           const Text(
             'Conexiones',

@@ -69,6 +69,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                                       top: 15.0, left: 10, right: 10),
                                   child: Text(
                                     user!.name,
+                                    textAlign: TextAlign.center,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),

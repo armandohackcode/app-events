@@ -1,3 +1,4 @@
+import 'package:app_events/models/organizer.dart';
 import 'package:app_events/models/resource_library.dart';
 import 'package:app_events/models/speaker.dart';
 import 'package:app_events/models/sponsor.dart';
@@ -12,15 +13,26 @@ class DataCenter with ChangeNotifier {
   bool _isAdmin = false;
 
   bool _loadingNewSchedule = false;
+  bool _loadingSchedule = false;
 
   bool _activeWeb = false;
   bool _activeMobile = false;
   bool _activeCloud = false;
   bool _activeIA = false;
 
+  bool _loadingResource = false;
+
   List<Speaker> _schedule = [];
   List<ResourceLibrary> _resources = [];
   List<Sponsor> _sponsors = [];
+  List<Organizer> _organizers = [];
+  List<UserCompetitor> _ranking = [];
+
+  bool get loadingResource => _loadingResource;
+  set loadingResource(bool state) {
+    _loadingResource = state;
+    notifyListeners();
+  }
 
   bool get isAdmin => _isAdmin;
   set isAdmin(bool state) {
@@ -60,6 +72,18 @@ class DataCenter with ChangeNotifier {
     notifyListeners();
   }
 
+  List<Organizer> get organizers => _organizers;
+  set organizers(List<Organizer> list) {
+    _organizers = list;
+    notifyListeners();
+  }
+
+  List<UserCompetitor> get ranking => _ranking;
+  set ranking(List<UserCompetitor> list) {
+    _ranking = list;
+    notifyListeners();
+  }
+
   List<ResourceLibrary> get resources => _resources;
   set resources(List<ResourceLibrary> list) {
     _resources = list;
@@ -85,13 +109,19 @@ class DataCenter with ChangeNotifier {
     notifyListeners();
   }
 
+  bool get loadingSchedule => _loadingSchedule;
+  set loadingSchedule(bool state) {
+    _loadingSchedule = state;
+    notifyListeners();
+  }
+
   final _db = FirebaseFirestore.instance;
 
   /// metodo para añadir un nuevo speaker o actividad al cronograma
   Future<void> addNewShedule(Speaker speaker) async {
     try {
       loadingNewSchedule = true;
-      await _db.collection("schedule").doc().set(speaker.toJson());
+      await _db.collection("schedule").doc(speaker.uuid).set(speaker.toJson());
       loadingNewSchedule = false;
     } catch (e) {
       loadingNewSchedule = false;
@@ -103,10 +133,26 @@ class DataCenter with ChangeNotifier {
   }
 
   /// metodo para escuchar los cambios en la Agenda
-  Stream<QuerySnapshot<Map<String, dynamic>>> getListSchedule() async* {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getListScheduleStream() async* {
     try {
       var ref = _db.collection('schedule').orderBy('position');
       yield* ref.snapshots();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        print("Error al traer cronograma");
+      }
+    }
+  }
+
+  /// metodo para ontener la información de la Agenda
+  Future<void> getListSchedule() async {
+    try {
+      loadingSchedule = true;
+      var ref = _db.collection('schedule').orderBy('position');
+      var data = await ref.get();
+      schedule = data.docs.map((e) => Speaker.fromJson(e.data())).toList();
+      loadingSchedule = false;
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -137,6 +183,22 @@ class DataCenter with ChangeNotifier {
       if (kDebugMode) {
         print(e);
         print("Error al consultar información de admins");
+      }
+    }
+  }
+
+  /// Update token de autorización
+  Future<void> updateToken(String token) async {
+    try {
+      var storage = await SharedPreferences.getInstance();
+      var uuid = storage.getString('uid_user') ?? "";
+      await _db
+          .collection("competidores")
+          .doc(uuid)
+          .update({"tokenAutorization": token});
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
       }
     }
   }
@@ -240,16 +302,38 @@ class DataCenter with ChangeNotifier {
 
   /// Trae la lista de todos los recursos de la biblioteca
   Future<void> getResources() async {
+    loadingResource = true;
     var res = await _db.collection("resource-library").get();
     var info = res.docs.map((e) => ResourceLibrary.fromJson(e.data())).toList();
     resources = info;
+    loadingResource = false;
   }
 
   ///Trae la lista de sponsors
   Future<void> getSponsors() async {
-    var res = await _db.collection("sponsors").get();
+    var res = await _db
+        .collection("sponsors")
+        .orderBy("position", descending: false)
+        .get();
     var info = res.docs.map((e) => Sponsor.fromJson(e.data())).toList();
     sponsors = info;
+  }
+
+  /// Organizers
+  Future<void> getOrganizer() async {
+    var res = await _db.collection("organizers").get();
+    var info = res.docs.map((e) => Organizer.fromJson(e.data())).toList();
+    organizers = info;
+  }
+
+  /// Ranking de posisiones
+  Stream<QuerySnapshot<Map<String, dynamic>>> getRanking() async* {
+    yield* _db
+        .collection("competidores")
+        .where('score', isGreaterThan: 20)
+        .orderBy("score", descending: true)
+        .limit(10)
+        .snapshots();
   }
 
   /// Buscar un recurso de la biblioteca

@@ -149,7 +149,7 @@ class _EditProfileState extends State<EditProfile> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Instrgram URL",
+              "Instagram URL",
               style: textStyle(),
             ),
             const SizedBox(height: 10),
