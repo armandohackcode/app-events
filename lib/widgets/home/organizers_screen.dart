@@ -86,24 +86,54 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
             for (var item in data.organizers)
               Container(
                 margin: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    ClipOval(
-                      child: FadeInImage(
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          placeholder: const AssetImage(
-                              "assets/img/gitgoogle-loading.gif"),
-                          image: NetworkImage(item.photoUrl)),
-                    ),
-                    const SizedBox(height: 5),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.25,
-                      child: Text(
-                        item.name,
-                        textAlign: TextAlign.center,
+                child: InkWell(
+                  onTap: () async {
+                    await laucherUrlInfo(item.link);
+                  },
+                  child: Column(
+                    children: [
+                      Stack(
+                        alignment: const Alignment(0, 1),
+                        children: [
+                          ClipOval(
+                            child: FadeInImage(
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                placeholder: const AssetImage(
+                                    "assets/img/gitgoogle-loading.gif"),
+                                image: NetworkImage(item.photoUrl)),
+                          ),
+                          if (item.type >= 3)
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              alignment: Alignment.center,
+                              height: 20,
+                              width: MediaQuery.of(context).size.width * 0.15,
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                                color: AppStyles.colorBaseRed,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                "LEAD",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                        ],
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 5),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: Text(
+                          item.name,
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
           ],

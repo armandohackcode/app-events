@@ -1,5 +1,6 @@
 import 'package:app_events/constants.dart';
 import 'package:app_events/models/speaker.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,12 +51,18 @@ String getSVG(SocialNetwork item) {
 }
 
 Future<void> laucherUrlInfo(String url) async {
-  var link = Uri.parse(url);
-  if (await canLaunchUrl(link)) {
-    print("lanzando url");
-    await launchUrl(
-      link,
-      mode: LaunchMode.externalApplication,
-    );
+  try {
+    var link = Uri.parse(url);
+    if (await canLaunchUrl(link)) {
+      // print("lanzando url");
+      await launchUrl(
+        link,
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
   }
 }

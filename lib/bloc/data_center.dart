@@ -22,11 +22,19 @@ class DataCenter with ChangeNotifier {
 
   bool _loadingResource = false;
 
+  Speaker? _currentSpeaker;
+
   List<Speaker> _schedule = [];
   List<ResourceLibrary> _resources = [];
   List<Sponsor> _sponsors = [];
   List<Organizer> _organizers = [];
   List<UserCompetitor> _ranking = [];
+
+  Speaker? get currentSpeaker => _currentSpeaker;
+  set currentSpeaker(Speaker? data) {
+    _currentSpeaker = data;
+    notifyListeners();
+  }
 
   bool get loadingResource => _loadingResource;
   set loadingResource(bool state) {
@@ -170,7 +178,7 @@ class DataCenter with ChangeNotifier {
           .get();
       if (res.docs.isNotEmpty) {
         isAdmin = true;
-        print('El usuario es un admin');
+        // print('El usuario es un admin');
       }
       var data = await _db
           .collection("competidores")
@@ -207,6 +215,9 @@ class DataCenter with ChangeNotifier {
   Future<UserCompetitor?> addNewFriend(String token) async {
     try {
       var friends = userCompetitor!.friends;
+      if (token.isEmpty) {
+        return null;
+      }
 
       /// validar que no haya agregado al amigo 2 veces
       if (friends.where((element) => element.token == token).isNotEmpty ||
@@ -241,6 +252,63 @@ class DataCenter with ChangeNotifier {
         print(e);
       }
       return null;
+    }
+  }
+
+  /// Añadir participante de taller
+  Future<bool> addWorkshop(String uuid) async {
+    try {
+      await _db.collection("schedule").doc(uuid).update({
+        'current': FieldValue.increment(1),
+      });
+      await _db
+          .collection("schedule")
+          .doc(uuid)
+          .collection("workshow")
+          .doc()
+          .set(Friend(
+                  uuid: userCompetitor!.uuid,
+                  name: userCompetitor!.name,
+                  token: userCompetitor!.tokenAutorization,
+                  photoUrl: userCompetitor!.photoUrl)
+              .toJson());
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print("falla");
+        print(e);
+      }
+      return false;
+    }
+  }
+
+  ///Escuchar datos de los cambios del speaker
+  Stream<DocumentSnapshot<Map<String, dynamic>>> speakerStream(
+      String uuid) async* {
+    yield* _db.collection("schedule").doc(uuid).snapshots();
+  }
+
+  /// buscar si el participante esta inscrito
+  Future<bool> searchUserInWorkShop(String uuid) async {
+    try {
+      var res = await _db
+          .collection("schedule")
+          .doc(uuid)
+          .collection("workshow")
+          .where("uuid", isEqualTo: userCompetitor?.uuid ?? "")
+          .get();
+      print("paso..");
+      if (res.docs.isNotEmpty) {
+        print("paso..");
+        return true;
+      }
+      return false;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return false;
     }
   }
 
@@ -323,7 +391,10 @@ class DataCenter with ChangeNotifier {
 
   /// Organizers
   Future<void> getOrganizer() async {
-    var res = await _db.collection("organizers").get();
+    var res = await _db
+        .collection("organizers")
+        .orderBy('type', descending: true)
+        .get();
     var info = res.docs.map((e) => Organizer.fromJson(e.data())).toList();
     organizers = info;
   }

@@ -220,7 +220,7 @@ class _EditProfileState extends State<EditProfile> {
                       loading = true;
                     });
                     int score = data.userCompetitor!.score;
-                    print(score);
+                    // print(score);
 
                     /// usuario completo su perfil
                     if (_aboutme.text.length >= 200 &&
@@ -229,7 +229,7 @@ class _EditProfileState extends State<EditProfile> {
                       data.userCompetitor =
                           data.userCompetitor!.copyWith(scoreProfile: true);
                     }
-                    print(score);
+                    // print(score);
 
                     /// usuario borro su perfil
                     if (_aboutme.text.length < 200 &&
@@ -239,7 +239,7 @@ class _EditProfileState extends State<EditProfile> {
                           data.userCompetitor!.copyWith(scoreProfile: false);
                       (score < 0) ? 0 : score;
                     }
-                    print(score);
+                    // print(score);
                     var socialNerwors = <SocialNetwork>[];
 
                     if (_linkedin.text != "https://www.linkedin.com/in/" &&
@@ -262,16 +262,16 @@ class _EditProfileState extends State<EditProfile> {
                       socialNerwors.add(SocialNetwork(
                           type: "FACEBOOK", link: _facebook.text));
                     }
-                    print(score);
+                    // print(score);
 
                     /// reduce el score asigando por redes sociales anterior
                     score =
                         score - data.userCompetitor!.socialNetwork.length * 3;
-                    print(score);
+                    // print(score);
 
                     /// Nuevo score asigando por redes sociales
                     score = score + socialNerwors.length * 3;
-                    print(score);
+                    // print(score);
                     var user = data.userCompetitor!.copyWith(
                       score: score,
                       name: _name.text,

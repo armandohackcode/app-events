@@ -1,6 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:app_events/bloc/data_center.dart';
-import 'package:app_events/constants.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

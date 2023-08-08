@@ -18,10 +18,10 @@ class _RankingDataState extends State<RankingData> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print("ejecutando listen base");
+      // print("ejecutando listen base");
       final data = Provider.of<DataCenter>(context, listen: false);
       _sub = data.getRanking().listen((event) {
-        print("ejecutando listen");
+        // print("ejecutando listen");
         data.ranking =
             event.docs.map((e) => UserCompetitor.fromJson(e.data())).toList();
       });

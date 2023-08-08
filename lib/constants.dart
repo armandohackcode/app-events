@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+DateFormat dateformat = DateFormat('dd/MM/yyyy HH:mm');
 
 class AppStyles {
   static const Color primaryColor = Colors.white;

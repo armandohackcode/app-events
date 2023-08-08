@@ -86,7 +86,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     return ZoomIn(
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.only(left: 10, right: 10),
                         alignment: const Alignment(0, 0),
                         decoration: BoxDecoration(
                           color: AppStyles.colorBaseBlue,
@@ -96,9 +96,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             width: 1.5,
                           ),
                         ),
-                        child: Text(
-                          item.title.toUpperCase(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(0),
+                          title: Text(
+                            item.title.toUpperCase(),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppStyles.backgroundColor),
+                          ),
+                          trailing: Text(
+                            item.schedule.toUpperCase(),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppStyles.backgroundColor),
+                          ),
                         ),
                       ),
                     );

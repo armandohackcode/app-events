@@ -21,6 +21,9 @@ class Speaker {
   String color;
   String schedule;
   int position;
+  int current;
+  int limit;
+  String? openDate;
   List<SocialNetwork> socialNetwork;
 
   Speaker({
@@ -37,6 +40,9 @@ class Speaker {
     required this.schedule,
     required this.position,
     required this.socialNetwork,
+    this.openDate,
+    this.current = 0,
+    this.limit = 0,
   });
 
   Speaker copyWith({
@@ -51,10 +57,15 @@ class Speaker {
     String? type,
     String? color,
     String? schedule,
+    int? limit,
+    int? current,
     int? position,
+    String? openDate,
     List<SocialNetwork>? socialNetwork,
   }) =>
       Speaker(
+        limit: limit ?? this.limit,
+        current: current ?? this.current,
         uuid: uuid ?? this.uuid,
         title: title ?? this.title,
         description: description ?? this.description,
@@ -67,11 +78,14 @@ class Speaker {
         color: color ?? this.color,
         schedule: schedule ?? this.schedule,
         position: position ?? this.position,
+        openDate: openDate ?? this.openDate,
         socialNetwork: socialNetwork ?? this.socialNetwork,
       );
 
   factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
-        uuid: json["uuis"] ?? "",
+        limit: json["limit"] ?? 0,
+        current: json["current"] ?? 0,
+        uuid: json["uuid"] ?? "",
         title: json["title"] ?? "",
         description: json["description"] ?? "",
         name: json["name"] ?? "",
@@ -83,11 +97,14 @@ class Speaker {
         color: json["color"] ?? "",
         schedule: json["schedule"] ?? "",
         position: json["position"] ?? 0,
+        openDate: json["openDate"] ?? "",
         socialNetwork: List<SocialNetwork>.from(
             json["SocialNetwork"].map((x) => SocialNetwork.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
+        "limit": limit,
+        "current": current,
         "title": title,
         "description": description,
         "name": name,
@@ -99,6 +116,7 @@ class Speaker {
         "color": color,
         "schedule": schedule,
         "position": position,
+        "openDate": openDate,
         "SocialNetwork":
             List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
       };
