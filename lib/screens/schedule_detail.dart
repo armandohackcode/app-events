@@ -134,9 +134,9 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
         ),
       );
     }
-    print(DateTime.parse(widget.info.openDate!)
-        .difference(DateTime.now())
-        .inSeconds);
+    // print(DateTime.parse(widget.info.openDate!)
+    //     .difference(DateTime.now())
+    //     .inSeconds);
     if ((DateTime.tryParse(widget.info.openDate!)
                 ?.difference(DateTime.now())
                 .inSeconds ??

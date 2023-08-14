@@ -78,6 +78,7 @@ class SignInScreen extends StatelessWidget {
                             ),
                           ),
                           onPressed: () async {
+                            // print("click");
                             await auth.appleAuth();
                           },
                           child: Row(

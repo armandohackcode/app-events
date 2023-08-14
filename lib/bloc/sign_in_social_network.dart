@@ -125,6 +125,7 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
     // Firebase, the nonce in the id token returned by Apple, is expected to
     // match the sha256 hash of `rawNonce`.
     try {
+      loadingAuth = true;
       final rawNonce = generateNonce();
       final nonce = sha256ofString(rawNonce);
 
@@ -154,6 +155,10 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
       // if (res == true) {
       //   isAuth = true;
       // }
+      await DataCenter().addCompetitor(
+          name: _userInfo.displayName ?? "Anónimo",
+          token: "",
+          photoUrl: _userInfo.photoURL ?? "");
       loadingAuth = false;
     } on FirebaseAuthException catch (e) {
       loadingAuth = false;

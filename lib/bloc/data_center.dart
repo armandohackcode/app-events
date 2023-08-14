@@ -14,6 +14,7 @@ class DataCenter with ChangeNotifier {
 
   bool _loadingNewSchedule = false;
   bool _loadingSchedule = false;
+  bool _loadingAttendies = false;
 
   bool _activeWeb = false;
   bool _activeMobile = false;
@@ -29,6 +30,7 @@ class DataCenter with ChangeNotifier {
   List<Sponsor> _sponsors = [];
   List<Organizer> _organizers = [];
   List<UserCompetitor> _ranking = [];
+  List<UserCompetitor> _attendies = [];
 
   Speaker? get currentSpeaker => _currentSpeaker;
   set currentSpeaker(Speaker? data) {
@@ -39,6 +41,12 @@ class DataCenter with ChangeNotifier {
   bool get loadingResource => _loadingResource;
   set loadingResource(bool state) {
     _loadingResource = state;
+    notifyListeners();
+  }
+
+  bool get loadingAttendies => _loadingAttendies;
+  set loadingAttendies(bool state) {
+    _loadingAttendies = state;
     notifyListeners();
   }
 
@@ -89,6 +97,12 @@ class DataCenter with ChangeNotifier {
   List<UserCompetitor> get ranking => _ranking;
   set ranking(List<UserCompetitor> list) {
     _ranking = list;
+    notifyListeners();
+  }
+
+  List<UserCompetitor> get attendies => _attendies;
+  set attendies(List<UserCompetitor> list) {
+    _attendies = list;
     notifyListeners();
   }
 
@@ -215,20 +229,20 @@ class DataCenter with ChangeNotifier {
   Future<UserCompetitor?> addNewFriend(String token) async {
     try {
       var friends = userCompetitor!.friends;
-      if (token.isEmpty) {
-        return null;
-      }
+      // if (token.isEmpty) {
+      //   return null;
+      // }
 
       /// validar que no haya agregado al amigo 2 veces
-      if (friends.where((element) => element.token == token).isNotEmpty ||
-          token == userCompetitor?.tokenAutorization) {
+      if (friends.where((element) => element.uuid == token).isNotEmpty ||
+          token == userCompetitor?.uuid) {
         return null;
       }
       var storage = await SharedPreferences.getInstance();
       var uuid = storage.getString('uid_user') ?? "";
       var res = await _db
           .collection("competidores")
-          .where('tokenAutorization', isEqualTo: token)
+          .where('uuid', isEqualTo: token)
           .get();
       if (res.docs.isNotEmpty) {
         var user = UserCompetitor.fromJson(res.docs.first.data());
@@ -298,9 +312,9 @@ class DataCenter with ChangeNotifier {
           .collection("workshow")
           .where("uuid", isEqualTo: userCompetitor?.uuid ?? "")
           .get();
-      print("paso..");
+      // print("paso..");
       if (res.docs.isNotEmpty) {
-        print("paso..");
+        // print("paso..");
         return true;
       }
       return false;
@@ -407,6 +421,37 @@ class DataCenter with ChangeNotifier {
         .orderBy("score", descending: true)
         .limit(10)
         .snapshots();
+  }
+
+  /// lista de competidores del sistema solo para administradores
+  Future<void> getAttendies() async {
+    loadingAttendies = true;
+    var res = await _db.collection("competidores").get();
+    attendies = res.docs.map((e) => UserCompetitor.fromJson(e.data())).toList();
+    loadingAttendies = false;
+  }
+
+  /// regaralar 10 puntos por participar en las preguntas
+  Future<void> addScoreAdmin(String uuid) async {
+    await _db.collection("competidores").doc(uuid).update({
+      'score': FieldValue.increment(10),
+    });
+  }
+
+  /// Buscar un recurso de asistente
+  Future<void> searchAttendies({
+    String? param,
+  }) async {
+    await getAttendies();
+    var data = attendies;
+    if ((param ?? "").isNotEmpty) {
+      data = attendies
+          .where((element) =>
+              element.name.toLowerCase().contains((param ?? "").toLowerCase()))
+          .toList();
+    }
+
+    attendies = data;
   }
 
   /// Buscar un recurso de la biblioteca

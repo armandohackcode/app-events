@@ -1,5 +1,6 @@
 import 'package:app_events/bloc/data_center.dart';
 import 'package:app_events/constants.dart';
+import 'package:app_events/screens/attendies_screen.dart';
 import 'package:app_events/screens/schedule_screen.dart';
 import 'package:app_events/widgets/button_activity.dart';
 import 'package:app_events/widgets/card_content.dart';
@@ -62,6 +63,16 @@ class Home extends StatelessWidget {
               await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
             },
           ),
+          const SizedBox(height: 10),
+          if (dataCenter.isAdmin)
+            ButtonActivity(
+              icon: Image.asset("assets/img/dino-write.png"),
+              text: 'Participantes',
+              onPressed: () async {
+                Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (_) => const AttendiesScrren()));
+              },
+            ),
           const SponsorsContent(),
           const SizedBox(height: 20),
           FutureBuilder(
@@ -88,11 +99,8 @@ class Home extends StatelessWidget {
           const SizedBox(height: 60),
         ],
       ),
-      floatingActionButton: (dataCenter.userCompetitor != null)
-          ? (dataCenter.userCompetitor!.tokenAutorization.isNotEmpty)
-              ? const ButtonScan()
-              : null
-          : null,
+      floatingActionButton:
+          (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
       // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }

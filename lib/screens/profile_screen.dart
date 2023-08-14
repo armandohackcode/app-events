@@ -1,22 +1,24 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_events/bloc/data_center.dart';
 import 'package:app_events/bloc/sign_in_social_network.dart';
 import 'package:app_events/constants.dart';
 import 'package:app_events/models/user_competitor.dart';
+import 'package:app_events/screens/delete_account.dart';
 import 'package:app_events/screens/home.dart';
 import 'package:app_events/widgets/card_content.dart';
 import 'package:app_events/widgets/profile/edit_profile.dart';
 import 'package:app_events/widgets/profile/modal_qr_identify.dart';
 import 'package:app_events/widgets/profile/profile_friend.dart';
 import 'package:app_events/widgets/profile/profile_public.dart';
-import 'package:app_events/widgets/utils/qr_scan_content.dart';
+// import 'package:app_events/widgets/utils/qr_scan_content.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+// import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -83,11 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (data.userCompetitor != null) const BodyProfile()
         ],
       ),
-      floatingActionButton: (data.userCompetitor != null)
-          ? (data.userCompetitor!.tokenAutorization.isNotEmpty)
-              ? const ButtonScan()
-              : null
-          : null,
+      floatingActionButton:
+          (data.userCompetitor != null) ? const ButtonScan() : null,
       // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }
@@ -112,12 +111,19 @@ class HeaderProfile extends StatelessWidget {
             padding:
                 const EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 10),
             child: ClipOval(
-              child: Image.network(
-                auth.userInfo.photoURL!,
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width * 0.23,
-                height: MediaQuery.of(context).size.width * 0.23,
-              ),
+              child: (auth.userInfo.photoURL != null)
+                  ? Image.network(
+                      auth.userInfo.photoURL!,
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.23,
+                      height: MediaQuery.of(context).size.width * 0.23,
+                    )
+                  : Image.asset(
+                      "assets/img/fire-ped.png",
+                      // fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.23,
+                      height: MediaQuery.of(context).size.width * 0.23,
+                    ),
             ),
           ),
           Container(
@@ -219,14 +225,14 @@ class BodyProfile extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            if (data.userCompetitor!.tokenAutorization.isNotEmpty)
+            if (data.userCompetitor!.uuid.isNotEmpty)
               InkWell(
                 borderRadius: BorderRadius.circular(100),
                 onTap: () async {
                   showDialog(
                       context: context,
-                      builder: (_) => ModalQrIdentify(
-                          identify: data.userCompetitor!.tokenAutorization));
+                      builder: (_) =>
+                          ModalQrIdentify(identify: data.userCompetitor!.uuid));
                 },
                 child: const Icon(
                   Icons.qr_code_outlined,
@@ -265,7 +271,22 @@ class BodyProfile extends StatelessWidget {
                 width: 45,
                 height: 45,
               ),
-            )
+            ),
+            if (Platform.isIOS)
+              Tooltip(
+                message: "Eliminar cuenta",
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(100),
+                  onTap: () async {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const DeleteAccount()));
+                  },
+                  child: const Icon(
+                    Icons.delete_forever_outlined,
+                    size: 32,
+                  ),
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 10),
@@ -318,41 +339,41 @@ class BodyProfile extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 20),
-        if (data.userCompetitor!.tokenAutorization.isEmpty)
-          Center(
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              onPressed: () async {
-                var res = await Navigator.of(context).push<Barcode?>(
-                  MaterialPageRoute(
-                    builder: (context) => const QRScanContent(),
-                  ),
-                );
-                if (res != null) {
-                  if (context.mounted) {
-                    customSnackbar(context, "Habilitando usuario...");
-                    await data.updateToken(res.code!);
-                  }
-                }
-              },
-              icon: SvgPicture.asset('assets/img/gamepad-svgrepo-com.svg',
-                  width: 60,
-                  height: 60,
-                  colorFilter:
-                      const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-              label: const Text(
-                "Empezar a Jugar",
-                style: TextStyle(fontSize: 22),
-              ),
-            ),
-          ),
+        // if (data.userCompetitor!.tokenAutorization.isEmpty)
+        //   Center(
+        //     child: ElevatedButton.icon(
+        //       style: ElevatedButton.styleFrom(
+        //         shape: RoundedRectangleBorder(
+        //           side: const BorderSide(
+        //             width: 1.5,
+        //           ),
+        //           borderRadius: BorderRadius.circular(15),
+        //         ),
+        //       ),
+        //       onPressed: () async {
+        //         var res = await Navigator.of(context).push<Barcode?>(
+        //           MaterialPageRoute(
+        //             builder: (context) => const QRScanContent(),
+        //           ),
+        //         );
+        //         if (res != null) {
+        //           if (context.mounted) {
+        //             customSnackbar(context, "Habilitando usuario...");
+        //             await data.updateToken(res.code!);
+        //           }
+        //         }
+        //       },
+        //       icon: SvgPicture.asset('assets/img/gamepad-svgrepo-com.svg',
+        //           width: 60,
+        //           height: 60,
+        //           colorFilter:
+        //               const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
+        //       label: const Text(
+        //         "Empezar a Jugar",
+        //         style: TextStyle(fontSize: 22),
+        //       ),
+        //     ),
+        //   ),
         if (data.userCompetitor!.friends.isNotEmpty)
           const Text(
             'Conexiones',
