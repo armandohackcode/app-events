@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class MyHome extends StatelessWidget {
-  const MyHome({Key? key}) : super(key: key);
+  const MyHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +50,7 @@ class MyHome extends StatelessWidget {
 class QRScanContent extends StatefulWidget {
   final String msg;
   const QRScanContent(
-      {Key? key, this.msg = " Escanea el código QR de tu manilla"})
-      : super(key: key);
+      {super.key, this.msg = " Escanea el código QR de tu manilla"});
 
   @override
   State<StatefulWidget> createState() => _QRScanContentState();

@@ -310,9 +310,9 @@ class CardLibrary extends StatelessWidget {
                 ),
               ),
             ),
-            Row(
+            const Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Icon(
                   Icons.circle,
                   size: 8,

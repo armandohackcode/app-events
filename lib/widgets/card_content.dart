@@ -19,9 +19,9 @@ class CardContent extends StatelessWidget {
           width: width,
           child: child,
         ),
-        Row(
+        const Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Icon(Icons.circle, size: 10),
             SizedBox(width: 3),
             Icon(Icons.circle, size: 10)

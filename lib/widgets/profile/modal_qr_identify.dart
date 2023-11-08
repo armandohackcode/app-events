@@ -22,13 +22,13 @@ class ModalQrIdentify extends StatelessWidget {
           child: SizedBox(
             width: 250,
             height: 250,
-            child: QrImage(
+            child: QrImageView(
               // foregroundColor: AppStyles.backgroundColor,
               data: identify, size: 250,
               // You can include embeddedImageStyle Property if you
               //wanna embed an image from your Asset folder
-              embeddedImageStyle: QrEmbeddedImageStyle(
-                size: const Size(
+              embeddedImageStyle: const QrEmbeddedImageStyle(
+                size: Size(
                   100,
                   100,
                 ),

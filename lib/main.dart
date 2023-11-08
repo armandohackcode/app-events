@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
 }
 
 class _ValidateStateAuth extends StatefulWidget {
-  const _ValidateStateAuth({Key? key}) : super(key: key);
+  const _ValidateStateAuth();
 
   @override
   State<_ValidateStateAuth> createState() => __ValidateStateAuthState();

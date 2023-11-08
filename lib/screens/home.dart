@@ -131,8 +131,10 @@ class ButtonScan extends StatelessWidget {
           if (info != null && context.mounted) {
             customSnackbar(context, "Añadiste a un nuevo amigo");
           } else {
-            customSnackbar(context, "QR no válido",
-                color: AppStyles.colorBaseRed);
+            if (context.mounted) {
+              customSnackbar(context, "QR no válido",
+                  color: AppStyles.colorBaseRed);
+            }
           }
         }
       },
@@ -162,7 +164,7 @@ class CardSchedule extends StatelessWidget {
               alignment: const Alignment(0, 1),
               child: Image.asset('assets/img/bottom_schedule.png'),
             ),
-            Row(
+            const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -172,8 +174,8 @@ class CardSchedule extends StatelessWidget {
                 //   child: SvgPicture.asset('assets/img/img_cronograma.svg'),
                 // ),
                 Stack(
-                  alignment: const Alignment(0, 1.2),
-                  children: const [
+                  alignment: Alignment(0, 1.2),
+                  children: [
                     Text(
                       "12",
                       style: TextStyle(
@@ -191,10 +193,10 @@ class CardSchedule extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 40,
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: Text(
                     "Cronograma",

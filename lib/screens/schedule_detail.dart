@@ -75,8 +75,7 @@ class ScheduleDetail extends StatelessWidget {
 class ButtonWorkshop extends StatefulWidget {
   final Speaker info;
   final String uuid;
-  const ButtonWorkshop({Key? key, required this.uuid, required this.info})
-      : super(key: key);
+  const ButtonWorkshop({super.key, required this.uuid, required this.info});
 
   @override
   State<ButtonWorkshop> createState() => _ButtonWorkshopState();
