@@ -27,6 +27,7 @@ class ScheduleDetail extends StatelessWidget {
           CardSchedule(
             info: info,
             showTitle: true,
+            action: false,
           ),
           if (info.type == "Taller")
             ButtonWorkshop(

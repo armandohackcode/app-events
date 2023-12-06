@@ -52,6 +52,7 @@ class _AddResourceState extends State<AddResource> {
         const SizedBox(height: 10),
         Text("Area Técnica", style: textStyle),
         DropdownButtonFormField(
+            dropdownColor: AppStyles.colorAppbar,
             value: technologyType,
             items: [
               DropdownMenuItem(

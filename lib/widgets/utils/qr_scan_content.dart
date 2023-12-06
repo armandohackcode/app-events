@@ -75,7 +75,7 @@ class _QRScanContentState extends State<QRScanContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppStyles.fontColor,
+      backgroundColor: AppStyles.backgroundColor,
       body: Column(
         children: <Widget>[
           Expanded(

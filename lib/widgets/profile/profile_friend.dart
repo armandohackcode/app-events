@@ -5,6 +5,7 @@ import 'package:app_events/models/user_competitor.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ModalProfileFriend extends StatefulWidget {
@@ -33,25 +34,38 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      backgroundColor: AppStyles.fontColor,
+      backgroundColor: AppStyles.colorAppbar,
       children: [
         if (user == null)
-          Image.asset("assets/img/GoogleIO_Logo.gif")
+          Container(
+            height: MediaQuery.of(context).size.height * 0.4,
+            alignment: Alignment.center,
+            child: Center(
+              child: LoadingAnimationWidget.twistingDots(
+                leftDotColor: AppStyles.colorBaseBlue,
+                rightDotColor: AppStyles.colorBaseYellow,
+                size: 40,
+              ),
+            ),
+          )
         else
           FadeIn(
             child: Container(
-              color: AppStyles.fontColor,
+              color: AppStyles.colorAppbar,
               child: Column(
                 children: [
-                  const SizedBox(height: 15),
-                  SvgPicture.asset("assets/img/io-logo-white.svg"),
+                  // const SizedBox(height: 15),
+                  Image.asset("assets/img/title-devfest.png"),
                   Stack(
                     alignment: const Alignment(0.9, 1),
                     children: [
                       Stack(
-                        alignment: const Alignment(0, 1),
+                        alignment: const Alignment(-1, 1),
                         children: [
-                          Image.asset("assets/img/more-color.png"),
+                          Image.asset(
+                            "assets/img/color-red.png",
+                            width: MediaQuery.of(context).size.width * 0.35,
+                          ),
                           Container(
                             margin: const EdgeInsets.only(
                                 top: 20, bottom: 60, left: 20, right: 20),
@@ -60,7 +74,8 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                             decoration: BoxDecoration(
                               color: AppStyles.backgroundColor,
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(width: 1.5),
+                              border: Border.all(
+                                  width: 1.5, color: AppStyles.borderColor),
                             ),
                             child: Column(
                               children: [

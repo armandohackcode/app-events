@@ -61,9 +61,11 @@ class MyApp extends StatelessWidget {
             fontFamily: 'GoogleSans',
           ),
           inputDecorationTheme: InputDecorationTheme(
+            hintStyle:
+                const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.all(9),
-            fillColor: Colors.white,
+            fillColor: const Color.fromARGB(255, 33, 33, 33),
             filled: true,
             enabledBorder: borderInput(),
             focusedErrorBorder: borderInput(),
@@ -71,19 +73,20 @@ class MyApp extends StatelessWidget {
             errorBorder: borderInput(color: Colors.red),
           ),
           dropdownMenuTheme: DropdownMenuThemeData(
-              inputDecorationTheme: InputDecorationTheme(
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.all(9),
-            fillColor: Colors.white,
-            filled: true,
-            enabledBorder: borderInput(),
-            focusedErrorBorder: borderInput(),
-            focusedBorder: borderInput(),
-            errorBorder: borderInput(color: Colors.red),
-          )),
+            inputDecorationTheme: InputDecorationTheme(
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(9),
+              fillColor: const Color.fromARGB(255, 77, 77, 77),
+              filled: true,
+              enabledBorder: borderInput(),
+              focusedErrorBorder: borderInput(),
+              focusedBorder: borderInput(),
+              errorBorder: borderInput(color: Colors.red),
+            ),
+          ),
           fontFamily: 'GoogleSans',
           appBarTheme: const AppBarTheme(
-            color: AppStyles.primaryColor,
+            color: AppStyles.colorAppbar,
             centerTitle: true,
             elevation: 0,
             foregroundColor: AppStyles.fontColor,
@@ -132,7 +135,11 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
     if (auth.loadingValidate) {
       return Scaffold(
-        body: Center(child: Image.asset("assets/img/GoogleIO_Logo.gif")),
+        body: Center(
+            child: Image.asset(
+          "assets/img/devfest-white.png",
+          width: MediaQuery.of(context).size.width * 0.65,
+        )),
       );
     } else {
       if (auth.isAuth) {

@@ -24,23 +24,25 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      backgroundColor: AppStyles.fontColor,
+      backgroundColor: AppStyles.colorAppbar,
       children: [
         RepaintBoundary(
           key: globalKey,
           child: Container(
-            color: AppStyles.fontColor,
+            color: AppStyles.colorAppbar,
             child: Column(
               children: [
-                const SizedBox(height: 15),
-                SvgPicture.asset("assets/img/io-logo-white.svg"),
+                Image.asset("assets/img/title-devfest.png"),
                 Stack(
                   alignment: const Alignment(0.9, 1),
                   children: [
                     Stack(
-                      alignment: const Alignment(0, 1),
+                      alignment: const Alignment(-1, 1),
                       children: [
-                        Image.asset("assets/img/more-color.png"),
+                        Image.asset(
+                          "assets/img/color-red.png",
+                          width: MediaQuery.of(context).size.width * 0.35,
+                        ),
                         Container(
                           margin: const EdgeInsets.only(
                               top: 20, bottom: 60, left: 20, right: 20),
@@ -49,7 +51,8 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                           decoration: BoxDecoration(
                             color: AppStyles.backgroundColor,
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(width: 1.5),
+                            border: Border.all(
+                                width: 1.5, color: AppStyles.borderColor),
                           ),
                           child: Column(children: [
                             Padding(
@@ -91,14 +94,14 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                 File(path).writeAsBytesSync(await capturePng());
 
                 await Share.shareXFiles([XFile(path)],
-                    text: "#SOYGDGSUCRE #GOOGLEI/O");
+                    text: "#SOYGDGSUCRE #DEVFEST");
               },
               icon: SvgPicture.asset(
                 "assets/img/share-2-svgrepo-com.svg",
               ),
               label: const Text(
                 "Compartir",
-                style: TextStyle(color: AppStyles.fontColor),
+                style: TextStyle(color: AppStyles.backgroundColor),
               )),
         )
       ],

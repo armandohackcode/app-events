@@ -50,6 +50,7 @@ class _RankingDataState extends State<RankingData> {
                   children: [
                     Column(
                       children: [
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,

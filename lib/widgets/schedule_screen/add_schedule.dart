@@ -71,6 +71,7 @@ class _AddScheduleState extends State<AddSchedule> {
           children: [
             Text("Taller/Conferencia/Actividad", style: textStyle),
             DropdownButtonFormField(
+              dropdownColor: AppStyles.colorAppbar,
               value: type,
               items: const [
                 DropdownMenuItem(value: "Taller", child: Text("Taller")),
@@ -88,6 +89,7 @@ class _AddScheduleState extends State<AddSchedule> {
             Text("Area Técnica", style: textStyle),
             DropdownButtonFormField(
                 value: technologyType,
+                dropdownColor: AppStyles.colorAppbar,
                 items: [
                   DropdownMenuItem(
                     value: "Mobile",

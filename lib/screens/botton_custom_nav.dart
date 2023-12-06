@@ -57,17 +57,30 @@ class _BottonCustomNavState extends State<BottonCustomNav> {
         // showSelectedLabels: false,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/img/icon_home.svg'),
+            icon: SvgPicture.asset(
+              'assets/img/icon_home.svg',
+              colorFilter:
+                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+            ),
             label: 'Inicio',
             // backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/img/icon_library.svg'),
+            icon: SvgPicture.asset(
+              'assets/img/icon_library.svg',
+              colorFilter:
+                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+            ),
             label: 'Biblioteca',
+
             // backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('assets/img/icon_profile.svg'),
+            icon: SvgPicture.asset(
+              'assets/img/icon_profile.svg',
+              colorFilter:
+                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+            ),
             label: 'Perfil',
             // backgroundColor: Colors.purple,
           ),
@@ -79,6 +92,7 @@ class _BottonCustomNavState extends State<BottonCustomNav> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: AppStyles.fontColor,
+        backgroundColor: AppStyles.colorNavbar,
         onTap: _onItemTapped,
       ),
     );

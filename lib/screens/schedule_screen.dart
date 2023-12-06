@@ -5,6 +5,7 @@ import 'package:app_events/widgets/schedule_screen/add_schedule.dart';
 import 'package:app_events/widgets/schedule_screen/card_schedule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -70,8 +71,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       //       hours: '09:00',
       //     ),
       body: (dataCenter.loadingSchedule)
-          ? Center(
-              child: Image.asset("assets/img/GoogleIO_Logo.gif"),
+          ? Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              alignment: Alignment.center,
+              child: Center(
+                child: LoadingAnimationWidget.twistingDots(
+                  leftDotColor: AppStyles.colorBaseBlue,
+                  rightDotColor: AppStyles.colorBaseYellow,
+                  size: 40,
+                ),
+              ),
             )
           : RefreshIndicator(
               onRefresh: () async {

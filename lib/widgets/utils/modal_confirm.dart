@@ -8,6 +8,7 @@ class ModalConfirm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
+      backgroundColor: AppStyles.backgroundColor,
       contentPadding: const EdgeInsets.all(15),
       children: [
         Text(

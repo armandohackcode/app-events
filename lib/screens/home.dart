@@ -23,81 +23,89 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final dataCenter = Provider.of<DataCenter>(context);
     return Scaffold(
-      appBar: AppBar(title: SvgPicture.asset('assets/img/logo.svg')),
-      body: ListView(
-        padding: const EdgeInsets.all(15),
-        children: [
-          const CardSchedule(),
-          const SizedBox(height: 20),
-          const Text(
-            "Únete a las actividades",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          ButtonActivity(
+      appBar: AppBar(
+          title: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Image.asset(
+          'assets/img/title-devfest.png',
+        ),
+      )),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(15),
+          children: [
+            const CardSchedule(),
+            const SizedBox(height: 20),
+            const Text(
+              "Únete a las actividades",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            ButtonActivity(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (_) => const RankingData()));
+                },
+                text: "Torneo GDG Sucre",
+                icon: Image.asset("assets/img/trofeo.png", height: 60)),
+            const SizedBox(height: 10),
+            ButtonActivity(
+              icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
+              text: 'Conoce a la comunidad',
               onPressed: () {
                 Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => const RankingData()));
-              },
-              text: "Torneo GDG Sucre",
-              icon: Image.asset("assets/img/trofeo.png", height: 60)),
-          const SizedBox(height: 10),
-          ButtonActivity(
-            icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
-            text: 'Conoce a la comunidad',
-            onPressed: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (_) => const OrganizersScreen(),
-                ),
-              );
-              // await laucherUrlInfo(
-              //     "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
-            },
-          ),
-          const SizedBox(height: 10),
-          ButtonActivity(
-            icon: SvgPicture.asset('assets/img/icon-discord.svg'),
-            text: 'Únete al canal en Discord',
-            onPressed: () async {
-              await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
-            },
-          ),
-          const SizedBox(height: 10),
-          if (dataCenter.isAdmin)
-            ButtonActivity(
-              icon: Image.asset("assets/img/dino-write.png"),
-              text: 'Participantes',
-              onPressed: () async {
-                Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (_) => const AttendiesScrren()));
+                  CupertinoPageRoute(
+                    builder: (_) => const OrganizersScreen(),
+                  ),
+                );
+                // await laucherUrlInfo(
+                //     "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
               },
             ),
-          const SponsorsContent(),
-          const SizedBox(height: 20),
-          FutureBuilder(
-            future: PackageInfo.fromPlatform(),
-            builder:
-                (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox();
-              }
-              return Text(
-                "Versión de aplicación: ${snapshot.data?.version ?? ""}",
-                textAlign: TextAlign.center,
-              );
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-            onPressed: () async {
-              await laucherUrlInfo(
-                  "https://www.linkedin.com/in/armandohackcode/");
-            },
-            child: const Text("Desarrollado por @armandohackcode"),
-          ),
-          const SizedBox(height: 60),
-        ],
+            const SizedBox(height: 10),
+            ButtonActivity(
+              icon: SvgPicture.asset('assets/img/icon-discord.svg'),
+              text: 'Únete al canal en Discord',
+              onPressed: () async {
+                await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
+              },
+            ),
+            const SizedBox(height: 10),
+            if (dataCenter.isAdmin)
+              ButtonActivity(
+                icon: Image.asset("assets/img/dino-write.png"),
+                text: 'Participantes',
+                onPressed: () async {
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (_) => const AttendiesScrren()));
+                },
+              ),
+            const SponsorsContent(),
+            const SizedBox(height: 20),
+            FutureBuilder(
+              future: PackageInfo.fromPlatform(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox();
+                }
+                return Text(
+                  "Versión de aplicación: ${snapshot.data?.version ?? ""}",
+                  textAlign: TextAlign.center,
+                );
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
+              onPressed: () async {
+                await laucherUrlInfo(
+                    "https://www.linkedin.com/in/armandohackcode/");
+              },
+              child: const Text("Desarrollado por @armandohackcode"),
+            ),
+            const SizedBox(height: 60),
+          ],
+        ),
       ),
       floatingActionButton:
           (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
@@ -160,9 +168,19 @@ class CardSchedule extends StatelessWidget {
         child: Stack(
           alignment: const Alignment(0, 0),
           children: [
+            Positioned(
+              left: 10,
+              child: Image.asset(
+                'assets/img/icon-cronograma.png',
+                height: MediaQuery.of(context).size.height * 0.08,
+              ),
+            ),
             Container(
-              alignment: const Alignment(0, 1),
-              child: Image.asset('assets/img/bottom_schedule.png'),
+              alignment: const Alignment(1, 1),
+              child: Image.asset(
+                'assets/img/devfest-footer.png',
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
             ),
             const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -177,15 +195,15 @@ class CardSchedule extends StatelessWidget {
                   alignment: Alignment(0, 1.2),
                   children: [
                     Text(
-                      "12",
+                      "09",
                       style: TextStyle(
-                        fontSize: 60,
+                        fontSize: 50,
                         color: AppStyles.fontColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      "Agosto",
+                      "Diciembre",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppStyles.fontColor,
@@ -194,7 +212,7 @@ class CardSchedule extends StatelessWidget {
                   ],
                 ),
                 SizedBox(
-                  width: 40,
+                  width: 20,
                 ),
                 Padding(
                   padding: EdgeInsets.only(right: 10),

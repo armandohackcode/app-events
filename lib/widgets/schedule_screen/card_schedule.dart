@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 class CardSchedule extends StatelessWidget {
   final Speaker info;
   final bool showTitle;
+  final bool action;
 
   const CardSchedule({
     required this.info,
     this.showTitle = false,
+    this.action = true,
     super.key,
   });
 
@@ -37,10 +39,16 @@ class CardSchedule extends StatelessWidget {
       child: CardContent(
         child: TextButton(
           onPressed: () {
-            Navigator.of(context).push(CupertinoPageRoute(
+            if (!action) {
+              return;
+            }
+            Navigator.of(context).push(
+              CupertinoPageRoute(
                 builder: (_) => ScheduleDetail(
-                      info: info,
-                    )));
+                  info: info,
+                ),
+              ),
+            );
           },
           style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
           child: Row(

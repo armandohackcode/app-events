@@ -53,6 +53,7 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
                       icon: const Icon(Icons.clear))
                   : const Icon(
                       Icons.search,
+                      color: AppStyles.fontColor,
                       size: 32,
                     ),
             ),
@@ -141,7 +142,7 @@ class _CardAttendiesState extends State<CardAttendies> {
                 });
               },
               child: const Icon(
-                Icons.plus_one,
+                Icons.add_chart,
               ),
             ),
     );

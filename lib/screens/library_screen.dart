@@ -6,7 +6,7 @@ import 'package:app_events/widgets/library_screen/add_resource.dart';
 import 'package:app_events/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,7 +43,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     final dataCenter = Provider.of<DataCenter>(context);
     return Scaffold(
-      appBar: AppBar(title: SvgPicture.asset('assets/img/logo.svg')),
+      appBar: AppBar(
+          title: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Image.asset('assets/img/title-devfest.png'),
+      )),
       body: RefreshIndicator(
         onRefresh: () async {
           await dataCenter.getResources();
@@ -52,89 +56,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 15, left: 15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Biblioteca de recursos',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  TextFormField(
-                    controller: _paramSearch,
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: 'Buscar contenido',
-                      suffixIcon: (_paramSearch.text.isNotEmpty)
-                          ? IconButton(
-                              onPressed: () {
-                                dataCenter.getResources();
-                                _paramSearch.clear();
-                              },
-                              icon: const Icon(Icons.clear))
-                          : const Icon(
-                              Icons.search,
-                              size: 32,
-                            ),
-                    ),
-                    onFieldSubmitted: (value) async {
-                      await dataCenter.searchResource(param: value);
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ButtonLibrary(
-                        color: AppStyles.colorBaseBlue,
-                        active: dataCenter.activeWeb,
-                        text: 'Web',
-                        onPressed: () async {
-                          dataCenter.activeWeb = !dataCenter.activeWeb;
-
-                          await dataCenter.searchResource(
-                              param: _paramSearch.text);
-                        },
-                      ),
-                      ButtonLibrary(
-                        active: dataCenter.activeMobile,
-                        color: AppStyles.colorBaseGreen,
-                        text: 'Mobile',
-                        onPressed: () async {
-                          dataCenter.activeMobile = !dataCenter.activeMobile;
-
-                          await dataCenter.searchResource(
-                              param: _paramSearch.text);
-                        },
-                      ),
-                      ButtonLibrary(
-                        active: dataCenter.activeCloud,
-                        color: AppStyles.colorBaseRed,
-                        text: 'Cloud',
-                        onPressed: () async {
-                          dataCenter.activeCloud = !dataCenter.activeCloud;
-
-                          await dataCenter.searchResource(
-                              param: _paramSearch.text);
-                        },
-                      ),
-                      ButtonLibrary(
-                        active: dataCenter.activeIA,
-                        color: AppStyles.colorBaseYellow,
-                        text: 'IA',
-                        onPressed: () async {
-                          dataCenter.activeIA = !dataCenter.activeIA;
-                          await dataCenter.searchResource(
-                              param: _paramSearch.text);
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            FiltersLibrary(paramSearch: _paramSearch, dataCenter: dataCenter),
             if (dataCenter.loadingResource)
               Container(
                 height: MediaQuery.of(context).size.height * 0.4,
@@ -203,6 +125,101 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 }
 
+class FiltersLibrary extends StatelessWidget {
+  const FiltersLibrary({
+    super.key,
+    required TextEditingController paramSearch,
+    required this.dataCenter,
+  }) : _paramSearch = paramSearch;
+
+  final TextEditingController _paramSearch;
+  final DataCenter dataCenter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // const Text(
+          //   'Biblioteca de recursos',
+          //   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          // ),
+          TextFormField(
+            controller: _paramSearch,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: 'Buscar contenido',
+              suffixIcon: (_paramSearch.text.isNotEmpty)
+                  ? IconButton(
+                      onPressed: () {
+                        dataCenter.getResources();
+                        _paramSearch.clear();
+                      },
+                      icon: const Icon(Icons.clear))
+                  : const Icon(
+                      Icons.search,
+                      color: AppStyles.fontColor,
+                      size: 32,
+                    ),
+            ),
+            onFieldSubmitted: (value) async {
+              await dataCenter.searchResource(param: value);
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ButtonLibrary(
+                color: AppStyles.colorBaseBlue,
+                active: dataCenter.activeWeb,
+                text: 'Web',
+                onPressed: () async {
+                  dataCenter.activeWeb = !dataCenter.activeWeb;
+
+                  await dataCenter.searchResource(param: _paramSearch.text);
+                },
+              ),
+              ButtonLibrary(
+                active: dataCenter.activeMobile,
+                color: AppStyles.colorBaseGreen,
+                text: 'Mobile',
+                onPressed: () async {
+                  dataCenter.activeMobile = !dataCenter.activeMobile;
+
+                  await dataCenter.searchResource(param: _paramSearch.text);
+                },
+              ),
+              ButtonLibrary(
+                active: dataCenter.activeCloud,
+                color: AppStyles.colorBaseRed,
+                text: 'Cloud',
+                onPressed: () async {
+                  dataCenter.activeCloud = !dataCenter.activeCloud;
+
+                  await dataCenter.searchResource(param: _paramSearch.text);
+                },
+              ),
+              ButtonLibrary(
+                active: dataCenter.activeIA,
+                color: AppStyles.colorBaseYellow,
+                text: 'IA',
+                onPressed: () async {
+                  dataCenter.activeIA = !dataCenter.activeIA;
+                  await dataCenter.searchResource(param: _paramSearch.text);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class CardLibrary extends StatelessWidget {
   final double? width;
   final double? heightLink;
@@ -221,7 +238,7 @@ class CardLibrary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: const Alignment(0, -0.96),
+      alignment: const Alignment(0, -1),
       children: [
         InkWell(
           onTap: () async {
@@ -230,6 +247,7 @@ class CardLibrary extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
+              color: color,
               border: Border.all(width: 1, color: AppStyles.fontColor),
               borderRadius: BorderRadius.circular(10),
             ),
@@ -287,7 +305,7 @@ class CardLibrary extends StatelessWidget {
                         "https://img.icons8.com/?size=512&id=92941&format=png",
                     cache: const Duration(days: 1),
                     backgroundColor: Colors.grey[100],
-                    borderRadius: 6,
+                    borderRadius: 10,
                     removeElevation: true,
                     // This disables tap event
                   ),
@@ -297,16 +315,20 @@ class CardLibrary extends StatelessWidget {
           ),
         ),
         Stack(
-          alignment: const Alignment(-0.9, 0),
+          alignment: const Alignment(-0.90, 0),
           children: [
             Container(
               height: 12,
-              width: width ?? MediaQuery.of(context).size.width * 0.445,
+              width: width ?? MediaQuery.of(context).size.width * 0.45,
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
+                border: Border.all(
+                  color: AppStyles.borderColor,
+                  width: 1,
                 ),
               ),
             ),

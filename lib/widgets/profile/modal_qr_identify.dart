@@ -1,6 +1,5 @@
 import 'package:app_events/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ModalQrIdentify extends StatelessWidget {
@@ -10,18 +9,18 @@ class ModalQrIdentify extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      backgroundColor: AppStyles.fontColor,
+      backgroundColor: AppStyles.backgroundColor,
       children: [
-        const SizedBox(height: 15),
-        SvgPicture.asset("assets/img/io-logo-white.svg"),
+        // const SizedBox(height: 15),
+        Image.asset("assets/img/title-devfest.png"),
         const SizedBox(height: 15),
         Container(
           margin: const EdgeInsets.all(15),
           alignment: Alignment.bottomCenter,
-          decoration: const BoxDecoration(color: AppStyles.backgroundColor),
+          decoration: const BoxDecoration(color: AppStyles.fontColor),
           child: SizedBox(
-            width: 250,
-            height: 250,
+            width: 260,
+            height: 260,
             child: QrImageView(
               // foregroundColor: AppStyles.backgroundColor,
               data: identify, size: 250,

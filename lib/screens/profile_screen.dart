@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final data = Provider.of<DataCenter>(context);
     return Scaffold(
       appBar: AppBar(
-        title: SvgPicture.asset('assets/img/logo.svg'),
+        title: Image.asset('assets/img/title-devfest.png'),
         actions: [
           IconButton(
               onPressed: () async {
@@ -237,6 +237,7 @@ class BodyProfile extends StatelessWidget {
                 child: const Icon(
                   Icons.qr_code_outlined,
                   size: 32,
+                  color: AppStyles.fontColor,
                 ),
               ),
             InkWell(
@@ -247,11 +248,11 @@ class BodyProfile extends StatelessWidget {
                     builder: (_) =>
                         ModalProfilePublic(user: data.userCompetitor!));
               },
-              child: SvgPicture.asset(
-                'assets/img/receipt-svgrepo-com.svg',
-                width: 45,
-                height: 45,
-              ),
+              child: SvgPicture.asset('assets/img/receipt-svgrepo-com.svg',
+                  width: 45,
+                  height: 45,
+                  colorFilter: const ColorFilter.mode(
+                      AppStyles.fontColor, BlendMode.srcIn)),
             ),
             InkWell(
               borderRadius: BorderRadius.circular(100),
@@ -266,11 +267,11 @@ class BodyProfile extends StatelessWidget {
                       context, "Feliciadades, ganastes los puntos extras");
                 }
               },
-              child: SvgPicture.asset(
-                'assets/img/icon_edit.svg',
-                width: 45,
-                height: 45,
-              ),
+              child: SvgPicture.asset('assets/img/icon_edit.svg',
+                  width: 45,
+                  height: 45,
+                  colorFilter: const ColorFilter.mode(
+                      AppStyles.fontColor, BlendMode.srcIn)),
             ),
             if (Platform.isIOS)
               Tooltip(
@@ -284,6 +285,7 @@ class BodyProfile extends StatelessWidget {
                   child: const Icon(
                     Icons.delete_forever_outlined,
                     size: 32,
+                    color: AppStyles.fontColor,
                   ),
                 ),
               ),
@@ -307,6 +309,8 @@ class BodyProfile extends StatelessWidget {
                           getSVG(item),
                           width: 60,
                           height: 40,
+                          colorFilter: const ColorFilter.mode(
+                              AppStyles.fontColor, BlendMode.srcIn),
                         ),
                         onTap: () async {
                           await laucherUrlInfo(item.link);

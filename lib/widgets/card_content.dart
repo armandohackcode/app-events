@@ -1,3 +1,4 @@
+import 'package:app_events/constants.dart';
 import 'package:flutter/material.dart';
 
 class CardContent extends StatelessWidget {
@@ -13,8 +14,9 @@ class CardContent extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 1.5),
-              borderRadius: BorderRadius.circular(10)),
+              color: AppStyles.cardColor,
+              border: Border.all(width: 1.5, color: AppStyles.borderColor),
+              borderRadius: BorderRadius.circular(4)),
           height: height,
           width: width,
           child: child,
@@ -22,9 +24,17 @@ class CardContent extends StatelessWidget {
         const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.circle, size: 10),
+            Icon(
+              Icons.rectangle,
+              size: 10,
+              color: AppStyles.borderColor,
+            ),
             SizedBox(width: 3),
-            Icon(Icons.circle, size: 10)
+            Icon(
+              Icons.rectangle,
+              size: 10,
+              color: AppStyles.borderColor,
+            )
           ],
         )
       ],

@@ -169,7 +169,7 @@ class CardComunity extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.22,
                     // height: 320,
                     placeholder:
-                        const AssetImage("assets/img/GoogleIO_Logo.gif"),
+                        const AssetImage("assets/img/gitgoogle-loading.gif"),
                     image: const NetworkImage(
                         "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/grupal2.jpeg?alt=media&token=ed6cc452-c3ea-4247-a528-5159d9a2b094"),
                   ),
@@ -182,7 +182,7 @@ class CardComunity extends StatelessWidget {
                     child: const Text(
                       "GDG Sucre",
                       style: TextStyle(
-                          color: AppStyles.backgroundColor,
+                          color: AppStyles.fontColor,
                           fontWeight: FontWeight.w800,
                           fontSize: 22),
                     ),
