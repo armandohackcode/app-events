@@ -185,7 +185,11 @@ class _RankingDataState extends State<RankingData> {
                 )
               ],
             )
-          : Center(child: Image.asset("assets/img/GoogleIO_Logo.gif")),
+          : Center(
+              child: Image.asset(
+              "assets/img/devfest-animation.gif",
+              width: MediaQuery.of(context).size.width * 0.7,
+            )),
     );
   }
 }

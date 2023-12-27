@@ -58,7 +58,7 @@ dependencies:
   share_plus: ^7.1.0
   path_provider: ^2.0.15
   qr_flutter: ^4.0.0
-  package_info_plus: ^4.1.0
+  package_info_plus: ^5.0.1
   intl: ^0.18.1
 
 dev_dependencies:

@@ -135,9 +135,10 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
     if (auth.loadingValidate) {
       return Scaffold(
+        backgroundColor: AppStyles.colorAppbar,
         body: Center(
             child: Image.asset(
-          "assets/img/devfest-white.png",
+          "assets/img/devfest-animation.gif",
           width: MediaQuery.of(context).size.width * 0.65,
         )),
       );
