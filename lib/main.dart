@@ -1,10 +1,9 @@
-import 'package:app_events/bloc/data_center.dart';
-import 'package:app_events/bloc/sign_in_social_network.dart';
-import 'package:app_events/constants.dart';
-// import 'package:app_events/firebase_options.dart';
-import 'package:app_events/screens/botton_custom_nav.dart';
-// import 'package:app_events/screens/botton_custom_nav.dart';
-import 'package:app_events/screens/sing_in_screen.dart';
+import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/domain/bloc/sign_in_social_network.dart';
+import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/config/theme/app_theme.dart';
+import 'package:app_events/ui/screens/botton_custom_nav.dart';
+import 'package:app_events/ui/screens/sing_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -22,13 +21,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  OutlineInputBorder borderInput({Color color = AppStyles.fontColor}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: color),
-    );
-  }
-
   List<SingleChildWidget> _listProvider(BuildContext context) {
     return <SingleChildWidget>[
       ChangeNotifierProvider(
@@ -54,50 +46,7 @@ class MyApp extends StatelessWidget {
           Locale('es', 'ES'),
           Locale('en', 'US'),
         ],
-        theme: ThemeData(
-          scaffoldBackgroundColor: AppStyles.backgroundColor,
-          textTheme: Typography.blackRedmond.apply(
-            bodyColor: AppStyles.fontColor,
-            fontFamily: 'GoogleSans',
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            hintStyle:
-                const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.all(9),
-            fillColor: const Color.fromARGB(255, 33, 33, 33),
-            filled: true,
-            enabledBorder: borderInput(),
-            focusedErrorBorder: borderInput(),
-            focusedBorder: borderInput(),
-            errorBorder: borderInput(color: Colors.red),
-          ),
-          dropdownMenuTheme: DropdownMenuThemeData(
-            inputDecorationTheme: InputDecorationTheme(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(9),
-              fillColor: const Color.fromARGB(255, 77, 77, 77),
-              filled: true,
-              enabledBorder: borderInput(),
-              focusedErrorBorder: borderInput(),
-              focusedBorder: borderInput(),
-              errorBorder: borderInput(color: Colors.red),
-            ),
-          ),
-          fontFamily: 'GoogleSans',
-          appBarTheme: const AppBarTheme(
-            color: AppStyles.colorAppbar,
-            centerTitle: true,
-            elevation: 0,
-            foregroundColor: AppStyles.fontColor,
-            titleTextStyle: TextStyle(
-              color: AppStyles.fontColor,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          primarySwatch: Colors.blue,
-        ),
+        theme: AppTheme().getTheme(),
         home: const _ValidateStateAuth(),
       ),
     );
