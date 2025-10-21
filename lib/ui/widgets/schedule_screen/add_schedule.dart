@@ -1,6 +1,6 @@
-import 'package:app_events/domain/bloc/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -12,6 +12,7 @@ class AddSchedule extends StatefulWidget {
   State<AddSchedule> createState() => _AddScheduleState();
 }
 
+// TO DO : Refactor this form
 class _AddScheduleState extends State<AddSchedule> {
   final _title = TextEditingController();
   final _description = TextEditingController();
@@ -26,7 +27,7 @@ class _AddScheduleState extends State<AddSchedule> {
   final _facebook = TextEditingController();
   final _instagram = TextEditingController();
   final _linkedin = TextEditingController();
-  final _twiter = TextEditingController();
+  final _twitter = TextEditingController();
   final _blog = TextEditingController();
 
   final _keyForm = GlobalKey<FormFieldState>();
@@ -49,7 +50,7 @@ class _AddScheduleState extends State<AddSchedule> {
     _facebook.dispose();
     _instagram.dispose();
     _linkedin.dispose();
-    _twiter.dispose();
+    _twitter.dispose();
     _blog.dispose();
 
     super.dispose();
@@ -59,7 +60,7 @@ class _AddScheduleState extends State<AddSchedule> {
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final data = Provider.of<ScheduleProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Agregar Speaker o actividad"),
@@ -72,7 +73,7 @@ class _AddScheduleState extends State<AddSchedule> {
             Text("Taller/Conferencia/Actividad", style: textStyle),
             DropdownButtonFormField(
               dropdownColor: AppStyles.colorAppbar,
-              value: type,
+              initialValue: type,
               items: const [
                 DropdownMenuItem(value: "Taller", child: Text("Taller")),
                 DropdownMenuItem(
@@ -88,7 +89,7 @@ class _AddScheduleState extends State<AddSchedule> {
             const SizedBox(height: 10),
             Text("Area Técnica", style: textStyle),
             DropdownButtonFormField(
-                value: technologyType,
+                initialValue: technologyType,
                 dropdownColor: AppStyles.colorAppbar,
                 items: [
                   DropdownMenuItem(
@@ -182,7 +183,7 @@ class _AddScheduleState extends State<AddSchedule> {
             const SizedBox(height: 10),
             Text("Twitter", style: textStyle),
             TextFormField(
-              controller: _twiter,
+              controller: _twitter,
             ),
             const SizedBox(height: 10),
             Text("Blog", style: textStyle),
@@ -213,15 +214,15 @@ class _AddScheduleState extends State<AddSchedule> {
                     listSocial.add(
                         SocialNetwork(type: "LINKEDIN", link: _linkedin.text));
                   }
-                  if (_twiter.text.isNotEmpty) {
+                  if (_twitter.text.isNotEmpty) {
                     listSocial.add(
-                        SocialNetwork(type: "TWITTER", link: _twiter.text));
+                        SocialNetwork(type: "TWITTER", link: _twitter.text));
                   }
                   if (_blog.text.isNotEmpty) {
                     listSocial
                         .add(SocialNetwork(type: "BLOG", link: _blog.text));
                   }
-                  await dataCenter.addNewShedule(
+                  await data.addNewSchedule(
                     Speaker(
                       uuid: const Uuid().v1(),
                       title: _title.text,

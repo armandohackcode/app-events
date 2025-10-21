@@ -10,7 +10,7 @@ class AppStyles {
 
   static const Color backgroundColor = Color(0xFF202124);
   static const Color fontColor = Colors.white;
-  static const Color fontSecundaryColor = Color.fromARGB(255, 96, 96, 98);
+  static const Color fontSecondaryColor = Color.fromARGB(255, 96, 96, 98);
   static const Color colorBaseBlue = Color(0xFF3D8AFF);
   static const Color colorBaseRed = Color(0xFFFF4F3E);
   static const Color colorBaseGreen = Color(0xFF36BD57);

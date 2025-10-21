@@ -1,6 +1,6 @@
-import 'package:app_events/domain/bloc/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/resource_library.dart';
+import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +43,7 @@ class _AddResourceState extends State<AddResource> {
       const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final data = Provider.of<ResourcesProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Añadir Recurso"),
@@ -53,7 +53,7 @@ class _AddResourceState extends State<AddResource> {
         Text("Area Técnica", style: textStyle),
         DropdownButtonFormField(
             dropdownColor: AppStyles.colorAppbar,
-            value: technologyType,
+            initialValue: technologyType,
             items: [
               DropdownMenuItem(
                 value: "Mobile",
@@ -98,7 +98,7 @@ class _AddResourceState extends State<AddResource> {
                 setState(() {
                   loading = true;
                 });
-                await dataCenter.addResources(ResourceLibrary(
+                await data.addResources(ResourceLibrary(
                     title: _title.text,
                     link: _link.text,
                     type: technologyType ?? ''));

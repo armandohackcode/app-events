@@ -1,0 +1,13 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "files": [
+        "lib/**/*.dart",
+    ],
+    "words": [
+    
+    ],
+    "ignorePaths": [
+        "lib/config/theme/app_strings.dart"
+    ]
+}

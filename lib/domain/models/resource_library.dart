@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final resourceLibrary = resourceLibraryFromJson(jsonString);
-
 import 'dart:convert';
 
 ResourceLibrary resourceLibraryFromJson(String str) =>

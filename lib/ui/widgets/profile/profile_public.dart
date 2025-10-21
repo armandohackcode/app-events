@@ -93,8 +93,10 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                 final path = '${temp.path}/user-gdgsucre.jpg';
                 File(path).writeAsBytesSync(await capturePng());
 
-                await Share.shareXFiles([XFile(path)],
-                    text: "#SOYGDGSUCRE #DEVFEST");
+                await SharePlus.instance.share(ShareParams(
+                  text: "#GDGSUCRE #DEVFESTSUCRE",
+                  files: [XFile(path)],
+                ));
               },
               icon: SvgPicture.asset(
                 "assets/img/share-2-svgrepo-com.svg",

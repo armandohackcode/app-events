@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:app_events/domain/bloc/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';

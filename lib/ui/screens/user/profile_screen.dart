@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app_events/domain/bloc/data_center.dart';
-import 'package:app_events/domain/bloc/sign_in_social_network.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
-import 'package:app_events/ui/screens/delete_account.dart';
-import 'package:app_events/ui/screens/home.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/screens/user/delete_account.dart';
+import 'package:app_events/ui/screens/home/home.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/profile/edit_profile.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
@@ -29,18 +30,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   StreamSubscription? _sub;
-  // StreamSubscription? _sub2;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // print("Ejecutando init");
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<UserProvider>(context, listen: false);
       if (data.userCompetitor != null) {
-        _sub = data.streamInfoUser().listen((event) {
-          // print("Emitiendo");
-          // print(event.data() != null);
-          if (event.data() != null) {
-            data.userCompetitor = UserCompetitor.fromJson(event.data()!);
+        _sub = data.streamInfoUser().listen((user) {
+          if (user != null) {
+            data.userCompetitor = user;
           }
         });
       }
@@ -51,17 +48,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     _sub?.cancel();
-    // _sub2?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/img/title-devfest.png'),
+        title: Image.asset(AppAssetsPath.titleEvent),
         actions: [
           IconButton(
               onPressed: () async {
@@ -76,7 +72,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )),
         ],
       ),
-
       body: ListView(
         padding: const EdgeInsets.all(15),
         children: [
@@ -87,7 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       floatingActionButton:
           (data.userCompetitor != null) ? const ButtonScan() : null,
-      // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }
 }
@@ -102,7 +96,7 @@ class HeaderProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<UserProvider>(context);
     return CardContent(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,7 +204,7 @@ class BodyProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<UserProvider>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,

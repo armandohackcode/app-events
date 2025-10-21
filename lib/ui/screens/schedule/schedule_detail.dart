@@ -1,9 +1,10 @@
 // import 'package:app_events/constants.dart';
 import 'dart:async';
 
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
@@ -36,14 +37,14 @@ class ScheduleDetail extends StatelessWidget {
             ),
           const SizedBox(height: 20),
           const Text(
-            'Descripción',
+            AppStrings.scheduleDescription,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(info.description),
           const SizedBox(height: 20),
           const Text(
-            'Acerca de mi',
+            AppStrings.scheduleAboutMe,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
@@ -90,28 +91,33 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<ScheduleProvider>(context, listen: false);
       data.currentSpeaker = null;
-      _sub = data.speakerStream(widget.uuid).listen((event) {
-        if (event.data() != null) {
-          data.currentSpeaker = Speaker.fromJson(event.data()!);
+      _sub = data.speakerStream(widget.uuid).listen((speaker) {
+        if (speaker != null) {
+          data.currentSpeaker = speaker;
           if (data.currentSpeaker?.current == data.currentSpeaker?.limit) {
             _sub?.cancel();
           }
         }
       });
-      var res = await data.searchUserInWorkShop(widget.uuid);
-      if (res) {
-        setState(() {
-          loading = false;
-          showMs = true;
-        });
-      } else {
-        setState(() {
-          loading = false;
-          showMs = false;
-        });
-      }
+      // TO DO
+      // var res = await data.searchUserInWorkShop(widget.uuid);
+      // if (res) {
+      //   setState(() {
+      //     loading = false;
+      //     showMs = true;
+      //   });
+      // } else {
+      //   setState(() {
+      //     loading = false;
+      //     showMs = false;
+      //   });
+      // }
+      setState(() {
+        loading = false;
+        showMs = false;
+      });
     });
     super.initState();
   }
@@ -124,7 +130,7 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<ScheduleProvider>(context);
 
     if (loading) {
       return Center(
@@ -149,7 +155,7 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
               color: AppStyles.colorBaseYellow,
               borderRadius: BorderRadius.circular(15)),
           child: Text(
-            " Las inscripciones estarán disponibles desde el \n ${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}",
+            " ${AppStrings.scheduleRegistrationOpen} \n ${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}",
             textAlign: TextAlign.center,
           ),
         ),
@@ -159,7 +165,7 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
       return const Padding(
         padding: EdgeInsets.all(8.0),
         child: Text(
-          " 😊 Te esperamos en el Taller 💻",
+          AppStrings.scheduleMessageWorkshopRegistered,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -175,7 +181,7 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
         if ((data.currentSpeaker?.current ?? 0) >=
             (data.currentSpeaker?.limit ?? -1))
           const Text(
-            "⚠️ Entradas agotadas",
+            AppStrings.scheduleSoldOut,
             style: TextStyle(fontSize: 18, color: AppStyles.colorBaseRed),
           )
         else
@@ -188,12 +194,13 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
               ),
             ),
             onPressed: () async {
-              await data.addWorkshop(widget.uuid);
-              setState(() {
-                showMs = true;
-              });
+              // TO DO
+              // await data.addWorkshop(widget.uuid);
+              // setState(() {
+              //   showMs = true;
+              // });
             },
-            label: const Text("Obtener un cupo"),
+            label: const Text(AppStrings.scheduleRegisterNow),
           ),
         Text(
           "${data.currentSpeaker?.current}/${data.currentSpeaker?.limit}",

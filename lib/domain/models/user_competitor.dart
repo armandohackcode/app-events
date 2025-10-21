@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final userCompetitor = userCompetitorFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:app_events/domain/models/speaker.dart';
@@ -17,7 +13,7 @@ class UserCompetitor {
   String name;
   String profession;
   String aboutMe;
-  String tokenAutorization;
+  String tokenAuthorization;
   int score;
   bool scoreProfile;
   List<SocialNetwork> socialNetwork;
@@ -29,7 +25,7 @@ class UserCompetitor {
     required this.photoUrl,
     required this.profession,
     required this.aboutMe,
-    required this.tokenAutorization,
+    required this.tokenAuthorization,
     required this.score,
     this.scoreProfile = false,
     required this.socialNetwork,
@@ -42,7 +38,7 @@ class UserCompetitor {
     String? photoUrl,
     String? profession,
     String? aboutMe,
-    String? tokenAutorization,
+    String? tokenAuthorization,
     int? score,
     bool? scoreProfile,
     List<SocialNetwork>? socialNetwork,
@@ -54,7 +50,7 @@ class UserCompetitor {
         photoUrl: photoUrl ?? this.photoUrl,
         profession: profession ?? this.profession,
         aboutMe: aboutMe ?? this.aboutMe,
-        tokenAutorization: tokenAutorization ?? this.tokenAutorization,
+        tokenAuthorization: tokenAuthorization ?? this.tokenAuthorization,
         score: score ?? this.score,
         scoreProfile: scoreProfile ?? this.scoreProfile,
         socialNetwork: socialNetwork ?? this.socialNetwork,
@@ -67,7 +63,7 @@ class UserCompetitor {
         photoUrl: json["photoUrl"] ?? "",
         profession: json["profession"] ?? "",
         aboutMe: json["aboutMe"] ?? "",
-        tokenAutorization: json["tokenAutorization"] ?? "",
+        tokenAuthorization: json["tokenAuthorization"] ?? "",
         score: json["score"] ?? 0,
         scoreProfile: json["scoreProfile"] ?? false,
         socialNetwork: (json["socialNetwork"] == null)
@@ -85,7 +81,7 @@ class UserCompetitor {
         "photoUrl": photoUrl,
         "profession": profession,
         "aboutMe": aboutMe,
-        "tokenAutorization": tokenAutorization,
+        "tokenAuthorization": tokenAuthorization,
         "score": score,
         "scoreProfile": scoreProfile,
         "socialNetwork":

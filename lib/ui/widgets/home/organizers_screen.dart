@@ -1,4 +1,4 @@
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
@@ -176,7 +176,7 @@ class CardComunity extends StatelessWidget {
                   Container(
                     alignment: const Alignment(-1, 1),
                     padding: const EdgeInsets.all(10),
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black,
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.22,
                     child: const Text(

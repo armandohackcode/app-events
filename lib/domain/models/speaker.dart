@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final speaker = speakerFromJson(jsonString);
-
 import 'dart:convert';
 
 Speaker speakerFromJson(String str) => Speaker.fromJson(json.decode(str));
@@ -149,4 +145,28 @@ class SocialNetwork {
         "type": type,
         "link": link,
       };
+}
+
+enum EventTypeSpeaker {
+  conference,
+  workshop,
+  panel,
+  unknown;
+
+  // TO DO: change panel value to 'panel'
+  static const Map<EventTypeSpeaker, String> _fromValue = {
+    EventTypeSpeaker.conference: 'conference',
+    EventTypeSpeaker.workshop: 'workshop',
+    EventTypeSpeaker.panel: 'Actividad', //panel
+    EventTypeSpeaker.unknown: 'unknown',
+  };
+
+  static final Map<String, EventTypeSpeaker> _toString = {
+    for (var entry in _fromValue.entries) entry.value: entry.key,
+  };
+
+  String get value => _fromValue[this] ?? 'unknown';
+
+  static EventTypeSpeaker fromValue(String? text) =>
+      _toString[text?.toLowerCase() ?? ''] ?? EventTypeSpeaker.unknown;
 }

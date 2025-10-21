@@ -1,6 +1,7 @@
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
-import 'package:app_events/ui/screens/schedule_detail.dart';
+import 'package:app_events/ui/screens/schedule/schedule_detail.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ class CardSchedule extends StatelessWidget {
                         height: MediaQuery.of(context).size.width * 0.23,
                         child: FadeInImage(
                             placeholder: const AssetImage(
-                                "assets/img/gitgoogle-loading.gif"),
+                                AppAssetsPath.loadingSmallImage),
                             image: NetworkImage(info.photoUrl)),
                       ),
                     ),
@@ -129,7 +130,7 @@ class CardSchedule extends StatelessWidget {
                       child: Text(
                         info.profession,
                         style: const TextStyle(
-                          color: AppStyles.fontSecundaryColor,
+                          color: AppStyles.fontSecondaryColor,
                           fontWeight: FontWeight.normal,
                         ),
                       ),

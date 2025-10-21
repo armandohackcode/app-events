@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final sponsor = sponsorFromJson(jsonString);
-
 import 'dart:convert';
 
 List<Sponsor> sponsorFromJson(String str) =>

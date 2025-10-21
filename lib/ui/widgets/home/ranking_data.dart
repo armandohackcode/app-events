@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +18,8 @@ class _RankingDataState extends State<RankingData> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // print("ejecutando listen base");
       final data = Provider.of<DataCenter>(context, listen: false);
       _sub = data.getRanking().listen((event) {
-        // print("ejecutando listen");
         data.ranking =
             event.docs.map((e) => UserCompetitor.fromJson(e.data())).toList();
       });

@@ -239,6 +239,7 @@ class _QRScanContentState extends State<QRScanContent> {
     });
     controller.scannedDataStream.listen((scanData) {
       controller.dispose();
+      if (!mounted) return;
       Navigator.pop(context, scanData);
       // setState(() {
       //   result = scanData;

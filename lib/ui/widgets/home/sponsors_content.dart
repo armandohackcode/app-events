@@ -1,5 +1,5 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

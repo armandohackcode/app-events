@@ -40,7 +40,7 @@ class AppTheme {
         ),
         fontFamily: 'GoogleSans',
         appBarTheme: const AppBarTheme(
-          color: AppStyles.colorAppbar,
+          backgroundColor: AppStyles.colorAppbar,
           centerTitle: true,
           elevation: 0,
           foregroundColor: AppStyles.fontColor,

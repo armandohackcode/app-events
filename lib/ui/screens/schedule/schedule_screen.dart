@@ -1,6 +1,9 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/config/theme/app_strings.dart';
+import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/providers/schedule_provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/schedule_screen/add_schedule.dart';
 import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,39 +19,32 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  // late StreamSubscription _sub;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final dataCenter = Provider.of<DataCenter>(context, listen: false);
-      // _sub = dataCenter.getListScheduleStream().listen((event) {
-      //   print("Conectando ...");
-      //   print(event.docs);
-      //   var data = event.docs.map((e) => Speaker.fromJson(e.data())).toList();
-      //   dataCenter.schedule = data;
-      // });
-      dataCenter.getListSchedule();
+      final schedule = Provider.of<ScheduleProvider>(context, listen: false);
+      schedule.loadSchedule();
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    // _sub.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final user = Provider.of<UserProvider>(context);
+    final schedule = Provider.of<ScheduleProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Cronograma',
+        title: Text(
+          AppStrings.scheduleSchedule,
           // style: TextStyle(color: AppStyles.fontColor),
         ),
         actions: [
-          if (dataCenter.isAdmin)
+          if (user.isAdmin)
             IconButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -60,17 +56,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ))
         ],
       ),
-      // CardSchedule(
-      //       imagePath:
-      //           'https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?4d355bd',
-      //       title: 'Inteligencia Artificial para todos',
-      //       name: 'Fernanda Lascano',
-      //       profession: 'GDE | Software engineer',
-      //       area: "Mobile",
-      //       type: 'Conferencia',
-      //       hours: '09:00',
-      //     ),
-      body: (dataCenter.loadingSchedule)
+      body: (schedule.loadingSchedule)
           ? Container(
               height: MediaQuery.of(context).size.height * 0.8,
               alignment: Alignment.center,
@@ -84,14 +70,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             )
           : RefreshIndicator(
               onRefresh: () async {
-                await dataCenter.getListSchedule();
+                await schedule.loadSchedule();
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(15),
-                itemCount: dataCenter.schedule.length,
+                itemCount: schedule.schedule.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var item = dataCenter.schedule[index];
-                  if (item.type == "Actividad") {
+                  var item = schedule.schedule[index];
+                  if (item.type == EventTypeSpeaker.panel.value) {
                     return ZoomIn(
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
