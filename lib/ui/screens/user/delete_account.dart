@@ -1,5 +1,5 @@
-import 'package:app_events/domain/bloc/data_center.dart';
-import 'package:app_events/domain/bloc/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/utils/modal_confirm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +10,7 @@ class DeleteAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Eliminar cuenta"),

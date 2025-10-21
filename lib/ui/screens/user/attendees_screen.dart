@@ -1,27 +1,27 @@
-import 'package:app_events/domain/bloc/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/utils/modal_confirm.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
-class AttendiesScrren extends StatefulWidget {
-  const AttendiesScrren({super.key});
+class AttendeesScreen extends StatefulWidget {
+  const AttendeesScreen({super.key});
 
   @override
-  State<AttendiesScrren> createState() => _AttendiesScrrenState();
+  State<AttendeesScreen> createState() => _AttendeesScreenState();
 }
 
-class _AttendiesScrrenState extends State<AttendiesScrren> {
+class _AttendeesScreenState extends State<AttendeesScreen> {
   final _paramSearch = TextEditingController();
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<UserProvider>(context, listen: false);
 
-      data.getAttendies();
+      data.getAttendees();
     });
     super.initState();
   }
@@ -34,7 +34,7 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
 
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(title: const Text("Lista de participantes")),
       body: Column(children: [
@@ -48,7 +48,7 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
               suffixIcon: (_paramSearch.text.isNotEmpty)
                   ? IconButton(
                       onPressed: () {
-                        dataCenter.getAttendies();
+                        dataCenter.getAttendees();
                       },
                       icon: const Icon(Icons.clear))
                   : const Icon(
@@ -58,11 +58,11 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
                     ),
             ),
             onFieldSubmitted: (value) async {
-              await dataCenter.searchAttendies(param: value);
+              await dataCenter.searchAttendees(param: value);
             },
           ),
         ),
-        (dataCenter.loadingAttendies)
+        (dataCenter.loadingAttendees)
             ? Container(
                 height: MediaQuery.of(context).size.height * 0.4,
                 alignment: Alignment.center,
@@ -76,16 +76,16 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
               )
             : Expanded(
                 child: ListView.builder(
-                  itemCount: dataCenter.attendies.length,
+                  itemCount: dataCenter.attendees.length,
                   padding: const EdgeInsets.all(15),
                   itemBuilder: (BuildContext context, int index) {
-                    var item = dataCenter.attendies[index];
+                    var item = dataCenter.attendees[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                           border: Border.all(),
                           borderRadius: BorderRadius.circular(10)),
-                      child: CardAttendies(item: item),
+                      child: CardAttendees(item: item),
                     );
                   },
                 ),
@@ -95,8 +95,8 @@ class _AttendiesScrrenState extends State<AttendiesScrren> {
   }
 }
 
-class CardAttendies extends StatefulWidget {
-  const CardAttendies({
+class CardAttendees extends StatefulWidget {
+  const CardAttendees({
     super.key,
     required this.item,
   });
@@ -104,14 +104,14 @@ class CardAttendies extends StatefulWidget {
   final UserCompetitor item;
 
   @override
-  State<CardAttendies> createState() => _CardAttendiesState();
+  State<CardAttendees> createState() => _CardAttendeesState();
 }
 
-class _CardAttendiesState extends State<CardAttendies> {
+class _CardAttendeesState extends State<CardAttendees> {
   bool loading = false;
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context, listen: false);
+    final data = Provider.of<UserProvider>(context, listen: false);
     return ListTile(
       title: Text(widget.item.name),
       trailing: (loading)

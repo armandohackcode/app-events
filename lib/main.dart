@@ -1,9 +1,18 @@
-import 'package:app_events/domain/bloc/data_center.dart';
-import 'package:app_events/domain/bloc/sign_in_social_network.dart';
+import 'package:app_events/config/di/service_locator.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/config/theme/app_theme.dart';
-import 'package:app_events/ui/screens/botton_custom_nav.dart';
-import 'package:app_events/ui/screens/sing_in_screen.dart';
+import 'package:app_events/domain/repositories/resource_repository.dart';
+import 'package:app_events/domain/repositories/schedule_repository.dart';
+import 'package:app_events/ui/providers/data_center.dart';
+import 'package:app_events/ui/providers/resources_provider.dart';
+import 'package:app_events/ui/providers/schedule_provider.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/firebase_options.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/screens/home/bottom_custom_nav.dart';
+import 'package:app_events/ui/screens/user/sing_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,7 +22,8 @@ import 'package:provider/single_child_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  setupServiceLocator();
   runApp(
     const MyApp(),
   );
@@ -21,11 +31,17 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  List<SingleChildWidget> _listProvider(BuildContext context) {
+  List<SingleChildWidget> _listProviders(BuildContext context) {
     return <SingleChildWidget>[
+      ChangeNotifierProvider(create: (_) => sl<SignInSocialNetworkProvider>()),
+      ChangeNotifierProvider(create: (_) => sl<UserProvider>()),
+      ChangeNotifierProvider(create: (_) => DataCenter()),
       ChangeNotifierProvider(
-          create: (context) => SignInSocialNetworkProvider()),
-      ChangeNotifierProvider(create: (context) => DataCenter()),
+        create: (_) => ScheduleProvider(sl<ScheduleRepository>()),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => ResourcesProvider(sl<ResourceRepository>()),
+      ),
     ];
   }
 
@@ -33,9 +49,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: _listProvider(context),
+      providers: _listProviders(context),
       child: MaterialApp(
-        title: 'GDG Sucre Events',
+        title: AppStrings.titleApp,
         debugShowCheckedModeBanner: false,
         localizationsDelegates: const [
           GlobalWidgetsLocalizations.delegate,
@@ -63,10 +79,11 @@ class _ValidateStateAuth extends StatefulWidget {
 class __ValidateStateAuthState extends State<_ValidateStateAuth> {
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final auth =
           Provider.of<SignInSocialNetworkProvider>(context, listen: false);
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<UserProvider>(context, listen: false);
 
       auth.loadingValidate = true;
       await Permission.camera.request();
@@ -76,7 +93,6 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
       }
       auth.loadingValidate = false;
     });
-    super.initState();
   }
 
   @override
@@ -87,13 +103,13 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
         backgroundColor: AppStyles.colorAppbar,
         body: Center(
             child: Image.asset(
-          "assets/img/devfest-animation.gif",
+          AppAssetsPath.loadingAnimation,
           width: MediaQuery.of(context).size.width * 0.65,
         )),
       );
     } else {
       if (auth.isAuth) {
-        return const BottonCustomNav();
+        return const BottomCustomNav();
       } else {
         return const SignInScreen();
       }

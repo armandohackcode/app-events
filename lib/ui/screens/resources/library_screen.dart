@@ -1,7 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:any_link_preview/any_link_preview.dart';
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/providers/resources_provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/library_screen/add_resource.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,9 +27,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<ResourcesProvider>(context, listen: false);
       if (data.resources.isEmpty) {
-        data.getResources();
+        data.loadResources();
       }
       data.cleanTag();
     });
@@ -41,23 +44,25 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final resource = Provider.of<ResourcesProvider>(context);
+    final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
           title: Padding(
         padding: const EdgeInsets.only(bottom: 5),
-        child: Image.asset('assets/img/title-devfest.png'),
+        child: Image.asset(AppAssetsPath.titleEvent),
       )),
       body: RefreshIndicator(
         onRefresh: () async {
-          await dataCenter.getResources();
+          await resource.loadResources();
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            FiltersLibrary(paramSearch: _paramSearch, dataCenter: dataCenter),
-            if (dataCenter.loadingResource)
+            FiltersLibrary(
+                paramSearch: _paramSearch, resourcesProvider: resource),
+            if (resource.loadingResource)
               Container(
                 height: MediaQuery.of(context).size.height * 0.4,
                 alignment: Alignment.center,
@@ -73,9 +78,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(15),
-                  itemCount: dataCenter.resources.length,
+                  itemCount: resource.resources.length,
                   itemBuilder: (BuildContext context, int index) {
-                    var item = dataCenter.resources[index];
+                    var item = resource.resources[index];
                     return ZoomIn(
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
@@ -129,11 +134,11 @@ class FiltersLibrary extends StatelessWidget {
   const FiltersLibrary({
     super.key,
     required TextEditingController paramSearch,
-    required this.dataCenter,
+    required this.resourcesProvider,
   }) : _paramSearch = paramSearch;
 
   final TextEditingController _paramSearch;
-  final DataCenter dataCenter;
+  final ResourcesProvider resourcesProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -144,19 +149,15 @@ class FiltersLibrary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // const Text(
-          //   'Biblioteca de recursos',
-          //   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          // ),
           TextFormField(
             controller: _paramSearch,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-              hintText: 'Buscar contenido',
+              hintText: AppStrings.resourceLibrarySearchHint,
               suffixIcon: (_paramSearch.text.isNotEmpty)
                   ? IconButton(
                       onPressed: () {
-                        dataCenter.getResources();
+                        resourcesProvider.loadResources();
                         _paramSearch.clear();
                       },
                       icon: const Icon(Icons.clear))
@@ -167,7 +168,7 @@ class FiltersLibrary extends StatelessWidget {
                     ),
             ),
             onFieldSubmitted: (value) async {
-              await dataCenter.searchResource(param: value);
+              await resourcesProvider.searchResource(param: value);
             },
           ),
           Row(
@@ -175,41 +176,47 @@ class FiltersLibrary extends StatelessWidget {
             children: [
               ButtonLibrary(
                 color: AppStyles.colorBaseBlue,
-                active: dataCenter.activeWeb,
+                active: resourcesProvider.activeWeb,
                 text: 'Web',
                 onPressed: () async {
-                  dataCenter.activeWeb = !dataCenter.activeWeb;
+                  resourcesProvider.activeWeb = !resourcesProvider.activeWeb;
 
-                  await dataCenter.searchResource(param: _paramSearch.text);
+                  await resourcesProvider.searchResource(
+                      param: _paramSearch.text);
                 },
               ),
               ButtonLibrary(
-                active: dataCenter.activeMobile,
+                active: resourcesProvider.activeMobile,
                 color: AppStyles.colorBaseGreen,
                 text: 'Mobile',
                 onPressed: () async {
-                  dataCenter.activeMobile = !dataCenter.activeMobile;
+                  resourcesProvider.activeMobile =
+                      !resourcesProvider.activeMobile;
 
-                  await dataCenter.searchResource(param: _paramSearch.text);
+                  await resourcesProvider.searchResource(
+                      param: _paramSearch.text);
                 },
               ),
               ButtonLibrary(
-                active: dataCenter.activeCloud,
+                active: resourcesProvider.activeCloud,
                 color: AppStyles.colorBaseRed,
                 text: 'Cloud',
                 onPressed: () async {
-                  dataCenter.activeCloud = !dataCenter.activeCloud;
+                  resourcesProvider.activeCloud =
+                      !resourcesProvider.activeCloud;
 
-                  await dataCenter.searchResource(param: _paramSearch.text);
+                  await resourcesProvider.searchResource(
+                      param: _paramSearch.text);
                 },
               ),
               ButtonLibrary(
-                active: dataCenter.activeIA,
+                active: resourcesProvider.activeIA,
                 color: AppStyles.colorBaseYellow,
                 text: 'IA',
                 onPressed: () async {
-                  dataCenter.activeIA = !dataCenter.activeIA;
-                  await dataCenter.searchResource(param: _paramSearch.text);
+                  resourcesProvider.activeIA = !resourcesProvider.activeIA;
+                  await resourcesProvider.searchResource(
+                      param: _paramSearch.text);
                 },
               ),
             ],

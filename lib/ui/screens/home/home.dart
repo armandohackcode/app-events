@@ -1,7 +1,9 @@
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
-import 'package:app_events/ui/screens/attendies_screen.dart';
-import 'package:app_events/ui/screens/schedule_screen.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/screens/user/attendees_screen.dart';
+import 'package:app_events/ui/screens/schedule/schedule_screen.dart';
 import 'package:app_events/ui/widgets/button_activity.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
@@ -21,14 +23,12 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dataCenter = Provider.of<DataCenter>(context);
+    final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
           title: Padding(
         padding: const EdgeInsets.only(bottom: 5),
-        child: Image.asset(
-          'assets/img/title-devfest.png',
-        ),
+        child: Image.asset(AppAssetsPath.titleEvent),
       )),
       body: SafeArea(
         child: ListView(
@@ -37,7 +37,7 @@ class Home extends StatelessWidget {
             const CardSchedule(),
             const SizedBox(height: 20),
             const Text(
-              "Únete a las actividades",
+              AppStrings.homeEventJoinActivities,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -46,26 +46,24 @@ class Home extends StatelessWidget {
                   Navigator.of(context).push(
                       CupertinoPageRoute(builder: (_) => const RankingData()));
                 },
-                text: "Torneo GDG Sucre",
-                icon: Image.asset("assets/img/trofeo.png", height: 60)),
+                text: AppStrings.homeTournamentGDG,
+                icon: Image.asset(AppAssetsPath.trophyIcon, height: 60)),
             const SizedBox(height: 10),
             ButtonActivity(
-              icon: SvgPicture.asset('assets/img/icon-gdg.svg'),
-              text: 'Conoce a la comunidad',
+              icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
+              text: AppStrings.homeMeetCommunity,
               onPressed: () {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
                     builder: (_) => const OrganizersScreen(),
                   ),
                 );
-                // await laucherUrlInfo(
-                //     "https://gdg.community.dev/events/details/google-gdg-sucre-presents-google-io-extended-sucre-1/");
               },
             ),
             const SizedBox(height: 10),
             ButtonActivity(
-              icon: SvgPicture.asset('assets/img/icon-discord.svg'),
-              text: 'Únete al canal en Discord',
+              icon: SvgPicture.asset(AppAssetsPath.discordIcon),
+              text: AppStrings.homeJoinDiscord,
               onPressed: () async {
                 await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
               },
@@ -73,11 +71,11 @@ class Home extends StatelessWidget {
             const SizedBox(height: 10),
             if (dataCenter.isAdmin)
               ButtonActivity(
-                icon: Image.asset("assets/img/dino-write.png"),
-                text: 'Participantes',
+                icon: Image.asset(AppAssetsPath.dinoWriteIcon),
+                text: AppStrings.commonWordAttendees,
                 onPressed: () async {
                   Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (_) => const AttendiesScrren()));
+                      builder: (_) => const AttendeesScreen()));
                 },
               ),
             const SponsorsContent(),
@@ -90,7 +88,7 @@ class Home extends StatelessWidget {
                   return const SizedBox();
                 }
                 return Text(
-                  "Versión de aplicación: ${snapshot.data?.version ?? ""}",
+                  "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
                   textAlign: TextAlign.center,
                 );
               },
@@ -101,7 +99,7 @@ class Home extends StatelessWidget {
                 await laucherUrlInfo(
                     "https://www.linkedin.com/in/armandohackcode/");
               },
-              child: const Text("Desarrollado por @armandohackcode"),
+              child: const Text(AppStrings.developedBy),
             ),
             const SizedBox(height: 60),
           ],
@@ -109,7 +107,6 @@ class Home extends StatelessWidget {
       ),
       floatingActionButton:
           (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
-      // bottomNavigationBar: const BottonCustomNavApp(),
     );
   }
 }
@@ -128,19 +125,19 @@ class ButtonScan extends StatelessWidget {
         size: 32,
       ),
       onPressed: () async {
-        final dataCenter = Provider.of<DataCenter>(context, listen: false);
+        final dataCenter = Provider.of<UserProvider>(context, listen: false);
         var res = await Navigator.of(context).push<Barcode?>(MaterialPageRoute(
           builder: (context) => const QRScanContent(
-            msg: "Scanea el código QR de tu nuevo amigo",
+            msg: AppStrings.scanMessage,
           ),
         ));
         if (res != null) {
           var info = await dataCenter.addNewFriend(res.code!);
           if (info != null && context.mounted) {
-            customSnackbar(context, "Añadiste a un nuevo amigo");
+            customSnackbar(context, AppStrings.scanMessageAddedFriend);
           } else {
             if (context.mounted) {
-              customSnackbar(context, "QR no válido",
+              customSnackbar(context, AppStrings.scanMessageInvalidQR,
                   color: AppStyles.colorBaseRed);
             }
           }
@@ -171,14 +168,14 @@ class CardSchedule extends StatelessWidget {
             Positioned(
               left: 10,
               child: Image.asset(
-                'assets/img/icon-cronograma.png',
+                AppAssetsPath.scheduleIcon,
                 height: MediaQuery.of(context).size.height * 0.08,
               ),
             ),
             Container(
               alignment: const Alignment(1, 1),
               child: Image.asset(
-                'assets/img/devfest-footer.png',
+                AppAssetsPath.footerImage,
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
             ),
@@ -187,15 +184,11 @@ class CardSchedule extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.only(top: 20),
-                //   child: SvgPicture.asset('assets/img/img_cronograma.svg'),
-                // ),
                 Stack(
                   alignment: Alignment(0, 1.2),
                   children: [
                     Text(
-                      "09",
+                      AppStrings.homeEventDay,
                       style: TextStyle(
                         fontSize: 50,
                         color: AppStyles.fontColor,
@@ -203,7 +196,7 @@ class CardSchedule extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Diciembre",
+                      AppStrings.homeEventMonth,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppStyles.fontColor,
@@ -217,7 +210,7 @@ class CardSchedule extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: Text(
-                    "Cronograma",
+                    AppStrings.scheduleSchedule,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

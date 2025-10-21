@@ -54,7 +54,6 @@ Future<void> laucherUrlInfo(String url) async {
   try {
     var link = Uri.parse(url);
     if (await canLaunchUrl(link)) {
-      // print("lanzando url");
       await launchUrl(
         link,
         mode: LaunchMode.externalApplication,

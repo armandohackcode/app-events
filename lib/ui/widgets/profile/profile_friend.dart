@@ -1,7 +1,8 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,7 +23,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<UserProvider>(context, listen: false);
       var res = await data.getUserInfo(widget.uuid);
       setState(() {
         user = res;
@@ -55,7 +56,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
               child: Column(
                 children: [
                   // const SizedBox(height: 15),
-                  Image.asset("assets/img/title-devfest.png"),
+                  Image.asset(AppAssetsPath.titleEvent),
                   Stack(
                     alignment: const Alignment(0.9, 1),
                     children: [

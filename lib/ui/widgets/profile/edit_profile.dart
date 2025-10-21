@@ -1,5 +1,5 @@
-import 'package:app_events/domain/bloc/data_center.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,9 +10,10 @@ class EditProfile extends StatefulWidget {
   State<EditProfile> createState() => _EditProfileState();
 }
 
+// TO DO : Refactor this form
 class _EditProfileState extends State<EditProfile> {
   final _name = TextEditingController();
-  final _aboutme = TextEditingController();
+  final _aboutMe = TextEditingController();
   final _profession = TextEditingController();
   final _facebook = TextEditingController(text: "https://www.facebook.com/");
   final _instagram = TextEditingController(text: "https://www.instagram.com/");
@@ -25,12 +26,12 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<UserProvider>(context, listen: false);
       var info = data.userCompetitor!;
       setState(
         () {
           _name.text = info.name;
-          _aboutme.text = info.aboutMe;
+          _aboutMe.text = info.aboutMe;
           _profession.text = info.profession;
           for (var element in info.socialNetwork) {
             if (element.type == "GITHUB") {
@@ -55,7 +56,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void dispose() {
     _name.dispose();
-    _aboutme.dispose();
+    _aboutMe.dispose();
     _facebook.dispose();
     _instagram.dispose();
     _github.dispose();
@@ -66,7 +67,7 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context, listen: false);
+    final data = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Editar Perfil"),
@@ -112,7 +113,7 @@ class _EditProfileState extends State<EditProfile> {
               "Cuentanos algo sobre tí, tienes que usar como mínimo 200 caracteres, para ganar los puntos de esta sección",
             ),
             TextFormField(
-              controller: _aboutme,
+              controller: _aboutMe,
               maxLength: 400,
               maxLines: 4,
               validator: (value) {
@@ -223,7 +224,7 @@ class _EditProfileState extends State<EditProfile> {
                     // print(score);
 
                     /// usuario completo su perfil
-                    if (_aboutme.text.length >= 200 &&
+                    if (_aboutMe.text.length >= 200 &&
                         data.userCompetitor!.scoreProfile == false) {
                       score = score + 20;
                       data.userCompetitor =
@@ -232,7 +233,7 @@ class _EditProfileState extends State<EditProfile> {
                     // print(score);
 
                     /// usuario borro su perfil
-                    if (_aboutme.text.length < 200 &&
+                    if (_aboutMe.text.length < 200 &&
                         data.userCompetitor!.scoreProfile) {
                       score = score - 20;
                       data.userCompetitor =
@@ -240,49 +241,49 @@ class _EditProfileState extends State<EditProfile> {
                       (score < 0) ? 0 : score;
                     }
                     // print(score);
-                    var socialNerwors = <SocialNetwork>[];
+                    var socialNetworks = <SocialNetwork>[];
 
                     if (_linkedin.text != "https://www.linkedin.com/in/" &&
                         _linkedin.text.isNotEmpty) {
-                      socialNerwors.add(SocialNetwork(
+                      socialNetworks.add(SocialNetwork(
                           type: "LINKEDIN", link: _linkedin.text));
                     }
                     if (_github.text != "https://github.com/" &&
                         _github.text.isNotEmpty) {
-                      socialNerwors.add(
+                      socialNetworks.add(
                           SocialNetwork(type: "GITHUB", link: _github.text));
                     }
                     if (_instagram.text != "https://www.instagram.com/" &&
                         _instagram.text.isNotEmpty) {
-                      socialNerwors.add(SocialNetwork(
+                      socialNetworks.add(SocialNetwork(
                           type: "INSTAGRAM", link: _instagram.text));
                     }
                     if (_facebook.text != "https://www.facebook.com/" &&
                         _facebook.text.isNotEmpty) {
-                      socialNerwors.add(SocialNetwork(
+                      socialNetworks.add(SocialNetwork(
                           type: "FACEBOOK", link: _facebook.text));
                     }
                     // print(score);
 
-                    /// reduce el score asigando por redes sociales anterior
+                    /// Reduce the score assigned by previous social networks
                     score =
                         score - data.userCompetitor!.socialNetwork.length * 3;
                     // print(score);
 
-                    /// Nuevo score asigando por redes sociales
-                    score = score + socialNerwors.length * 3;
+                    /// New score assigned by social networks
+                    score = score + socialNetworks.length * 3;
                     // print(score);
                     var user = data.userCompetitor!.copyWith(
                       score: score,
                       name: _name.text,
                       profession: _profession.text,
-                      aboutMe: _aboutme.text,
-                      socialNetwork: socialNerwors,
+                      aboutMe: _aboutMe.text,
+                      socialNetwork: socialNetworks,
                     );
                     await data.editCompetitor(user);
                     if (context.mounted) {
                       Navigator.pop(context,
-                          (_aboutme.text.length >= 200) ? true : false);
+                          (_aboutMe.text.length >= 200) ? true : false);
                     }
                   }
                 },

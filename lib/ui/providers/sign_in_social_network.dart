@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-// import 'package:app_events/firebase_options.dart';
-import 'package:app_events/domain/bloc/data_center.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:crypto/crypto.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,13 +10,21 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInSocialNetworkProvider extends ChangeNotifier {
-  final _googleSignIn = GoogleSignIn();
+  final GoogleSignIn googleSignIn;
+  final FirebaseAuth auth;
+  final UserProvider userProvider;
+
+  SignInSocialNetworkProvider(
+    this.googleSignIn,
+    this.auth,
+    this.userProvider,
+  );
+
   bool _isAuth = false;
   bool _outService = false;
   bool _loadingAuth = false;
   bool _loadingValidate = true;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   late User _userInfo;
 
   bool get isAuth => _isAuth;
@@ -51,7 +58,6 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// validar estado de token de usuario En firebase
   Future<void> validateToken() async {
     try {
       FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -73,27 +79,22 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   Future<void> googleAuth() async {
     try {
       loadingAuth = true;
-      var googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        var googleAuth = await googleUser.authentication;
+      var googleUser = await googleSignIn.authenticate();
+      var googleAuth = googleUser.authentication;
+      var credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+      var resInfo = await auth.signInWithCredential(credential);
+      _userInfo = resInfo.user!;
+      var storage = await SharedPreferences.getInstance();
+      storage.setString('uid_user', resInfo.user!.uid);
 
-        var credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        var resInfo = await _auth.signInWithCredential(credential);
-        _userInfo = resInfo.user!;
-        var storage = await SharedPreferences.getInstance();
-        storage.setString('uid_user', resInfo.user!.uid);
+      await userProvider.addCompetitor(
+          name: _userInfo.displayName ?? "Anonymous",
+          token: "",
+          photoUrl: _userInfo.photoURL ?? "");
 
-        await DataCenter().addCompetitor(
-            name: _userInfo.displayName ?? "Anónimo",
-            token: "",
-            photoUrl: _userInfo.photoURL ?? "");
-
-        isAuth = true;
-      }
-      loadingAuth = false;
+      isAuth = true;
     } catch (e) {
       loadingAuth = false;
       if (kDebugMode) {
@@ -146,7 +147,7 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
 
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-      var resInfo = await _auth.signInWithCredential(oauthCredential);
+      var resInfo = await auth.signInWithCredential(oauthCredential);
       _userInfo = resInfo.user!;
       var storage = await SharedPreferences.getInstance();
       storage.setString('uid_user', resInfo.user!.uid);
@@ -155,8 +156,8 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
       // if (res == true) {
       //   isAuth = true;
       // }
-      await DataCenter().addCompetitor(
-          name: _userInfo.displayName ?? "Anónimo",
+      await userProvider.addCompetitor(
+          name: _userInfo.displayName ?? "Anonymous",
           token: "",
           photoUrl: _userInfo.photoURL ?? "");
       loadingAuth = false;
@@ -171,10 +172,9 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   }
 
   Future<void> logOut() async {
-    await _googleSignIn.signOut();
-    // await FacebookAuth.instance.logOut();
+    await googleSignIn.signOut();
     var storage = await SharedPreferences.getInstance();
     await storage.clear();
-    await FirebaseAuth.instance.signOut();
+    await auth.signOut();
   }
 }
