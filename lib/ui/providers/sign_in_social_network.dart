@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:app_events/env.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:crypto/crypto.dart';
 
@@ -75,7 +76,7 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   Future<void> googleAuth() async {
     try {
       loadingAuth = true;
-      googleSignIn.initialize(serverClientId: "567592938140-hrje5fbbdfmfoitkvgf5dmef94ufk714.apps.googleusercontent.com");
+      googleSignIn.initialize(serverClientId: serviceClientId);
       var googleUser = await googleSignIn.authenticate();
       var googleAuth = googleUser.authentication;
       var credential = GoogleAuthProvider.credential(

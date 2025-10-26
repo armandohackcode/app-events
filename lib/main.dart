@@ -24,9 +24,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupServiceLocator();
-  runApp(
-    const MyApp(),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -58,10 +56,7 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('es', 'ES'),
-          Locale('en', 'US'),
-        ],
+        supportedLocales: const [Locale('es', 'ES'), Locale('en', 'US')],
         theme: AppTheme().getTheme(),
         home: const _ValidateStateAuth(),
       ),
@@ -81,8 +76,10 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final auth =
-          Provider.of<SignInSocialNetworkProvider>(context, listen: false);
+      final auth = Provider.of<SignInSocialNetworkProvider>(
+        context,
+        listen: false,
+      );
       final data = Provider.of<UserProvider>(context, listen: false);
 
       auth.loadingValidate = true;
@@ -102,10 +99,11 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
       return Scaffold(
         backgroundColor: AppStyles.colorAppbar,
         body: Center(
-            child: Image.asset(
-          AppAssetsPath.loadingAnimation,
-          width: MediaQuery.of(context).size.width * 0.65,
-        )),
+          child: Image.asset(
+            AppAssetsPath.loadingAnimation,
+            width: MediaQuery.of(context).size.width * 0.65,
+          ),
+        ),
       );
     } else {
       if (auth.isAuth) {

@@ -21,17 +21,15 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
     Home(),
     LibraryScreen(),
     ProfileScreen(),
-    // Text(
-    //   'Index 3: Settings',
-    //   style: optionStyle,
-    // ),
   ];
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final auth =
-          Provider.of<SignInSocialNetworkProvider>(context, listen: false);
+      final auth = Provider.of<SignInSocialNetworkProvider>(
+        context,
+        listen: false,
+      );
       final data = Provider.of<UserProvider>(context, listen: false);
       if (data.userCompetitor == null) {
         await data.validateIsAdmin(auth.userInfo.uid);
@@ -49,9 +47,7 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,
         // showSelectedLabels: false,
@@ -59,8 +55,10 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/img/icon_home.svg',
-              colorFilter:
-                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                AppStyles.fontColor,
+                BlendMode.srcIn,
+              ),
             ),
             label: 'Inicio',
             // backgroundColor: Colors.red,
@@ -68,8 +66,10 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/img/icon_library.svg',
-              colorFilter:
-                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                AppStyles.fontColor,
+                BlendMode.srcIn,
+              ),
             ),
             label: 'Biblioteca',
 
@@ -78,8 +78,10 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/img/icon_profile.svg',
-              colorFilter:
-                  const ColorFilter.mode(AppStyles.fontColor, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                AppStyles.fontColor,
+                BlendMode.srcIn,
+              ),
             ),
             label: 'Perfil',
             // backgroundColor: Colors.purple,

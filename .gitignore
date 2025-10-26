@@ -47,3 +47,4 @@ app.*.map.json
 
 ### firma de firebase
 lib/firebase_options.dart
+lib/env.dart

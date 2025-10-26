@@ -63,7 +63,6 @@ class QRScanContent extends StatefulWidget {
 }
 
 class _QRScanContentState extends State<QRScanContent> {
-  Barcode? _barcode;
   late MobileScannerController controller;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -88,9 +87,7 @@ class _QRScanContentState extends State<QRScanContent> {
 
   void _handleBarcode(BarcodeCapture barcodes) {
     if (mounted) {
-      setState(() {
-        _barcode = barcodes.barcodes.firstOrNull;
-      });
+      setState(() {});
     }
   }
 
