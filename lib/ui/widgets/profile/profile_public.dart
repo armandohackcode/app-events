@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
             color: AppStyles.colorAppbar,
             child: Column(
               children: [
-                Image.asset("assets/img/title-devfest.png"),
+                Image.asset(AppAssetsPath.titleEvent, height: 50),
                 Stack(
                   alignment: const Alignment(0.9, 1),
                   children: [
@@ -45,39 +46,48 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                              top: 20, bottom: 60, left: 20, right: 20),
+                            top: 20,
+                            bottom: 60,
+                            left: 20,
+                            right: 20,
+                          ),
                           // height: 200,
                           width: 300,
                           decoration: BoxDecoration(
                             color: AppStyles.backgroundColor,
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                                width: 1.5, color: AppStyles.borderColor),
+                              width: 1.5,
+                              color: AppStyles.borderColor,
+                            ),
                           ),
-                          child: Column(children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 15.0, left: 10, right: 10),
-                              child: Text(
-                                widget.user.name,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 15.0,
+                                  left: 10,
+                                  right: 10,
+                                ),
+                                child: Text(
+                                  widget.user.name,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Text(widget.user.aboutMe),
-                            ),
-                            const SizedBox(height: 10),
-                          ]),
+                              Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Text(widget.user.aboutMe),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    Image.asset(
-                      "assets/img/dino-write.png",
-                      width: 120,
-                    )
+                    Image.asset("assets/img/dino-write.png", width: 120),
                   ],
                 ),
               ],
@@ -86,26 +96,28 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
         ),
         Align(
           child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppStyles.colorBaseYellow),
-              onPressed: () async {
-                final temp = await getTemporaryDirectory();
-                final path = '${temp.path}/user-gdgsucre.jpg';
-                File(path).writeAsBytesSync(await capturePng());
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppStyles.colorBaseYellow,
+            ),
+            onPressed: () async {
+              final temp = await getTemporaryDirectory();
+              final path = '${temp.path}/user-gdgsucre.jpg';
+              File(path).writeAsBytesSync(await capturePng());
 
-                await SharePlus.instance.share(ShareParams(
+              await SharePlus.instance.share(
+                ShareParams(
                   text: "#GDGSUCRE #DEVFESTSUCRE",
                   files: [XFile(path)],
-                ));
-              },
-              icon: SvgPicture.asset(
-                "assets/img/share-2-svgrepo-com.svg",
-              ),
-              label: const Text(
-                "Compartir",
-                style: TextStyle(color: AppStyles.backgroundColor),
-              )),
-        )
+                ),
+              );
+            },
+            icon: SvgPicture.asset("assets/img/share-2-svgrepo-com.svg"),
+            label: const Text(
+              "Compartir",
+              style: TextStyle(color: AppStyles.backgroundColor),
+            ),
+          ),
+        ),
       ],
     );
   }

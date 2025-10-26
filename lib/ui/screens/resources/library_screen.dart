@@ -48,10 +48,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-          title: Padding(
-        padding: const EdgeInsets.only(bottom: 5),
-        child: Image.asset(AppAssetsPath.titleEvent),
-      )),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Image.asset(AppAssetsPath.titleEvent, height: 50),
+        ),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           await resource.loadResources();
@@ -61,7 +62,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             FiltersLibrary(
-                paramSearch: _paramSearch, resourcesProvider: resource),
+              paramSearch: _paramSearch,
+              resourcesProvider: resource,
+            ),
             if (resource.loadingResource)
               Container(
                 height: MediaQuery.of(context).size.height * 0.4,
@@ -95,20 +98,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     );
                   },
                 ),
-              )
+              ),
           ],
         ),
       ),
       floatingActionButton: (dataCenter.isAdmin)
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (_) => const AddResource()));
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (_) => const AddResource()),
+                );
               },
-              child: const Icon(
-                Icons.note_add_outlined,
-                size: 32,
-              ),
+              child: const Icon(Icons.note_add_outlined, size: 32),
             )
           : null,
     );
@@ -160,7 +162,8 @@ class FiltersLibrary extends StatelessWidget {
                         resourcesProvider.loadResources();
                         _paramSearch.clear();
                       },
-                      icon: const Icon(Icons.clear))
+                      icon: const Icon(Icons.clear),
+                    )
                   : const Icon(
                       Icons.search,
                       color: AppStyles.fontColor,
@@ -182,7 +185,8 @@ class FiltersLibrary extends StatelessWidget {
                   resourcesProvider.activeWeb = !resourcesProvider.activeWeb;
 
                   await resourcesProvider.searchResource(
-                      param: _paramSearch.text);
+                    param: _paramSearch.text,
+                  );
                 },
               ),
               ButtonLibrary(
@@ -194,7 +198,8 @@ class FiltersLibrary extends StatelessWidget {
                       !resourcesProvider.activeMobile;
 
                   await resourcesProvider.searchResource(
-                      param: _paramSearch.text);
+                    param: _paramSearch.text,
+                  );
                 },
               ),
               ButtonLibrary(
@@ -206,7 +211,8 @@ class FiltersLibrary extends StatelessWidget {
                       !resourcesProvider.activeCloud;
 
                   await resourcesProvider.searchResource(
-                      param: _paramSearch.text);
+                    param: _paramSearch.text,
+                  );
                 },
               ),
               ButtonLibrary(
@@ -216,7 +222,8 @@ class FiltersLibrary extends StatelessWidget {
                 onPressed: () async {
                   resourcesProvider.activeIA = !resourcesProvider.activeIA;
                   await resourcesProvider.searchResource(
-                      param: _paramSearch.text);
+                    param: _paramSearch.text,
+                  );
                 },
               ),
             ],
@@ -262,13 +269,14 @@ class CardLibrary extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                    padding: const EdgeInsets.all(10),
-                    width: width,
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    )),
+                  padding: const EdgeInsets.all(10),
+                  width: width,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
                 Container(
                   padding: const EdgeInsets.all(1),
                   height: 60,
@@ -302,10 +310,7 @@ class CardLibrary extends StatelessWidget {
                           width: 60,
                           height: 60,
                         ),
-                        Container(
-                          color: Colors.grey[100],
-                          child: Text(title),
-                        ),
+                        Container(color: Colors.grey[100], child: Text(title)),
                       ],
                     ),
                     errorImage:
@@ -333,24 +338,17 @@ class CardLibrary extends StatelessWidget {
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
                 ),
-                border: Border.all(
-                  color: AppStyles.borderColor,
-                  width: 1,
-                ),
+                border: Border.all(color: AppStyles.borderColor, width: 1),
               ),
             ),
             const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.circle,
-                  size: 8,
-                  color: AppStyles.backgroundColor,
-                ),
+                Icon(Icons.circle, size: 8, color: AppStyles.backgroundColor),
                 SizedBox(width: 3),
-                Icon(Icons.circle, size: 8, color: AppStyles.backgroundColor)
+                Icon(Icons.circle, size: 8, color: AppStyles.backgroundColor),
               ],
-            )
+            ),
           ],
         ),
       ],
@@ -381,12 +379,14 @@ class _ButtonLibraryState extends State<ButtonLibrary> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        backgroundColor:
-            widget.active ? widget.color : AppStyles.backgroundColor,
+        backgroundColor: widget.active
+            ? widget.color
+            : AppStyles.backgroundColor,
         shape: RoundedRectangleBorder(
           side: BorderSide(
-              color: widget.active ? AppStyles.fontColor : widget.color,
-              width: 1.2),
+            color: widget.active ? AppStyles.fontColor : widget.color,
+            width: 1.2,
+          ),
           borderRadius: BorderRadius.circular(10.0),
         ),
       ),

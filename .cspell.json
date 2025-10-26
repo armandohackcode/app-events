@@ -2,10 +2,12 @@
     "version": "0.2",
     "language": "en",
     "files": [
-        "lib/**/*.dart",
+        "lib/**/*.dart"
     ],
     "words": [
-    
+        "DEVFESTSUCRE",
+        "gdgsucre",
+        "googleusercontent"
     ],
     "ignorePaths": [
         "lib/config/theme/app_strings.dart"

@@ -57,19 +57,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final data = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(AppAssetsPath.titleEvent),
+        title: Image.asset(AppAssetsPath.titleEvent, height: 50),
         actions: [
           IconButton(
-              onPressed: () async {
-                await auth.logOut();
-                data.userCompetitor = null;
-                auth.isAuth = false;
-              },
-              icon: const Icon(
-                Icons.output,
-                color: AppStyles.fontColor,
-                size: 32,
-              )),
+            onPressed: () async {
+              await auth.logOut();
+              data.userCompetitor = null;
+              auth.isAuth = false;
+            },
+            icon: const Icon(
+              Icons.output,
+              color: AppStyles.fontColor,
+              size: 32,
+            ),
+          ),
         ],
       ),
       body: ListView(
@@ -77,20 +78,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           HeaderProfile(auth: auth),
           const SizedBox(height: 20),
-          if (data.userCompetitor != null) const BodyProfile()
+          if (data.userCompetitor != null) const BodyProfile(),
         ],
       ),
-      floatingActionButton:
-          (data.userCompetitor != null) ? const ButtonScan() : null,
+      floatingActionButton: (data.userCompetitor != null)
+          ? const ButtonScan()
+          : null,
     );
   }
 }
 
 class HeaderProfile extends StatelessWidget {
-  const HeaderProfile({
-    super.key,
-    required this.auth,
-  });
+  const HeaderProfile({super.key, required this.auth});
 
   final SignInSocialNetworkProvider auth;
 
@@ -102,8 +101,12 @@ class HeaderProfile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 10),
+            padding: const EdgeInsets.only(
+              top: 15,
+              left: 10,
+              right: 10,
+              bottom: 10,
+            ),
             child: ClipOval(
               child: (auth.userInfo.photoURL != null)
                   ? Image.network(
@@ -136,9 +139,10 @@ class HeaderProfile extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppStyles.fontColor),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppStyles.fontColor,
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -166,10 +170,7 @@ class HeaderProfile extends StatelessWidget {
                             (data.userCompetitor?.score ?? 0).toString(),
                             style: const TextStyle(fontSize: 28),
                           ),
-                          const Text(
-                            'Puntos',
-                            style: TextStyle(height: 0.6),
-                          )
+                          const Text('Puntos', style: TextStyle(height: 0.6)),
                         ],
                       ),
                       Column(
@@ -181,16 +182,18 @@ class HeaderProfile extends StatelessWidget {
                                 .toString(),
                             style: const TextStyle(fontSize: 28),
                           ),
-                          const Text('Conexiones',
-                              style: TextStyle(height: 0.6))
+                          const Text(
+                            'Conexiones',
+                            style: TextStyle(height: 0.6),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -198,9 +201,7 @@ class HeaderProfile extends StatelessWidget {
 }
 
 class BodyProfile extends StatelessWidget {
-  const BodyProfile({
-    super.key,
-  });
+  const BodyProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -224,9 +225,10 @@ class BodyProfile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 onTap: () async {
                   showDialog(
-                      context: context,
-                      builder: (_) =>
-                          ModalQrIdentify(identify: data.userCompetitor!.uuid));
+                    context: context,
+                    builder: (_) =>
+                        ModalQrIdentify(identify: data.userCompetitor!.uuid),
+                  );
                 },
                 child: const Icon(
                   Icons.qr_code_outlined,
@@ -238,34 +240,43 @@ class BodyProfile extends StatelessWidget {
               borderRadius: BorderRadius.circular(100),
               onTap: () async {
                 showDialog(
-                    context: context,
-                    builder: (_) =>
-                        ModalProfilePublic(user: data.userCompetitor!));
+                  context: context,
+                  builder: (_) =>
+                      ModalProfilePublic(user: data.userCompetitor!),
+                );
               },
-              child: SvgPicture.asset('assets/img/receipt-svgrepo-com.svg',
-                  width: 45,
-                  height: 45,
-                  colorFilter: const ColorFilter.mode(
-                      AppStyles.fontColor, BlendMode.srcIn)),
+              child: SvgPicture.asset(
+                'assets/img/receipt-svgrepo-com.svg',
+                width: 45,
+                height: 45,
+                colorFilter: const ColorFilter.mode(
+                  AppStyles.fontColor,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
             InkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () async {
                 var res = await Navigator.of(context).push<bool?>(
-                  CupertinoPageRoute(
-                    builder: (_) => const EditProfile(),
-                  ),
+                  CupertinoPageRoute(builder: (_) => const EditProfile()),
                 );
                 if (res == true && context.mounted) {
                   customSnackbar(
-                      context, "Feliciadades, ganastes los puntos extras");
+                    context,
+                    "Feliciadades, ganastes los puntos extras",
+                  );
                 }
               },
-              child: SvgPicture.asset('assets/img/icon_edit.svg',
-                  width: 45,
-                  height: 45,
-                  colorFilter: const ColorFilter.mode(
-                      AppStyles.fontColor, BlendMode.srcIn)),
+              child: SvgPicture.asset(
+                'assets/img/icon_edit.svg',
+                width: 45,
+                height: 45,
+                colorFilter: const ColorFilter.mode(
+                  AppStyles.fontColor,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
             if (Platform.isIOS)
               Tooltip(
@@ -273,8 +284,11 @@ class BodyProfile extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100),
                   onTap: () async {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const DeleteAccount()));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const DeleteAccount(),
+                      ),
+                    );
                   },
                   child: const Icon(
                     Icons.delete_forever_outlined,
@@ -290,9 +304,7 @@ class BodyProfile extends StatelessWidget {
           Column(
             children: [
               Text(data.userCompetitor!.aboutMe),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -304,15 +316,17 @@ class BodyProfile extends StatelessWidget {
                           width: 60,
                           height: 40,
                           colorFilter: const ColorFilter.mode(
-                              AppStyles.fontColor, BlendMode.srcIn),
+                            AppStyles.fontColor,
+                            BlendMode.srcIn,
+                          ),
                         ),
                         onTap: () async {
                           await laucherUrlInfo(item.link);
                         },
                       ),
-                    )
+                    ),
                 ],
-              )
+              ),
             ],
           )
         else
@@ -322,17 +336,14 @@ class BodyProfile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/img/dino-write.png',
-                  height: 150,
-                ),
+                Image.asset('assets/img/dino-write.png', height: 150),
                 const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
                     "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝",
                     textAlign: TextAlign.center,
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -395,57 +406,64 @@ class CardNetworking extends StatelessWidget {
     return InkWell(
       onTap: () {
         showDialog(
-            context: context,
-            builder: (_) => ModalProfileFriend(uuid: friend.uuid));
+          context: context,
+          builder: (_) => ModalProfileFriend(uuid: friend.uuid),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          border: Border.all(
-            width: 2,
-            color: AppStyles.fontColor,
-          ),
+          border: Border.all(width: 2, color: AppStyles.fontColor),
           borderRadius: BorderRadius.circular(10),
         ),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
-            child: ClipOval(
-              // child: Image.network(
-              //   'https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg',
-              //   fit: BoxFit.cover,
-              //   width: MediaQuery.of(context).size.width * 0.15,
-              //   height: MediaQuery.of(context).size.width * 0.15,
-              // ),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
-                height: MediaQuery.of(context).size.width * 0.15,
-                child: (friend.photoUrl.isEmpty)
-                    ? Image.asset("assets/img/dino-runs.png")
-                    : FadeInImage(
-                        placeholder: const AssetImage(
-                            "assets/img/gitgoogle-loading.gif"),
-                        image: NetworkImage(friend.photoUrl)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 10,
+                left: 10,
+                right: 10,
+                bottom: 10,
+              ),
+              child: ClipOval(
+                // child: Image.network(
+                //   'https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg',
+                //   fit: BoxFit.cover,
+                //   width: MediaQuery.of(context).size.width * 0.15,
+                //   height: MediaQuery.of(context).size.width * 0.15,
+                // ),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.15,
+                  height: MediaQuery.of(context).size.width * 0.15,
+                  child: (friend.photoUrl.isEmpty)
+                      ? Image.asset("assets/img/dino-runs.png")
+                      : FadeInImage(
+                          placeholder: const AssetImage(
+                            "assets/img/gitgoogle-loading.gif",
+                          ),
+                          image: NetworkImage(friend.photoUrl),
+                        ),
+                ),
               ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: Text(
-              friend.name,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+            Container(
+              padding: const EdgeInsets.all(10),
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: Text(
+                friend.name,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppStyles.fontColor),
+                  color: AppStyles.fontColor,
+                ),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

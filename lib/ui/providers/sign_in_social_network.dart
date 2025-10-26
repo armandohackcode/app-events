@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:app_events/env.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:crypto/crypto.dart';
 
@@ -14,11 +15,7 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   final FirebaseAuth auth;
   final UserProvider userProvider;
 
-  SignInSocialNetworkProvider(
-    this.googleSignIn,
-    this.auth,
-    this.userProvider,
-  );
+  SignInSocialNetworkProvider(this.googleSignIn, this.auth, this.userProvider);
 
   bool _isAuth = false;
   bool _outService = false;
@@ -79,6 +76,7 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   Future<void> googleAuth() async {
     try {
       loadingAuth = true;
+      googleSignIn.initialize(serverClientId: serviceClientId);
       var googleUser = await googleSignIn.authenticate();
       var googleAuth = googleUser.authentication;
       var credential = GoogleAuthProvider.credential(
@@ -90,9 +88,10 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
       storage.setString('uid_user', resInfo.user!.uid);
 
       await userProvider.addCompetitor(
-          name: _userInfo.displayName ?? "Anonymous",
-          token: "",
-          photoUrl: _userInfo.photoURL ?? "");
+        name: _userInfo.displayName ?? "Anonymous",
+        token: "",
+        photoUrl: _userInfo.photoURL ?? "",
+      );
 
       isAuth = true;
     } catch (e) {
@@ -109,8 +108,10 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   /// Returns the sha256 hash of [input] in hex notation.
@@ -140,10 +141,9 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
       );
 
       // Create an `OAuthCredential` from the credential returned by Apple.
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
+      final oauthCredential = OAuthProvider(
+        "apple.com",
+      ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
 
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
@@ -157,9 +157,10 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
       //   isAuth = true;
       // }
       await userProvider.addCompetitor(
-          name: _userInfo.displayName ?? "Anonymous",
-          token: "",
-          photoUrl: _userInfo.photoURL ?? "");
+        name: _userInfo.displayName ?? "Anonymous",
+        token: "",
+        photoUrl: _userInfo.photoURL ?? "",
+      );
       loadingAuth = false;
     } on FirebaseAuthException catch (e) {
       loadingAuth = false;

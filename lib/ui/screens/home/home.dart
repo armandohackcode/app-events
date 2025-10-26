@@ -14,9 +14,10 @@ import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+// import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -26,10 +27,12 @@ class Home extends StatelessWidget {
     final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-          title: Padding(
-        padding: const EdgeInsets.only(bottom: 5),
-        child: Image.asset(AppAssetsPath.titleEvent),
-      )),
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Image.asset(AppAssetsPath.titleEvent, height: 50),
+        ),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(15),
@@ -42,21 +45,21 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ButtonActivity(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (_) => const RankingData()));
-                },
-                text: AppStrings.homeTournamentGDG,
-                icon: Image.asset(AppAssetsPath.trophyIcon, height: 60)),
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
+              },
+              text: AppStrings.homeTournamentGDG,
+              icon: Image.asset(AppAssetsPath.trophyIcon, height: 60),
+            ),
             const SizedBox(height: 10),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
               text: AppStrings.homeMeetCommunity,
               onPressed: () {
                 Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (_) => const OrganizersScreen(),
-                  ),
+                  CupertinoPageRoute(builder: (_) => const OrganizersScreen()),
                 );
               },
             ),
@@ -74,8 +77,9 @@ class Home extends StatelessWidget {
                 icon: Image.asset(AppAssetsPath.dinoWriteIcon),
                 text: AppStrings.commonWordAttendees,
                 onPressed: () async {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (_) => const AttendeesScreen()));
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (_) => const AttendeesScreen()),
+                  );
                 },
               ),
             const SponsorsContent(),
@@ -84,20 +88,21 @@ class Home extends StatelessWidget {
               future: PackageInfo.fromPlatform(),
               builder:
                   (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox();
-                }
-                return Text(
-                  "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
-                  textAlign: TextAlign.center,
-                );
-              },
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox();
+                    }
+                    return Text(
+                      "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
+                      textAlign: TextAlign.center,
+                    );
+                  },
             ),
             TextButton(
               style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
               onPressed: () async {
                 await laucherUrlInfo(
-                    "https://www.linkedin.com/in/armandohackcode/");
+                  "https://www.linkedin.com/in/armandohackcode/",
+                );
               },
               child: const Text(AppStrings.developedBy),
             ),
@@ -105,40 +110,40 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton:
-          (dataCenter.userCompetitor != null) ? const ButtonScan() : null,
+      floatingActionButton: (dataCenter.userCompetitor != null)
+          ? const ButtonScan()
+          : null,
     );
   }
 }
 
 class ButtonScan extends StatelessWidget {
-  const ButtonScan({
-    super.key,
-  });
+  const ButtonScan({super.key});
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       backgroundColor: AppStyles.colorBaseBlue,
-      child: const Icon(
-        Icons.qr_code_scanner,
-        size: 32,
-      ),
+      child: const Icon(Icons.qr_code_scanner, size: 32),
       onPressed: () async {
         final dataCenter = Provider.of<UserProvider>(context, listen: false);
-        var res = await Navigator.of(context).push<Barcode?>(MaterialPageRoute(
-          builder: (context) => const QRScanContent(
-            msg: AppStrings.scanMessage,
+        var res = await Navigator.of(context).push<Barcode?>(
+          MaterialPageRoute(
+            builder: (context) =>
+                const QRScanContent(msg: AppStrings.scanMessage),
           ),
-        ));
+        );
         if (res != null) {
           var info = await dataCenter.addNewFriend(res.code!);
           if (info != null && context.mounted) {
             customSnackbar(context, AppStrings.scanMessageAddedFriend);
           } else {
             if (context.mounted) {
-              customSnackbar(context, AppStrings.scanMessageInvalidQR,
-                  color: AppStyles.colorBaseRed);
+              customSnackbar(
+                context,
+                AppStrings.scanMessageInvalidQR,
+                color: AppStyles.colorBaseRed,
+              );
             }
           }
         }
@@ -148,9 +153,7 @@ class ButtonScan extends StatelessWidget {
 }
 
 class CardSchedule extends StatelessWidget {
-  const CardSchedule({
-    super.key,
-  });
+  const CardSchedule({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +162,9 @@ class CardSchedule extends StatelessWidget {
       child: TextButton(
         style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
         onPressed: () {
-          Navigator.of(context)
-              .push(CupertinoPageRoute(builder: (_) => const ScheduleScreen()));
+          Navigator.of(
+            context,
+          ).push(CupertinoPageRoute(builder: (_) => const ScheduleScreen()));
         },
         child: Stack(
           alignment: const Alignment(0, 0),
@@ -204,9 +208,7 @@ class CardSchedule extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: 20,
-                ),
+                SizedBox(width: 20),
                 Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: Text(
@@ -217,7 +219,7 @@ class CardSchedule extends StatelessWidget {
                       color: AppStyles.fontColor,
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ],
