@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
@@ -116,7 +117,7 @@ class HeaderProfile extends StatelessWidget {
                       height: MediaQuery.of(context).size.width * 0.23,
                     )
                   : Image.asset(
-                      "assets/img/fire-ped.png",
+                      AppAssetsPath.firePedIcon,
                       // fit: BoxFit.cover,
                       width: MediaQuery.of(context).size.width * 0.23,
                       height: MediaQuery.of(context).size.width * 0.23,
@@ -135,7 +136,7 @@ class HeaderProfile extends StatelessWidget {
                   child: Text(
                     data.userCompetitor?.name ??
                         auth.userInfo.displayName ??
-                        "Anonimo",
+                        AppStrings.commonWordAnonymous,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -170,7 +171,10 @@ class HeaderProfile extends StatelessWidget {
                             (data.userCompetitor?.score ?? 0).toString(),
                             style: const TextStyle(fontSize: 28),
                           ),
-                          const Text('Puntos', style: TextStyle(height: 0.6)),
+                          const Text(
+                            AppStrings.commonWordPoints,
+                            style: TextStyle(height: 0.6),
+                          ),
                         ],
                       ),
                       Column(
@@ -183,7 +187,7 @@ class HeaderProfile extends StatelessWidget {
                             style: const TextStyle(fontSize: 28),
                           ),
                           const Text(
-                            'Conexiones',
+                            AppStrings.commonWordConnections,
                             style: TextStyle(height: 0.6),
                           ),
                         ],
@@ -216,7 +220,7 @@ class BodyProfile extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: const Text(
-                'Acerca de mí',
+                AppStrings.scheduleAboutMe,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -246,7 +250,7 @@ class BodyProfile extends StatelessWidget {
                 );
               },
               child: SvgPicture.asset(
-                'assets/img/receipt-svgrepo-com.svg',
+                AppAssetsPath.iconProfileSmall,
                 width: 45,
                 height: 45,
                 colorFilter: const ColorFilter.mode(
@@ -262,14 +266,11 @@ class BodyProfile extends StatelessWidget {
                   CupertinoPageRoute(builder: (_) => const EditProfile()),
                 );
                 if (res == true && context.mounted) {
-                  customSnackbar(
-                    context,
-                    "Feliciadades, ganastes los puntos extras",
-                  );
+                  customSnackbar(context, AppStrings.profileMsCongratulations);
                 }
               },
               child: SvgPicture.asset(
-                'assets/img/icon_edit.svg',
+                AppAssetsPath.iconEdit,
                 width: 45,
                 height: 45,
                 colorFilter: const ColorFilter.mode(
@@ -280,7 +281,7 @@ class BodyProfile extends StatelessWidget {
             ),
             if (Platform.isIOS)
               Tooltip(
-                message: "Eliminar cuenta",
+                message: AppStrings.profileDeleteAccount,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(100),
                   onTap: () async {
@@ -336,11 +337,11 @@ class BodyProfile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset('assets/img/dino-write.png', height: 150),
+                Image.asset(AppAssetsPath.dinoWriteIcon, height: 150),
                 const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝",
+                    AppStrings.profileMsEditProfile,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -348,7 +349,7 @@ class BodyProfile extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 20),
-        // if (data.userCompetitor!.tokenAutorization.isEmpty)
+        // if (data.userCompetitor!.tokenAuthorization.isEmpty)
         //   Center(
         //     child: ElevatedButton.icon(
         //       style: ElevatedButton.styleFrom(
@@ -367,7 +368,7 @@ class BodyProfile extends StatelessWidget {
         //         );
         //         if (res != null) {
         //           if (context.mounted) {
-        //             customSnackbar(context, "Habilitando usuario...");
+        //             customSnackbar(context, "Enabling user...");
         //             await data.updateToken(res.code!);
         //           }
         //         }
@@ -378,14 +379,14 @@ class BodyProfile extends StatelessWidget {
         //           colorFilter:
         //               const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
         //       label: const Text(
-        //         "Empezar a Jugar",
+        //         "Start Playing",
         //         style: TextStyle(fontSize: 22),
         //       ),
         //     ),
         //   ),
         if (data.userCompetitor!.friends.isNotEmpty)
           const Text(
-            'Conexiones',
+            AppStrings.commonWordConnections,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         const SizedBox(height: 10),
@@ -437,10 +438,10 @@ class CardNetworking extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.15,
                   height: MediaQuery.of(context).size.width * 0.15,
                   child: (friend.photoUrl.isEmpty)
-                      ? Image.asset("assets/img/dino-runs.png")
+                      ? Image.asset(AppAssetsPath.dinoRunIcon)
                       : FadeInImage(
                           placeholder: const AssetImage(
-                            "assets/img/gitgoogle-loading.gif",
+                            AppAssetsPath.loadingSmallImage,
                           ),
                           image: NetworkImage(friend.photoUrl),
                         ),

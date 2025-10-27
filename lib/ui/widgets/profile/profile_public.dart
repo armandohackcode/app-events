@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +41,10 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                     Stack(
                       alignment: const Alignment(-1, 1),
                       children: [
-                        Image.asset(
-                          "assets/img/color-red.png",
-                          width: MediaQuery.of(context).size.width * 0.35,
-                        ),
+                        // Image.asset(
+                        //   "assets/img/color-red.png",
+                        //   width: MediaQuery.of(context).size.width * 0.35,
+                        // ),
                         Container(
                           margin: const EdgeInsets.only(
                             top: 20,
@@ -87,7 +88,7 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                         ),
                       ],
                     ),
-                    Image.asset("assets/img/dino-write.png", width: 120),
+                    Image.asset(AppAssetsPath.dinoWriteIcon, width: 120),
                   ],
                 ),
               ],
@@ -111,9 +112,9 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                 ),
               );
             },
-            icon: SvgPicture.asset("assets/img/share-2-svgrepo-com.svg"),
+            icon: SvgPicture.asset(AppAssetsPath.iconShare),
             label: const Text(
-              "Compartir",
+              AppStrings.commonWordShare,
               style: TextStyle(color: AppStyles.backgroundColor),
             ),
           ),

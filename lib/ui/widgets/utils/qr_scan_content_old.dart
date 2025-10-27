@@ -1,62 +1,13 @@
-// import 'dart:developer';
 import 'dart:io';
 
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-// import 'package:qr_code_scanner/qr_code_scanner.dart';
-
-class MyHome extends StatelessWidget {
-  const MyHome({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Demo Home Page')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            var res = await Navigator.of(context).push<Barcode?>(
-              MaterialPageRoute(builder: (context) => const QRScanContent()),
-            );
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: AppStyles.colorBaseBlue,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(20),
-                  duration: const Duration(seconds: 3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  content: Row(
-                    children: [
-                      Image.asset(
-                        'assets/img/fire-ped.png',
-                        width: 45,
-                        height: 45,
-                      ),
-                      Text(res?.rawValue ?? ""),
-                    ],
-                  ),
-                ),
-              );
-            }
-          },
-          child: const Text('qrView'),
-        ),
-      ),
-    );
-  }
-}
 
 class QRScanContent extends StatefulWidget {
   final String msg;
-  const QRScanContent({
-    super.key,
-    this.msg = " Escanea el código QR de tu manilla",
-  });
+  const QRScanContent({super.key, this.msg = AppStrings.scanMessageCredential});
 
   @override
   State<StatefulWidget> createState() => _QRScanContentState();
@@ -94,7 +45,7 @@ class _QRScanContentState extends State<QRScanContent> {
   // Widget _barcodePreview(Barcode? value) {
   //   if (value == null) {
   //     return const Text(
-  //       'Escanea un QR!',
+  //       'Scan a QR!',
   //       overflow: TextOverflow.fade,
   //       style: TextStyle(color: Colors.white),
   //     );

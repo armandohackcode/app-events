@@ -46,14 +46,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         actions: [
           if (user.isAdmin)
             IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (_) => const AddSchedule()));
-                },
-                icon: const Icon(
-                  Icons.person_add,
-                  size: 32,
-                ))
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(CupertinoPageRoute(builder: (_) => const AddSchedule()));
+              },
+              icon: const Icon(Icons.person_add, size: 32),
+            ),
         ],
       ),
       body: (schedule.loadingSchedule)
@@ -96,14 +95,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           title: Text(
                             item.title.toUpperCase(),
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppStyles.backgroundColor),
+                              fontWeight: FontWeight.bold,
+                              color: AppStyles.backgroundColor,
+                            ),
                           ),
                           trailing: Text(
                             item.schedule.toUpperCase(),
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppStyles.backgroundColor),
+                              fontWeight: FontWeight.bold,
+                              color: AppStyles.backgroundColor,
+                            ),
                           ),
                         ),
                       ),
