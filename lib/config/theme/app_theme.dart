@@ -62,6 +62,10 @@ class AppTheme {
         foregroundColor: AppStyles.fontSecondaryColor,
       ),
     ),
-    primarySwatch: Colors.blue,
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: AppStyles.colorBaseRed,
+      circularTrackColor: const Color.fromARGB(255, 237, 175, 169),
+    ),
+    primarySwatch: Colors.red,
   );
 }

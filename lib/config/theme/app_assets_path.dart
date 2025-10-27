@@ -6,6 +6,7 @@ class AppAssetsPath {
   static const String titleEvent = 'assets/img/title-devfest.png';
   static const String headerImage = 'assets/img/header-image.png';
   static const String footerImage = 'assets/img/footer-image.png';
+  static const String centerImage = 'assets/img/center-login.png';
 
   static const String scheduleIcon = 'assets/img/schedule-icon.png';
   static const String trophyIcon = 'assets/img/trofeo.png';

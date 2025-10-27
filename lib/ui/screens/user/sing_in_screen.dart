@@ -26,7 +26,14 @@ class SignInScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+                    Align(
+                      child: Image.asset(
+                        AppAssetsPath.centerImage,
+                        width: MediaQuery.of(context).size.width * 0.25,
+                      ),
+                    ),
+                    SizedBox(height: 20),
                     Align(
                       child: Image.asset(
                         AppAssetsPath.titleEvent,
@@ -135,7 +142,7 @@ class SignInScreen extends StatelessWidget {
                 ),
                 Image.asset(
                   AppAssetsPath.footerImage,
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.13,
                 ),
               ],
             ),
