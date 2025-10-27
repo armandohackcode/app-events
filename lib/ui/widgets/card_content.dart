@@ -14,9 +14,10 @@ class CardContent extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-              color: AppStyles.cardColor,
-              border: Border.all(width: 1.5, color: AppStyles.borderColor),
-              borderRadius: BorderRadius.circular(4)),
+            color: AppStyles.cardColor,
+            border: Border.all(width: 1.5, color: AppStyles.borderColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
           height: height,
           width: width,
           child: child,
@@ -24,19 +25,13 @@ class CardContent extends StatelessWidget {
         const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.rectangle,
-              size: 10,
-              color: AppStyles.borderColor,
-            ),
+            Icon(Icons.circle, size: 10, color: AppStyles.colorBaseRed),
             SizedBox(width: 3),
-            Icon(
-              Icons.rectangle,
-              size: 10,
-              color: AppStyles.borderColor,
-            )
+            Icon(Icons.circle, size: 10, color: AppStyles.colorBaseYellow),
+            SizedBox(width: 3),
+            Icon(Icons.circle, size: 10, color: AppStyles.colorBaseGreen),
           ],
-        )
+        ),
       ],
     );
   }
