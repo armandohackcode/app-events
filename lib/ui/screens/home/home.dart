@@ -53,7 +53,7 @@ class Home extends StatelessWidget {
               text: AppStrings.homeTournamentGDG,
               icon: Image.asset(AppAssetsPath.trophyIcon, height: 60),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
               text: AppStrings.homeMeetCommunity,
@@ -63,7 +63,7 @@ class Home extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.discordIcon),
               text: AppStrings.homeJoinDiscord,
@@ -71,7 +71,7 @@ class Home extends StatelessWidget {
                 await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             if (dataCenter.isAdmin)
               ButtonActivity(
                 icon: Image.asset(AppAssetsPath.dinoWriteIcon),
@@ -170,20 +170,20 @@ class CardSchedule extends StatelessWidget {
           alignment: const Alignment(0, 0),
           children: [
             Positioned(
-              left: 10,
+              left: 15,
               child: Image.asset(
                 AppAssetsPath.scheduleIcon,
                 height: MediaQuery.of(context).size.height * 0.08,
               ),
             ),
             Container(
-              alignment: const Alignment(1, 1),
+              alignment: const Alignment(0.95, 0.8),
               child: Image.asset(
                 AppAssetsPath.footerImage,
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
             ),
-            const Row(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -191,12 +191,21 @@ class CardSchedule extends StatelessWidget {
                 Stack(
                   alignment: Alignment(0, 1.2),
                   children: [
-                    Text(
-                      AppStrings.homeEventDay,
-                      style: TextStyle(
-                        fontSize: 50,
-                        color: AppStyles.fontColor,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+
+                      margin: EdgeInsets.only(bottom: 15),
+                      decoration: BoxDecoration(
+                        color: AppStyles.colorBaseRed,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        AppStrings.homeEventDay,
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: AppStyles.fontColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Text(

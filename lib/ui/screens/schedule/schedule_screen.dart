@@ -79,7 +79,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   if (item.type == EventTypeSpeaker.panel.value) {
                     return ZoomIn(
                       child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(bottom: 20),
                         padding: const EdgeInsets.only(left: 10, right: 10),
                         alignment: const Alignment(0, 0),
                         decoration: BoxDecoration(
@@ -104,6 +104,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppStyles.backgroundColor,
+                              fontSize: 16,
                             ),
                           ),
                         ),
