@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
@@ -53,14 +54,16 @@ class _SponsorsContentState extends State<SponsorsContent> {
                             width: MediaQuery.of(context).size.width * 0.35,
                             // height: MediaQuery.of(context).size.width * 0.35,
                             child: FadeInImage(
-                                placeholder: const AssetImage(
-                                    "assets/img/gitgoogle-loading.gif"),
-                                image: NetworkImage(item.photoUrl)),
+                              placeholder: const AssetImage(
+                                AppAssetsPath.loadingSmallImage,
+                              ),
+                              image: NetworkImage(item.photoUrl),
+                            ),
                           ),
                         ),
-                      )
+                      ),
                   ],
-                )
+                ),
               ],
             ),
           )

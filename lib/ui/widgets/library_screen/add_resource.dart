@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/resource_library.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
@@ -11,6 +12,7 @@ class AddResource extends StatefulWidget {
   State<AddResource> createState() => _AddResourceState();
 }
 
+// TO DO : refactor this screen to use form key and validators and enum for types
 class _AddResourceState extends State<AddResource> {
   final _title = TextEditingController();
   final _link = TextEditingController();
@@ -31,27 +33,27 @@ class _AddResourceState extends State<AddResource> {
         Icon(Icons.circle, color: color),
         Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: SizedBox(
-            child: Text(text),
-          ),
+          child: SizedBox(child: Text(text)),
         ),
       ],
     );
   }
 
-  TextStyle textStyle =
-      const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  TextStyle textStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<ResourcesProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Añadir Recurso"),
-      ),
-      body: ListView(padding: const EdgeInsets.all(15), children: [
-        const SizedBox(height: 10),
-        Text("Area Técnica", style: textStyle),
-        DropdownButtonFormField(
+      appBar: AppBar(title: const Text(AppStrings.resourceLibraryAddResource)),
+      body: ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          const SizedBox(height: 10),
+          Text(AppStrings.resourceLibraryTechnicalArea, style: textStyle),
+          DropdownButtonFormField(
             dropdownColor: AppStyles.colorAppbar,
             initialValue: technologyType,
             items: [
@@ -76,38 +78,38 @@ class _AddResourceState extends State<AddResource> {
               setState(() {
                 technologyType = value;
               });
-            }),
-        const SizedBox(height: 10),
-        Text("Título o Descripción", style: textStyle),
-        TextFormField(
-          controller: _title,
-        ),
-        const SizedBox(height: 10),
-        Text("Link del recurso", style: textStyle),
-        TextFormField(
-          controller: _link,
-        ),
-        const SizedBox(height: 20),
-        if (loading)
-          const Center(
-            child: CircularProgressIndicator(),
-          )
-        else
-          ElevatedButton(
+            },
+          ),
+          const SizedBox(height: 10),
+          Text(AppStrings.resourceLibraryDescription, style: textStyle),
+          TextFormField(controller: _title),
+          const SizedBox(height: 10),
+          Text(AppStrings.resourceLibraryResourceLink, style: textStyle),
+          TextFormField(controller: _link),
+          const SizedBox(height: 20),
+          if (loading)
+            const Center(child: CircularProgressIndicator())
+          else
+            ElevatedButton(
               onPressed: () async {
                 setState(() {
                   loading = true;
                 });
-                await data.addResources(ResourceLibrary(
+                await data.addResources(
+                  ResourceLibrary(
                     title: _title.text,
                     link: _link.text,
-                    type: technologyType ?? ''));
+                    type: technologyType ?? '',
+                  ),
+                );
                 if (context.mounted) {
                   Navigator.pop(context);
                 }
               },
-              child: const Text("Guardar"))
-      ]),
+              child: const Text(AppStrings.commonWordSave),
+            ),
+        ],
+      ),
     );
   }
 }

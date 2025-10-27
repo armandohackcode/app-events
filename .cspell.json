@@ -2,12 +2,18 @@
     "version": "0.2",
     "language": "en",
     "files": [
-        "lib/**/*.dart"
+        "lib/**/*.dart",
+        "lib/**/**/*.dart",
+        "lib/**/**/**/*.dart"
     ],
     "words": [
+        "cronograma",
+        "devfest",
         "DEVFESTSUCRE",
         "gdgsucre",
-        "googleusercontent"
+        "googleusercontent",
+        "svgrepo",
+        "trofeo"
     ],
     "ignorePaths": [
         "lib/config/theme/app_strings.dart"

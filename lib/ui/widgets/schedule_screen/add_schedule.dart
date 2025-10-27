@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
@@ -56,30 +57,33 @@ class _AddScheduleState extends State<AddSchedule> {
     super.dispose();
   }
 
-  TextStyle textStyle =
-      const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  TextStyle textStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<ScheduleProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Agregar Speaker o actividad"),
+        title: const Text(AppStrings.scheduleAddSpeakerOrActivity),
       ),
       body: Form(
         key: _keyForm,
         child: ListView(
           padding: const EdgeInsets.all(15),
           children: [
-            Text("Taller/Conferencia/Actividad", style: textStyle),
-            DropdownButtonFormField(
+            Text(AppStrings.scheduleWorkshopTitle, style: textStyle),
+
+            DropdownButtonFormField<String>(
               dropdownColor: AppStyles.colorAppbar,
               initialValue: type,
-              items: const [
-                DropdownMenuItem(value: "Taller", child: Text("Taller")),
-                DropdownMenuItem(
-                    value: "Conferencia", child: Text("Conferencia")),
-                DropdownMenuItem(value: "Actividad", child: Text("Actividad")),
-              ],
+              items: EventTypeSpeaker.values
+                  .map(
+                    (e) =>
+                        DropdownMenuItem(value: e.value, child: Text(e.value)),
+                  )
+                  .toList(),
               onChanged: (value) {
                 setState(() {
                   type = value;
@@ -87,40 +91,39 @@ class _AddScheduleState extends State<AddSchedule> {
               },
             ),
             const SizedBox(height: 10),
-            Text("Area Técnica", style: textStyle),
+            Text(AppStrings.scheduleArea, style: textStyle),
             DropdownButtonFormField(
-                initialValue: technologyType,
-                dropdownColor: AppStyles.colorAppbar,
-                items: [
-                  DropdownMenuItem(
-                    value: "Mobile",
-                    child: _selectType("Mobile", AppStyles.colorBaseGreen),
-                  ),
-                  DropdownMenuItem(
-                    value: "Web",
-                    child: _selectType("Web", AppStyles.colorBaseBlue),
-                  ),
-                  DropdownMenuItem(
-                    value: "Cloud",
-                    child: _selectType("Cloud", AppStyles.colorBaseRed),
-                  ),
-                  DropdownMenuItem(
-                    value: "IA",
-                    child: _selectType("IA", AppStyles.colorBaseYellow),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    technologyType = value;
-                  });
-                }),
-            const SizedBox(height: 10),
-            Text("Título", style: textStyle),
-            TextFormField(
-              controller: _title,
+              initialValue: technologyType,
+              dropdownColor: AppStyles.colorAppbar,
+              items: [
+                DropdownMenuItem(
+                  value: "Mobile",
+                  child: _selectType("Mobile", AppStyles.colorBaseGreen),
+                ),
+                DropdownMenuItem(
+                  value: "Web",
+                  child: _selectType("Web", AppStyles.colorBaseBlue),
+                ),
+                DropdownMenuItem(
+                  value: "Cloud",
+                  child: _selectType("Cloud", AppStyles.colorBaseRed),
+                ),
+                DropdownMenuItem(
+                  value: "IA",
+                  child: _selectType("IA", AppStyles.colorBaseYellow),
+                ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  technologyType = value;
+                });
+              },
             ),
             const SizedBox(height: 10),
-            Text("Descripción", style: textStyle),
+            Text(AppStrings.scheduleTitle, style: textStyle),
+            TextFormField(controller: _title),
+            const SizedBox(height: 10),
+            Text(AppStrings.scheduleDescription, style: textStyle),
             TextFormField(
               controller: _description,
               minLines: 4,
@@ -128,22 +131,16 @@ class _AddScheduleState extends State<AddSchedule> {
               textInputAction: TextInputAction.done,
             ),
             const SizedBox(height: 10),
-            Text("Nombre del Speaker", style: textStyle),
-            TextFormField(
-              controller: _name,
-            ),
+            Text(AppStrings.scheduleNameSpeaker, style: textStyle),
+            TextFormField(controller: _name),
             const SizedBox(height: 10),
-            Text("Profesión", style: textStyle),
-            TextFormField(
-              controller: _profession,
-            ),
+            Text(AppStrings.scheduleProfession, style: textStyle),
+            TextFormField(controller: _profession),
             const SizedBox(height: 10),
-            Text("foto Url", style: textStyle),
-            TextFormField(
-              controller: _photoUrl,
-            ),
+            Text(AppStrings.schedulePhotoUrl, style: textStyle),
+            TextFormField(controller: _photoUrl),
             const SizedBox(height: 10),
-            Text("Descripción profesional", style: textStyle),
+            Text(AppStrings.scheduleDescriptionProfession, style: textStyle),
             TextFormField(
               controller: _aboutMe,
               minLines: 4,
@@ -151,50 +148,35 @@ class _AddScheduleState extends State<AddSchedule> {
               textInputAction: TextInputAction.done,
             ),
             const SizedBox(height: 10),
-            Text("Posición", style: textStyle),
+            Text(AppStrings.schedulePosition, style: textStyle),
             TextFormField(
               controller: _position,
+              keyboardType: TextInputType.numberWithOptions(),
             ),
             const SizedBox(height: 10),
-            Text("Horario", style: textStyle),
-            TextFormField(
-              controller: _schedule,
-            ),
+            Text(AppStrings.scheduleHours, style: textStyle),
+            TextFormField(controller: _schedule),
             const SizedBox(height: 10),
-            Text("Github", style: textStyle),
-            TextFormField(
-              controller: _github,
-            ),
+            Text(AppStrings.scheduleGithub, style: textStyle),
+            TextFormField(controller: _github),
             const SizedBox(height: 10),
-            Text("Instagram", style: textStyle),
-            TextFormField(
-              controller: _instagram,
-            ),
+            Text(AppStrings.scheduleInstagram, style: textStyle),
+            TextFormField(controller: _instagram),
             const SizedBox(height: 10),
-            Text("Facebook", style: textStyle),
-            TextFormField(
-              controller: _facebook,
-            ),
+            Text(AppStrings.scheduleFacebook, style: textStyle),
+            TextFormField(controller: _facebook),
             const SizedBox(height: 10),
-            Text("Linkedin", style: textStyle),
-            TextFormField(
-              controller: _linkedin,
-            ),
+            Text(AppStrings.scheduleLinkedIn, style: textStyle),
+            TextFormField(controller: _linkedin),
             const SizedBox(height: 10),
-            Text("Twitter", style: textStyle),
-            TextFormField(
-              controller: _twitter,
-            ),
+            Text(AppStrings.scheduleTwitter, style: textStyle),
+            TextFormField(controller: _twitter),
             const SizedBox(height: 10),
-            Text("Blog", style: textStyle),
-            TextFormField(
-              controller: _blog,
-            ),
+            Text(AppStrings.scheduleBlog, style: textStyle),
+            TextFormField(controller: _blog),
             const SizedBox(height: 20),
             if (loading)
-              const Center(
-                child: CircularProgressIndicator(),
-              )
+              const Center(child: CircularProgressIndicator())
             else
               ElevatedButton(
                 onPressed: () async {
@@ -203,24 +185,29 @@ class _AddScheduleState extends State<AddSchedule> {
                   });
                   var listSocial = <SocialNetwork>[];
                   if (_github.text.isNotEmpty) {
-                    listSocial
-                        .add(SocialNetwork(type: "GITHUB", link: _github.text));
+                    listSocial.add(
+                      SocialNetwork(type: "GITHUB", link: _github.text),
+                    );
                   }
                   if (_instagram.text.isNotEmpty) {
-                    listSocial.add(SocialNetwork(
-                        type: "INSTAGRAM", link: _instagram.text));
+                    listSocial.add(
+                      SocialNetwork(type: "INSTAGRAM", link: _instagram.text),
+                    );
                   }
                   if (_linkedin.text.isNotEmpty) {
                     listSocial.add(
-                        SocialNetwork(type: "LINKEDIN", link: _linkedin.text));
+                      SocialNetwork(type: "LINKEDIN", link: _linkedin.text),
+                    );
                   }
                   if (_twitter.text.isNotEmpty) {
                     listSocial.add(
-                        SocialNetwork(type: "TWITTER", link: _twitter.text));
+                      SocialNetwork(type: "TWITTER", link: _twitter.text),
+                    );
                   }
                   if (_blog.text.isNotEmpty) {
-                    listSocial
-                        .add(SocialNetwork(type: "BLOG", link: _blog.text));
+                    listSocial.add(
+                      SocialNetwork(type: "BLOG", link: _blog.text),
+                    );
                   }
                   await data.addNewSchedule(
                     Speaker(
@@ -244,8 +231,8 @@ class _AddScheduleState extends State<AddSchedule> {
                     Navigator.of(context).pop();
                   }
                 },
-                child: const Text("Guardar"),
-              )
+                child: const Text(AppStrings.commonWordSave),
+              ),
           ],
         ),
       ),
@@ -258,9 +245,7 @@ class _AddScheduleState extends State<AddSchedule> {
         Icon(Icons.circle, color: color),
         Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: SizedBox(
-            child: Text(text),
-          ),
+          child: SizedBox(child: Text(text)),
         ),
       ],
     );

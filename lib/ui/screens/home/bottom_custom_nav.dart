@@ -1,3 +1,5 @@
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -54,41 +56,41 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/img/icon_home.svg',
+              AppAssetsPath.iconHome,
               colorFilter: const ColorFilter.mode(
                 AppStyles.fontColor,
                 BlendMode.srcIn,
               ),
             ),
-            label: 'Inicio',
+            label: AppStrings.navBarHome,
             // backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/img/icon_library.svg',
+              AppAssetsPath.iconLibrary,
               colorFilter: const ColorFilter.mode(
                 AppStyles.fontColor,
                 BlendMode.srcIn,
               ),
             ),
-            label: 'Biblioteca',
+            label: AppStrings.navBarLibrary,
 
             // backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/img/icon_profile.svg',
+              AppAssetsPath.iconProfile,
               colorFilter: const ColorFilter.mode(
                 AppStyles.fontColor,
                 BlendMode.srcIn,
               ),
             ),
-            label: 'Perfil',
+            label: AppStrings.navBarProfile,
             // backgroundColor: Colors.purple,
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.settings),
-          //   label: 'Turs',
+          //   label: 'Tours',
           //   // backgroundColor: Colors.pink,
           // ),
         ],

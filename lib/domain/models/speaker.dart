@@ -58,93 +58,78 @@ class Speaker {
     int? position,
     String? openDate,
     List<SocialNetwork>? socialNetwork,
-  }) =>
-      Speaker(
-        limit: limit ?? this.limit,
-        current: current ?? this.current,
-        uuid: uuid ?? this.uuid,
-        title: title ?? this.title,
-        description: description ?? this.description,
-        name: name ?? this.name,
-        profession: profession ?? this.profession,
-        aboutMe: aboutMe ?? this.aboutMe,
-        photoUrl: photoUrl ?? this.photoUrl,
-        technologyType: technologyType ?? this.technologyType,
-        type: type ?? this.type,
-        color: color ?? this.color,
-        schedule: schedule ?? this.schedule,
-        position: position ?? this.position,
-        openDate: openDate ?? this.openDate,
-        socialNetwork: socialNetwork ?? this.socialNetwork,
-      );
+  }) => Speaker(
+    limit: limit ?? this.limit,
+    current: current ?? this.current,
+    uuid: uuid ?? this.uuid,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    name: name ?? this.name,
+    profession: profession ?? this.profession,
+    aboutMe: aboutMe ?? this.aboutMe,
+    photoUrl: photoUrl ?? this.photoUrl,
+    technologyType: technologyType ?? this.technologyType,
+    type: type ?? this.type,
+    color: color ?? this.color,
+    schedule: schedule ?? this.schedule,
+    position: position ?? this.position,
+    openDate: openDate ?? this.openDate,
+    socialNetwork: socialNetwork ?? this.socialNetwork,
+  );
 
   factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
-        limit: json["limit"] ?? 0,
-        current: json["current"] ?? 0,
-        uuid: json["uuid"] ?? "",
-        title: json["title"] ?? "",
-        description: json["description"] ?? "",
-        name: json["name"] ?? "",
-        profession: json["profession"] ?? "",
-        aboutMe: json["aboutMe"] ?? "",
-        photoUrl: json["photoUrl"] ?? "",
-        technologyType: json["technologyType"] ?? "",
-        type: json["type"] ?? "",
-        color: json["color"] ?? "",
-        schedule: json["schedule"] ?? "",
-        position: json["position"] ?? 0,
-        openDate: json["openDate"] ?? "",
-        socialNetwork: List<SocialNetwork>.from(
-            json["SocialNetwork"].map((x) => SocialNetwork.fromJson(x))),
-      );
+    limit: json["limit"] ?? 0,
+    current: json["current"] ?? 0,
+    uuid: json["uuid"] ?? "",
+    title: json["title"] ?? "",
+    description: json["description"] ?? "",
+    name: json["name"] ?? "",
+    profession: json["profession"] ?? "",
+    aboutMe: json["aboutMe"] ?? "",
+    photoUrl: json["photoUrl"] ?? "",
+    technologyType: json["technologyType"] ?? "",
+    type: json["type"] ?? "",
+    color: json["color"] ?? "",
+    schedule: json["schedule"] ?? "",
+    position: json["position"] ?? 0,
+    openDate: json["openDate"] ?? "",
+    socialNetwork: List<SocialNetwork>.from(
+      json["SocialNetwork"].map((x) => SocialNetwork.fromJson(x)),
+    ),
+  );
 
   Map<String, dynamic> toJson() => {
-        "limit": limit,
-        "current": current,
-        "title": title,
-        "description": description,
-        "name": name,
-        "profession": profession,
-        "aboutMe": aboutMe,
-        "photoUrl": photoUrl,
-        "technologyType": technologyType,
-        "type": type,
-        "color": color,
-        "schedule": schedule,
-        "position": position,
-        "openDate": openDate,
-        "SocialNetwork":
-            List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
-      };
+    "limit": limit,
+    "current": current,
+    "title": title,
+    "description": description,
+    "name": name,
+    "profession": profession,
+    "aboutMe": aboutMe,
+    "photoUrl": photoUrl,
+    "technologyType": technologyType,
+    "type": type,
+    "color": color,
+    "schedule": schedule,
+    "position": position,
+    "openDate": openDate,
+    "SocialNetwork": List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
+  };
 }
 
 class SocialNetwork {
   String type;
   String link;
 
-  SocialNetwork({
-    required this.type,
-    required this.link,
-  });
+  SocialNetwork({required this.type, required this.link});
 
-  SocialNetwork copyWith({
-    String? type,
-    String? link,
-  }) =>
-      SocialNetwork(
-        type: type ?? this.type,
-        link: link ?? this.link,
-      );
+  SocialNetwork copyWith({String? type, String? link}) =>
+      SocialNetwork(type: type ?? this.type, link: link ?? this.link);
 
-  factory SocialNetwork.fromJson(Map<String, dynamic> json) => SocialNetwork(
-        type: json["type"] ?? "",
-        link: json["link"] ?? "",
-      );
+  factory SocialNetwork.fromJson(Map<String, dynamic> json) =>
+      SocialNetwork(type: json["type"] ?? "", link: json["link"] ?? "");
 
-  Map<String, dynamic> toJson() => {
-        "type": type,
-        "link": link,
-      };
+  Map<String, dynamic> toJson() => {"type": type, "link": link};
 }
 
 enum EventTypeSpeaker {

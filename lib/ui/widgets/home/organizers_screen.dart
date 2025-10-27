@@ -1,3 +1,5 @@
+import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
@@ -28,125 +30,125 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
   Widget build(BuildContext context) {
     final data = Provider.of<DataCenter>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Equipo de Organización"),
-      ),
-      body: ListView(padding: const EdgeInsets.all(15), children: [
-        const CardComunity(),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            InkWell(
-              child: SvgPicture.asset(
-                "assets/img/facebook-1-svgrepo-com.svg",
-                width: 60,
-                height: 40,
+      appBar: AppBar(title: const Text(AppStrings.organizersTitle)),
+      body: ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          const CardCommunity(),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              InkWell(
+                child: SvgPicture.asset(
+                  AppAssetsPath.iconFacebook,
+                  width: 60,
+                  height: 40,
+                ),
+                onTap: () async {
+                  await laucherUrlInfo("https://www.facebook.com/gdgsucre");
+                },
               ),
-              onTap: () async {
-                await laucherUrlInfo("https://www.facebook.com/gdgsucre");
-              },
-            ),
-            InkWell(
-              child: SvgPicture.asset(
-                "assets/img/instagram-2016-logo-svgrepo-com.svg",
-                width: 60,
-                height: 40,
+              InkWell(
+                child: SvgPicture.asset(
+                  AppAssetsPath.iconInstagram,
+                  width: 60,
+                  height: 40,
+                ),
+                onTap: () async {
+                  await laucherUrlInfo("https://www.instagram.com/gdgsucre/");
+                },
               ),
-              onTap: () async {
-                await laucherUrlInfo("https://www.instagram.com/gdgsucre/");
-              },
-            ),
-            InkWell(
-              child: SvgPicture.asset(
-                "assets/img/linkedin-svgrepo-com.svg",
-                width: 60,
-                height: 40,
+              InkWell(
+                child: SvgPicture.asset(
+                  AppAssetsPath.iconLinkedIn,
+                  width: 60,
+                  height: 40,
+                ),
+                onTap: () async {
+                  await laucherUrlInfo(
+                    "https://www.linkedin.com/showcase/google-developer-groups/about/",
+                  );
+                },
               ),
-              onTap: () async {
-                await laucherUrlInfo(
-                    "https://www.linkedin.com/showcase/google-developer-groups/about/");
-              },
-            ),
-            InkWell(
-              child: SvgPicture.asset(
-                "assets/img/twitter-3-logo-svgrepo-com.svg",
-                width: 60,
-                height: 40,
+              InkWell(
+                child: SvgPicture.asset(
+                  AppAssetsPath.iconTwitter,
+                  width: 60,
+                  height: 40,
+                ),
+                onTap: () async {
+                  await laucherUrlInfo("https://twitter.com/gdg_sucre");
+                },
               ),
-              onTap: () async {
-                await laucherUrlInfo("https://twitter.com/gdg_sucre");
-              },
-            )
-          ],
-        ),
-        const SizedBox(height: 20),
-        Wrap(
-          children: [
-            for (var item in data.organizers)
-              Container(
-                margin: const EdgeInsets.all(10),
-                child: InkWell(
-                  onTap: () async {
-                    await laucherUrlInfo(item.link);
-                  },
-                  child: Column(
-                    children: [
-                      Stack(
-                        alignment: const Alignment(0, 1),
-                        children: [
-                          ClipOval(
-                            child: FadeInImage(
+            ],
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            children: [
+              for (var item in data.organizers)
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  child: InkWell(
+                    onTap: () async {
+                      await laucherUrlInfo(item.link);
+                    },
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: const Alignment(0, 1),
+                          children: [
+                            ClipOval(
+                              child: FadeInImage(
                                 width: MediaQuery.of(context).size.width * 0.25,
                                 placeholder: const AssetImage(
-                                    "assets/img/gitgoogle-loading.gif"),
-                                image: NetworkImage(item.photoUrl)),
-                          ),
-                          if (item.type >= 3)
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              alignment: Alignment.center,
-                              height: 20,
-                              width: MediaQuery.of(context).size.width * 0.15,
-                              decoration: BoxDecoration(
-                                border: Border.all(),
-                                color: AppStyles.colorBaseRed,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Text(
-                                "LEAD",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600),
+                                  AppAssetsPath.loadingSmallImage,
+                                ),
+                                image: NetworkImage(item.photoUrl),
                               ),
                             ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: Text(
-                          item.name,
-                          textAlign: TextAlign.center,
+                            if (item.type >= 3)
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                alignment: Alignment.center,
+                                height: 20,
+                                width: MediaQuery.of(context).size.width * 0.15,
+                                decoration: BoxDecoration(
+                                  border: Border.all(),
+                                  color: AppStyles.colorBaseRed,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  AppStrings.organizersTagLead,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                      )
-                    ],
+                        const SizedBox(height: 5),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: Text(item.name, textAlign: TextAlign.center),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
-        )
-      ]),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
 
-class CardComunity extends StatelessWidget {
-  const CardComunity({
-    super.key,
-  });
+class CardCommunity extends StatelessWidget {
+  const CardCommunity({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +159,9 @@ class CardComunity extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 25),
           child: Container(
             decoration: BoxDecoration(
-                border: Border.all(width: 3, color: AppStyles.colorBaseYellow),
-                borderRadius: BorderRadius.circular(15)),
+              border: Border.all(width: 3, color: AppStyles.colorBaseYellow),
+              borderRadius: BorderRadius.circular(15),
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Stack(
@@ -168,10 +171,12 @@ class CardComunity extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.22,
                     // height: 320,
-                    placeholder:
-                        const AssetImage("assets/img/gitgoogle-loading.gif"),
+                    placeholder: const AssetImage(
+                      AppAssetsPath.loadingSmallImage,
+                    ),
                     image: const NetworkImage(
-                        "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/grupal2.jpeg?alt=media&token=ed6cc452-c3ea-4247-a528-5159d9a2b094"),
+                      "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/grupal2.jpeg?alt=media&token=ed6cc452-c3ea-4247-a528-5159d9a2b094",
+                    ),
                   ),
                   Container(
                     alignment: const Alignment(-1, 1),
@@ -180,11 +185,12 @@ class CardComunity extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.22,
                     child: const Text(
-                      "GDG Sucre",
+                      AppStrings.organizersGDGSucre,
                       style: TextStyle(
-                          color: AppStyles.fontColor,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 22),
+                        color: AppStyles.fontColor,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                      ),
                     ),
                   ),
                 ],
@@ -193,18 +199,21 @@ class CardComunity extends StatelessWidget {
           ),
         ),
         ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AppStyles.colorBaseYellow,
-                shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: AppStyles.fontColor),
-                    borderRadius: BorderRadius.circular(10))),
-            onPressed: () async {
-              laucherUrlInfo("https://gdg.community.dev/gdg-sucre/");
-            },
-            child: const Text(
-              "Ver más",
-              style: TextStyle(color: AppStyles.fontColor),
-            )),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppStyles.colorBaseYellow,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: AppStyles.fontColor),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: () async {
+            laucherUrlInfo("https://gdg.community.dev/gdg-sucre/");
+          },
+          child: const Text(
+            AppStrings.commonWordSeeMore,
+            style: TextStyle(color: AppStyles.fontColor),
+          ),
+        ),
       ],
     );
   }
