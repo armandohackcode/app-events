@@ -138,11 +138,10 @@ enum EventTypeSpeaker {
   panel,
   unknown;
 
-  // TO DO: change panel value to 'panel'
   static const Map<EventTypeSpeaker, String> _fromValue = {
     EventTypeSpeaker.conference: 'conference',
     EventTypeSpeaker.workshop: 'workshop',
-    EventTypeSpeaker.panel: 'Actividad', //panel
+    EventTypeSpeaker.panel: 'panel',
     EventTypeSpeaker.unknown: 'unknown',
   };
 
