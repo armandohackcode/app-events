@@ -3,9 +3,10 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/config/theme/app_theme.dart';
+import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
-import 'package:app_events/ui/providers/data_center.dart';
+import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
@@ -33,7 +34,9 @@ class MyApp extends StatelessWidget {
     return <SingleChildWidget>[
       ChangeNotifierProvider(create: (_) => sl<SignInSocialNetworkProvider>()),
       ChangeNotifierProvider(create: (_) => sl<UserProvider>()),
-      ChangeNotifierProvider(create: (_) => DataCenter()),
+      ChangeNotifierProvider(
+        create: (_) => OtherProvider(sl<OtherRepository>()),
+      ),
       ChangeNotifierProvider(
         create: (_) => ScheduleProvider(sl<ScheduleRepository>()),
       ),

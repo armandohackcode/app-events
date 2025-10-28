@@ -1,12 +1,16 @@
+import 'package:app_events/data/datasources/firebase_other_datasource.dart';
 import 'package:app_events/data/datasources/firebase_resource_datasource.dart';
 import 'package:app_events/data/datasources/firebase_schedule_datasource.dart';
 import 'package:app_events/data/datasources/firebase_user_datasource.dart';
+import 'package:app_events/data/repositories/other_repository_impl.dart';
 import 'package:app_events/data/repositories/resource_repository_impl.dart';
 import 'package:app_events/data/repositories/schedule_repository_impl.dart';
 import 'package:app_events/data/repositories/user_repository_impl.dart';
+import 'package:app_events/domain/datasources/other_datasource.dart';
 import 'package:app_events/domain/datasources/resource_datasource.dart';
 import 'package:app_events/domain/datasources/schedule_datasource.dart';
 import 'package:app_events/domain/datasources/user_datasource.dart';
+import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
@@ -30,8 +34,10 @@ void setupServiceLocator() {
   sl.registerLazySingleton<ResourceDatasource>(
     () => FirebaseResourceDatasource(sl()),
   );
-  sl.registerLazySingleton<UserDatasource>(
-    () => FirebaseUserDatasource(sl()),
+  sl.registerLazySingleton<UserDatasource>(() => FirebaseUserDatasource(sl()));
+
+  sl.registerLazySingleton<OtherDatasource>(
+    () => FirebaseOtherDatasource(sl()),
   );
 
   sl.registerLazySingleton<ScheduleRepository>(
@@ -40,16 +46,16 @@ void setupServiceLocator() {
   sl.registerLazySingleton<ResourceRepository>(
     () => ResourceRepositoryImpl(sl()),
   );
-  sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(sl()),
-  );
 
-  sl.registerFactory(() => UserProvider(
-        sl<UserRepository>(),
-      ));
-  sl.registerFactory(() => SignInSocialNetworkProvider(
-        sl<GoogleSignIn>(),
-        sl<FirebaseAuth>(),
-        sl<UserProvider>(),
-      ));
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
+  sl.registerLazySingleton<OtherRepository>(() => OtherRepositoryImpl(sl()));
+
+  sl.registerFactory(() => UserProvider(sl<UserRepository>()));
+  sl.registerFactory(
+    () => SignInSocialNetworkProvider(
+      sl<GoogleSignIn>(),
+      sl<FirebaseAuth>(),
+      sl<UserProvider>(),
+    ),
+  );
 }

@@ -74,7 +74,7 @@ class CardSchedule extends StatelessWidget {
                           AppAssetsPath.loadingSmallImage,
                         ),
                         image: NetworkImage(info.photoUrl),
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),

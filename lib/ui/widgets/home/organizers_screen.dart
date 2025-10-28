@@ -1,7 +1,7 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
-import 'package:app_events/ui/providers/data_center.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,7 +18,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final data = Provider.of<DataCenter>(context, listen: false);
+      final data = Provider.of<OtherProvider>(context, listen: false);
       if (data.organizers.isEmpty) {
         data.getOrganizer();
       }
@@ -28,7 +28,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DataCenter>(context);
+    final data = Provider.of<OtherProvider>(context);
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.organizersTitle)),
       body: ListView(
