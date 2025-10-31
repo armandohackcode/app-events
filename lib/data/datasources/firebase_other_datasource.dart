@@ -51,4 +51,14 @@ class FirebaseOtherDatasource implements OtherDatasource {
       rethrow;
     }
   }
+
+  @override
+  Future<void> addSponsor(Sponsor sponsor) async {
+    try {
+      await _db.collection("sponsors").add(sponsor.toJson());
+    } catch (e) {
+      print("FirebaseOtherDatasource addSponsor error: $e");
+      rethrow;
+    }
+  }
 }

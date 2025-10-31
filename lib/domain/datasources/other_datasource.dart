@@ -11,4 +11,7 @@ abstract class OtherDatasource {
 
   /// Listens for changes in the ranking
   Stream<List<UserCompetitor>> getRanking();
+
+  /// Adds a sponsor to the list
+  Future<void> addSponsor(Sponsor sponsor);
 }

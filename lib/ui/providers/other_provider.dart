@@ -42,4 +42,9 @@ class OtherProvider with ChangeNotifier {
   Stream<List<UserCompetitor>> getRanking() {
     return _otherRepository.getRanking();
   }
+
+  Future<void> addSponsor(Sponsor sponsor) async {
+    await _otherRepository.addSponsor(sponsor);
+    await getSponsors();
+  }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:app_events/env.dart';
+import 'package:app_events/env_example.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:crypto/crypto.dart';
 
