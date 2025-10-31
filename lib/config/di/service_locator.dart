@@ -20,6 +20,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 final sl = GetIt.instance;
 
@@ -27,6 +28,7 @@ void setupServiceLocator() {
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   sl.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn.instance);
+  sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
   sl.registerLazySingleton<ScheduleDatasource>(
     () => FirebaseScheduleDatasource(sl()),
@@ -37,7 +39,7 @@ void setupServiceLocator() {
   sl.registerLazySingleton<UserDatasource>(() => FirebaseUserDatasource(sl()));
 
   sl.registerLazySingleton<OtherDatasource>(
-    () => FirebaseOtherDatasource(sl()),
+    () => FirebaseOtherDatasource(sl(), sl()),
   );
 
   sl.registerLazySingleton<ScheduleRepository>(

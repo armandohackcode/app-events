@@ -13,5 +13,5 @@ abstract class OtherRepository {
   Stream<List<UserCompetitor>> getRanking();
 
   /// Adds a sponsor to the list
-  Future<void> addSponsor(Sponsor sponsor);
+  Future<void> addSponsor(Sponsor sponsor, String? sponsorImagePath);
 }

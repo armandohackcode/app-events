@@ -13,5 +13,5 @@ abstract class OtherDatasource {
   Stream<List<UserCompetitor>> getRanking();
 
   /// Adds a sponsor to the list
-  Future<void> addSponsor(Sponsor sponsor);
+  Future<void> addSponsor(Map<String, dynamic> sponsorData, String? sponsorImagePath);
 }

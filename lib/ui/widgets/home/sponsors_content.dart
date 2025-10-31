@@ -3,7 +3,6 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -46,21 +45,21 @@ class _SponsorsContentState extends State<SponsorsContent> {
                 ),
                 const SizedBox(height: 20),
                 if (userProvider.isAdmin)
-          ElevatedButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) => Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: const AddSponsorForm(),
+                        ),
+                      );
+                    },
+                    child: const Text('Agregar Sponsor'),
                   ),
-                  child: const AddSponsorForm(),
-                ),
-              );
-            },
-            child: const Text('Agregar Sponsor'),
-          ),
                 Container(
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
