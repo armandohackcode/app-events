@@ -64,30 +64,40 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                         alignment: const Alignment(-1, 1),
                         children: [
                           Image.asset(
-                            "assets/img/color-red.png",
+                            AppAssetsPath.colorRed,
                             width: MediaQuery.of(context).size.width * 0.35,
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                                top: 20, bottom: 60, left: 20, right: 20),
+                              top: 20,
+                              bottom: 60,
+                              left: 20,
+                              right: 20,
+                            ),
                             // height: 200,
                             width: 300,
                             decoration: BoxDecoration(
                               color: AppStyles.backgroundColor,
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(
-                                  width: 1.5, color: AppStyles.borderColor),
+                                width: 1.5,
+                                color: AppStyles.borderColor,
+                              ),
                             ),
                             child: Column(
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 15.0, left: 10, right: 10),
+                                    top: 15.0,
+                                    left: 10,
+                                    right: 10,
+                                  ),
                                   child: Text(
                                     user!.name,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                                 Padding(
@@ -111,7 +121,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                                             await laucherUrlInfo(item.link);
                                           },
                                         ),
-                                      )
+                                      ),
                                   ],
                                 ),
                                 const SizedBox(height: 35),
@@ -120,10 +130,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                           ),
                         ],
                       ),
-                      Image.asset(
-                        "assets/img/dino-write.png",
-                        width: 120,
-                      )
+                      Image.asset(AppAssetsPath.dinoWriteIcon, width: 120),
                     ],
                   ),
                 ],

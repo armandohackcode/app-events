@@ -33,7 +33,7 @@ class MyHome extends StatelessWidget {
                   content: Row(
                     children: [
                       Image.asset(
-                        'assets/img/fire-ped.png',
+                        AppAssetsPath.firePedIcon,
                         width: 45,
                         height: 45,
                       ),
