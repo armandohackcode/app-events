@@ -48,7 +48,7 @@ class FirebaseOtherDatasource implements OtherDatasource {
     try {
       var res = await _db
           .collection("sponsors")
-          .orderBy("position", descending: false)
+          .orderBy("createdAt", descending: false)
           .get();
       var info = res.docs.map((e) => Sponsor.fromJson(e.data())).toList();
       return info;
@@ -66,13 +66,14 @@ class FirebaseOtherDatasource implements OtherDatasource {
       final storageRef = _storage
           .ref()
           .child('sponsors')
-          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+          .child('${DateTime.now().millisecondsSinceEpoch}');
 
       await storageRef.putFile(imageFile);
       photoUrl = await storageRef.getDownloadURL();
     }
 
     sponsorData['photoUrl'] = photoUrl;
+    sponsorData['createdAt'] = FieldValue.serverTimestamp();
 
     await _db.collection('sponsors').add(sponsorData);
     

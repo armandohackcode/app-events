@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'package:app_events/domain/models/sponsor.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 
 class AddSponsorForm extends StatefulWidget {
   const AddSponsorForm({super.key});
@@ -38,7 +38,7 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
       final newSponsor = Sponsor(
         name: _nameController.text,
         link: _linkController.text,
-        photoUrl: '', // This will be set after uploading the image
+        photoUrl: '',
       );
 
       try {
@@ -48,14 +48,16 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
         if (mounted) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sponsor agregado exitosamente!')),
+            const SnackBar(content: Text(AppStrings.sponsorSuccessMessage)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error al agregar sponsor: ${e.toString()}'),
+              content: Text(
+                '${AppStrings.sponsorErrorMessage} : ${e.toString()}',
+              ),
             ),
           );
         }
@@ -74,148 +76,131 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
   Widget build(BuildContext context) {
     final otherProvider = context.watch<OtherProvider>();
     final bool isSaving = otherProvider.isLoading;
+    final theme = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context);
+    final bottomPadding = mediaQuery.viewInsets.bottom > 0
+        ? mediaQuery.viewInsets.bottom + 20.0
+        : mediaQuery.padding.bottom + 20.0;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 16.0,
-        left: 16.0,
-        right: 16.0,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
-      ),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Título con estilo
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
-                child: Text(
-                  'Registrar Nuevo Sponsor',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre de la empresa',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Campo requerido';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 15),
-
-              TextFormField(
-                controller: _linkController,
-                decoration: const InputDecoration(
-                  labelText: 'Enlace web (URL)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Campo requerido';
-                  if (!(Uri.tryParse(value!)?.isAbsolute ?? false)) {
-                    return 'URL inválida';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // 💡 REEMPLAZO DEL CAMPO URL POR EL SELECTOR DE IMAGEN
-              Row(
-                children: [
-                  // 1. Botón para seleccionar imagen
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: isSaving ? null : _pickImage,
-                      icon: const Icon(Icons.image),
-                      label: const Text('Seleccionar Logo'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-
-                  // 2. Vista previa de la imagen seleccionada (UX)
-                  if (_sponsorImagePath != null)
-                    Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: FileImage(
-                                File(_sponsorImagePath!),
-                              ), // Mostrar imagen local
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => setState(
-                            () => _sponsorImagePath = null,
-                          ), // Opción para quitar la imagen
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    // Placeholder si no hay imagen
-                    const Text('No se ha seleccionado logo'),
-                ],
-              ),
-              const SizedBox(height: 25),
-
-              // 💡 MEJORA UX: Botones deshabilitados y con indicador de carga
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: isSaving ? null : () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton.icon(
-                    onPressed: isSaving
-                        ? null
-                        : _submit, // Deshabilitar si está guardando
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(
-                        context,
-                      ).primaryColor, // Usar color primario
-                      foregroundColor: Colors.white,
-                    ),
-                    icon: isSaving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.save),
-                    label: Text(isSaving ? 'Guardando...' : 'Guardar Sponsor'),
-                  ),
-                ],
-              ),
-            ],
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppStyles.backgroundColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
         ),
+      ),
+      padding: EdgeInsets.only(
+        top: 20.0,
+        left: 20.0,
+        right: 20.0,
+        bottom: bottomPadding,
+      ),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                // ...
+                children: [
+                  Text(
+                    AppStrings.sponsorModalTitle,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppStyles.fontColor,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: AppStrings.sponsorsNameLabel,
+                    ),
+                    validator: (value) => (value?.isEmpty ?? true)
+                        ? AppStrings.profileAboutMeValidate
+                        : null,
+                  ),
+                  SizedBox(height: 15),
+
+                  TextFormField(
+                    controller: _linkController,
+                    decoration: const InputDecoration(
+                      labelText: AppStrings.sponsorsLinkLabel,
+                    ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? true)
+                        return AppStrings.profileAboutMeValidate;
+                      if (!(Uri.tryParse(value!)?.isAbsolute ?? false)) {
+                        return AppStrings.urlNotValidMessage;
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 15),
+
+                  ElevatedButton.icon(
+                    onPressed: isSaving ? null : _pickImage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppStyles.colorNavbar,
+                      foregroundColor: AppStyles.fontColor,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 15,
+                        horizontal: 20,
+                      ),
+                    ),
+                    icon: const Icon(Icons.image),
+                    label: Text(
+                      _sponsorImagePath != null
+                          ? AppStrings.sponsorsChangeImageLabel
+                          : AppStrings.sponsorsAddImageLabel,
+                      style: theme.textTheme.labelLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: isSaving
+                            ? null
+                            : () => Navigator.pop(context),
+                        child: Text(AppStrings.commonWordCancel),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        onPressed: isSaving ? null : _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppStyles.colorBaseBlue,
+                          foregroundColor: AppStyles.fontColor,
+                        ),
+                        icon: const Icon(Icons.save),
+                        label: Text(AppStrings.commonWordSave),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isSaving)
+            Positioned.fill(
+              child: Container(
+                color: AppStyles.backgroundColor.withOpacity(0.8),
+                child: Center(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6,
+                      color: AppStyles.colorBaseRed,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

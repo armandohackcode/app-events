@@ -36,30 +36,41 @@ class _SponsorsContentState extends State<SponsorsContent> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Sponsors",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
+                Row(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Sponsors",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (userProvider.isAdmin)
+                      IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (_) => Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(
+                                  context,
+                                ).viewInsets.bottom,
+                              ),
+                              child: const AddSponsorForm(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add_business, size: 32, color: AppStyles.borderColor),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 20),
-                if (userProvider.isAdmin)
-                  ElevatedButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
-                          child: const AddSponsorForm(),
-                        ),
-                      );
-                    },
-                    child: const Text('Agregar Sponsor'),
-                  ),
+
                 Container(
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(

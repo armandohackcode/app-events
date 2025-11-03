@@ -51,9 +51,11 @@ class OtherProvider with ChangeNotifier {
 
     try {
       await _otherRepository.addSponsor(sponsor, sponsorImagePath);
+      sponsors = await _otherRepository.getSponsors();
     } catch (e) {
       rethrow;
     } finally {
+      
       isLoading = false;
       notifyListeners();
     }
