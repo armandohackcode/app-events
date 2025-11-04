@@ -31,4 +31,12 @@ class AppAssetsPath {
       "assets/img/instagram-2016-logo-svgrepo-com.svg";
   static const String iconLinkedIn = "assets/img/linkedin-svgrepo-com.svg";
   static const String iconTwitter = "assets/img/twitter-3-logo-svgrepo-com.svg";
+  static const String iconGithub = 'assets/img/github-142-svgrepo-com.svg';
+  static const String iconWebRound = 'assets/img/web-round-svgrepo-com-2.svg';
+
+  // clean
+  static const String androidPed = 'assets/img/android-ped.png';
+  static const String colorRed = "assets/img/color-red.png";
+  static const String dashPed = 'assets/img/dash-ped.png';
+  static const String partyAnimation = "assets/img/git-party.gif";
 }

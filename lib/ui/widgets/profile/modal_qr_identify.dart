@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -12,7 +13,7 @@ class ModalQrIdentify extends StatelessWidget {
       backgroundColor: AppStyles.backgroundColor,
       children: [
         // const SizedBox(height: 15),
-        Image.asset("assets/img/title-devfest.png"),
+        Image.asset(AppAssetsPath.titleEvent),
         const SizedBox(height: 15),
         Container(
           margin: const EdgeInsets.all(15),
@@ -23,18 +24,16 @@ class ModalQrIdentify extends StatelessWidget {
             height: 260,
             child: QrImageView(
               // foregroundColor: AppStyles.backgroundColor,
-              data: identify, size: 250,
+              data: identify,
+              size: 250,
               // You can include embeddedImageStyle Property if you
               //wanna embed an image from your Asset folder
               embeddedImageStyle: const QrEmbeddedImageStyle(
-                size: Size(
-                  100,
-                  100,
-                ),
+                size: Size(100, 100),
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

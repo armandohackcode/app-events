@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
@@ -193,7 +194,7 @@ class _QRScanContentState extends State<QRScanContent> {
                   Row(
                     children: [
                       Image.asset(
-                        "assets/img/fire-ped.png",
+                        AppAssetsPath.firePedIcon,
                         height: 80,
                         width: MediaQuery.of(context).size.width * 0.2,
                       ),

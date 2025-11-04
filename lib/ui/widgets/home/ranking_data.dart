@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
@@ -54,7 +55,7 @@ class _RankingDataState extends State<RankingData> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Image.asset(
-                                  'assets/img/android-ped.png',
+                                  AppAssetsPath.androidPed,
                                   height: 55,
                                 ),
                                 Container(
@@ -87,7 +88,7 @@ class _RankingDataState extends State<RankingData> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Image.asset(
-                                  'assets/img/fire-ped.png',
+                                  AppAssetsPath.firePedIcon,
                                   height: 50,
                                 ),
                                 Container(
@@ -119,10 +120,7 @@ class _RankingDataState extends State<RankingData> {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Image.asset(
-                                  'assets/img/dash-ped.png',
-                                  height: 50,
-                                ),
+                                Image.asset(AppAssetsPath.dashPed, height: 50),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 50,
@@ -152,7 +150,7 @@ class _RankingDataState extends State<RankingData> {
                         ),
                       ],
                     ),
-                    Image.asset("assets/img/git-party.gif", height: 110),
+                    Image.asset(AppAssetsPath.partyAnimation, height: 110),
                   ],
                 ),
                 Expanded(
@@ -192,7 +190,7 @@ class _RankingDataState extends State<RankingData> {
             )
           : Center(
               child: Image.asset(
-                "assets/img/devfest-animation.gif",
+                AppAssetsPath.loadingAnimation,
                 width: MediaQuery.of(context).size.width * 0.7,
               ),
             ),
