@@ -27,6 +27,8 @@ class CardSchedule extends StatelessWidget {
         return AppStyles.colorBaseRed;
       case "Web":
         return AppStyles.colorBaseBlue;
+      case "UI/UX":
+        return AppStyles.colorBasePurple;
       default:
         return AppStyles.colorBaseRed;
     }

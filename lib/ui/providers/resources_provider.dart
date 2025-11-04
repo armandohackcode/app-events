@@ -10,6 +10,7 @@ class ResourcesProvider with ChangeNotifier {
   bool _activeMobile = false;
   bool _activeCloud = false;
   bool _activeIA = false;
+  bool _activeUIUX = false;
 
   bool _loadingResource = false;
   List<ResourceLibrary> _resources = [];
@@ -30,6 +31,7 @@ class ResourcesProvider with ChangeNotifier {
   bool get activeMobile => _activeMobile;
   bool get activeCloud => _activeCloud;
   bool get activeIA => _activeIA;
+  bool get activeUIUX => _activeUIUX;
 
   set activeWeb(bool state) {
     _activeWeb = state;
@@ -48,6 +50,11 @@ class ResourcesProvider with ChangeNotifier {
 
   set activeIA(bool state) {
     _activeIA = state;
+    notifyListeners();
+  }
+
+  set activeUIUX(bool state) {
+    _activeUIUX = state;
     notifyListeners();
   }
 
@@ -73,6 +80,8 @@ class ResourcesProvider with ChangeNotifier {
         param = 'Cloud';
       } else if (activeIA) {
         param = 'IA';
+      } else if (activeUIUX) {
+        param = 'UI/UX';
       }
       var data = await resourceRepository.searchResource(param: param);
       resources = data;
@@ -95,5 +104,6 @@ class ResourcesProvider with ChangeNotifier {
     activeMobile = false;
     activeCloud = false;
     activeIA = false;
+    activeUIUX = false;
   }
 }

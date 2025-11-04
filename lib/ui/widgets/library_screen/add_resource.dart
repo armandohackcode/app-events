@@ -73,6 +73,10 @@ class _AddResourceState extends State<AddResource> {
                 value: "IA",
                 child: _selectType("IA", AppStyles.colorBaseYellow),
               ),
+              DropdownMenuItem(
+                value: "UI/UX",
+                child: _selectType("UI/UX", AppStyles.colorBasePurple),
+              ),
             ],
             onChanged: (value) {
               setState(() {
