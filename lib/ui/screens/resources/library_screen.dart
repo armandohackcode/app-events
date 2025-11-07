@@ -126,6 +126,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
         return AppStyles.colorBaseRed;
       case "IA":
         return AppStyles.colorBaseYellow;
+      case "UI/UX":
+        return AppStyles.colorBasePurple;
       default:
         return AppStyles.colorBaseBlue;
     }
@@ -221,6 +223,23 @@ class FiltersLibrary extends StatelessWidget {
                 text: 'IA',
                 onPressed: () async {
                   resourcesProvider.activeIA = !resourcesProvider.activeIA;
+                  await resourcesProvider.searchResource(
+                    param: _paramSearch.text,
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ButtonLibrary(
+                active: resourcesProvider.activeUIUX,
+                color: AppStyles.colorBasePurple,
+                text: 'UI/UX',
+                onPressed: () async {
+                  resourcesProvider.activeUIUX = !resourcesProvider.activeUIUX;
                   await resourcesProvider.searchResource(
                     param: _paramSearch.text,
                   );
