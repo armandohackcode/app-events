@@ -35,106 +35,85 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
         padding: const EdgeInsets.all(15),
         children: [
           const CardCommunity(),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              InkWell(
-                child: SvgPicture.asset(
-                  AppAssetsPath.iconFacebook,
-                  width: 60,
-                  height: 40,
-                ),
-                onTap: () async {
-                  await laucherUrlInfo("https://www.facebook.com/gdgsucre");
-                },
-              ),
-              InkWell(
-                child: SvgPicture.asset(
-                  AppAssetsPath.iconInstagram,
-                  width: 60,
-                  height: 40,
-                ),
-                onTap: () async {
-                  await laucherUrlInfo("https://www.instagram.com/gdgsucre/");
-                },
-              ),
-              InkWell(
-                child: SvgPicture.asset(
-                  AppAssetsPath.iconLinkedIn,
-                  width: 60,
-                  height: 40,
-                ),
-                onTap: () async {
-                  await laucherUrlInfo(
-                    "https://www.linkedin.com/showcase/google-developer-groups/about/",
-                  );
-                },
-              ),
-              InkWell(
-                child: SvgPicture.asset(
-                  AppAssetsPath.iconTwitter,
-                  width: 60,
-                  height: 40,
-                ),
-                onTap: () async {
-                  await laucherUrlInfo("https://twitter.com/gdg_sucre");
-                },
-              ),
-            ],
-          ),
           const SizedBox(height: 20),
           Wrap(
+            spacing: 8,
+            runSpacing: 15,
+            alignment: WrapAlignment.center,
             children: [
               for (var item in data.organizers)
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: InkWell(
+                SizedBox(
+                  width: (MediaQuery.of(context).size.width - 60) / 3,
+                  child: GestureDetector(
                     onTap: () async {
                       await laucherUrlInfo(item.link);
                     },
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Stack(
-                          alignment: const Alignment(0, 1),
-                          children: [
-                            ClipOval(
-                              child: FadeInImage(
-                                width: MediaQuery.of(context).size.width * 0.25,
-                                placeholder: const AssetImage(
-                                  AppAssetsPath.loadingSmallImage,
-                                ),
-                                image: NetworkImage(item.photoUrl),
-                              ),
-                            ),
-                            if (item.type >= 3)
-                              Container(
-                                padding: const EdgeInsets.all(2),
-                                alignment: Alignment.center,
-                                height: 20,
-                                width: MediaQuery.of(context).size.width * 0.15,
-                                decoration: BoxDecoration(
-                                  border: Border.all(),
-                                  color: AppStyles.colorBaseRed,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Text(
-                                  AppStrings.organizersTagLead,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                        ClipOval(
+                          child: SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                FadeInImage(
+                                  fit: BoxFit.cover,
+                                  placeholder: const AssetImage(
+                                    AppAssetsPath.loadingSmallImage,
                                   ),
+                                  image: NetworkImage(item.photoUrl),
                                 ),
-                              ),
-                          ],
+                                if (item.lead)
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppStyles.colorBaseRed
+                                            .withValues(alpha: 0.9),
+                                      ),
+                                      child: const Text(
+                                        AppStrings.organizersTagLead,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 5),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          child: Text(item.name, textAlign: TextAlign.center),
+                        const SizedBox(height: 8),
+                        Text(
+                          item.name,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
+                        const SizedBox(height: 6),
+                        if (item.team.isNotEmpty)
+                          Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              for (var teamName in item.team)
+                                TeamTag(teamName: teamName),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -142,6 +121,63 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TeamTag extends StatelessWidget {
+  final String teamName;
+
+  const TeamTag({super.key, required this.teamName});
+
+  Color _getTeamColor(String team) {
+    final teamLower = team.toLowerCase();
+    if (teamLower.contains('speaker')) {
+      return AppStyles.colorBaseRed;
+    } else if (teamLower.contains('logística') ||
+        teamLower.contains('logistica')) {
+      return const Color(0xFF2196F3);
+    } else if (teamLower.contains('acreditación') ||
+        teamLower.contains('acreditacion')) {
+      return AppStyles.colorBaseGreen;
+    } else if (teamLower.contains('escenografía') ||
+        teamLower.contains('escenografia')) {
+      return const Color(0xFF9C27B0);
+    } else if (teamLower.contains('diseño') || teamLower.contains('diseno')) {
+      return const Color(0xFFE91E63);
+    } else if (teamLower.contains('web')) {
+      return AppStyles.colorBaseBlue;
+    } else if (teamLower.contains('mobile')) {
+      return const Color(0xFF00BCD4);
+    } else if (teamLower.contains('marketing')) {
+      return const Color(0xFFFF9800);
+    } else if (teamLower.contains('audio') || teamLower.contains('video')) {
+      return const Color(0xFFFF5722);
+    } else if (teamLower.contains('sponsor')) {
+      return AppStyles.colorBaseYellow;
+    } else {
+      return const Color(0xFF607D8B);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _getTeamColor(teamName);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        border: Border.all(color: color, width: 1.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        teamName,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -170,27 +206,65 @@ class CardCommunity extends StatelessWidget {
                     fit: BoxFit.cover,
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.22,
-                    // height: 320,
                     placeholder: const AssetImage(
                       AppAssetsPath.loadingSmallImage,
                     ),
                     image: const NetworkImage(
-                      "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/grupal2.jpeg?alt=media&token=ed6cc452-c3ea-4247-a528-5159d9a2b094",
+                      "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/banner%2Fbanner.jpg?alt=media&token=23be97a8-c096-4f12-bfe7-6d7adb1604c7",
                     ),
                   ),
                   Container(
-                    alignment: const Alignment(-1, 1),
                     padding: const EdgeInsets.all(10),
-                    color: Colors.black,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.7),
+                        ],
+                      ),
+                    ),
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.22,
-                    child: const Text(
-                      AppStrings.organizersGDGSucre,
-                      style: TextStyle(
-                        color: AppStyles.fontColor,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          AppStrings.organizersGDGSucre,
+                          style: TextStyle(
+                            color: AppStyles.fontColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 22,
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SocialMediaButton(
+                              iconPath: AppAssetsPath.iconFacebook,
+                              url: "https://www.facebook.com/gdg.sucre",
+                            ),
+                            const SizedBox(width: 8),
+                            SocialMediaButton(
+                              iconPath: AppAssetsPath.iconInstagram,
+                              url: "https://www.instagram.com/gdg.sucre",
+                            ),
+                            const SizedBox(width: 8),
+                            SocialMediaButton(
+                              iconPath: AppAssetsPath.iconLinkedIn,
+                              url:
+                                  "https://www.linkedin.com/showcase/google-developer-groups/about/",
+                            ),
+                            const SizedBox(width: 8),
+                            SocialMediaButton(
+                              iconPath: AppAssetsPath.iconTwitter,
+                              url: "https://twitter.com/gdg_sucre",
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -207,7 +281,7 @@ class CardCommunity extends StatelessWidget {
             ),
           ),
           onPressed: () async {
-            laucherUrlInfo("https://gdg.community.dev/gdg-sucre/");
+            await laucherUrlInfo("https://gdg.community.dev/gdg-sucre/");
           },
           child: const Text(
             AppStrings.commonWordSeeMore,
@@ -215,6 +289,29 @@ class CardCommunity extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SocialMediaButton extends StatelessWidget {
+  final String iconPath;
+  final String url;
+  final double size;
+
+  const SocialMediaButton({
+    super.key,
+    required this.iconPath,
+    required this.url,
+    this.size = 25,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: SvgPicture.asset(iconPath, width: size, height: size),
+      onTap: () async {
+        await laucherUrlInfo(url);
+      },
     );
   }
 }
