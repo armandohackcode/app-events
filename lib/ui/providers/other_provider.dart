@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 
 class OtherProvider with ChangeNotifier {
   final OtherRepository _otherRepository;
+  bool isLoading = false;
+  bool get loading => isLoading;
 
   OtherProvider(this._otherRepository);
 
@@ -41,5 +43,21 @@ class OtherProvider with ChangeNotifier {
 
   Stream<List<UserCompetitor>> getRanking() {
     return _otherRepository.getRanking();
+  }
+
+  Future<void> addSponsor(Sponsor sponsor, String? sponsorImagePath) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      await _otherRepository.addSponsor(sponsor, sponsorImagePath);
+      sponsors = await _otherRepository.getSponsors();
+    } catch (e) {
+      rethrow;
+    } finally {
+      
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

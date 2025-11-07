@@ -23,4 +23,10 @@ class OtherRepositoryImpl implements OtherRepository {
   Future<List<Sponsor>> getSponsors() {
     return _db.getSponsors();
   }
+
+  @override
+  Future<void> addSponsor(Sponsor sponsor, String? sponsorImagePath) {
+    final sponsorMap = sponsor.toJson();
+    return _db.addSponsor(sponsorMap, sponsorImagePath);
+  }
 }

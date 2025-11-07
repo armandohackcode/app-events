@@ -145,4 +145,17 @@ class AppStrings {
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
   static const String organizersGDGSucre = "GDG Sucre";
+
+  // Add Sponsors
+  static const String sponsorModalTitle = "Registrar Sponsor";
+  static const String sponsorsNameLabel = "Nombre del Sponsor";
+  static const String sponsorsLinkLabel = "Link del Sponsor";
+  static const String urlNotValidMessage = "URL no válida";
+  static const String sponsorsAddImageLabel = "Seleccionar logo";
+  static const String sponsorsChangeImageLabel = "Cambiar logo";
+  
+  static const String sponsorSuccessMessage = "Sponsor registrado correctamente";
+  static const String sponsorErrorMessage =
+      "Ocurrió un error al registrar el sponsor";
+
 }

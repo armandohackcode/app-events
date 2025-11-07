@@ -5,6 +5,8 @@ import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/widgets/utils/modal_sponsor_form.dart';
 
 class SponsorsContent extends StatefulWidget {
   const SponsorsContent({super.key});
@@ -28,19 +30,47 @@ class _SponsorsContentState extends State<SponsorsContent> {
   @override
   Widget build(BuildContext context) {
     final dataCenter = Provider.of<OtherProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     return dataCenter.sponsors.isNotEmpty
         ? FadeIn(
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Sponsors",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
+                Row(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Sponsors",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (userProvider.isAdmin)
+                      IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (_) => Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(
+                                  context,
+                                ).viewInsets.bottom,
+                              ),
+                              child: const AddSponsorForm(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add_business, size: 32, color: AppStyles.borderColor),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 20),
+
                 Container(
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
