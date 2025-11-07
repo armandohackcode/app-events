@@ -98,111 +98,112 @@ class HeaderProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = Provider.of<UserProvider>(context);
     return CardContent(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 15,
-              left: 10,
-              right: 10,
-              bottom: 10,
-            ),
-            child: ClipOval(
-              child: (auth.userInfo.photoURL != null)
-                  ? Image.network(
-                      auth.userInfo.photoURL!,
-                      fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width * 0.23,
-                      height: MediaQuery.of(context).size.width * 0.23,
-                    )
-                  : Image.asset(
-                      AppAssetsPath.firePedIcon,
-                      // fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width * 0.23,
-                      height: MediaQuery.of(context).size.width * 0.23,
-                    ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: Text(
-                    data.userCompetitor?.name ??
-                        auth.userInfo.displayName ??
-                        AppStrings.commonWordAnonymous,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppStyles.fontColor,
-                    ),
-                  ),
+      child: LayoutBuilder(
+        builder: (context, constraints){
+          final imageSize = constraints.maxWidth * 0.20;
+          return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(constraints.maxWidth * 0.02),
+                child: ClipOval(
+                  child: (auth.userInfo.photoURL != null)
+                      ? Image.network(
+                          auth.userInfo.photoURL!,
+                          fit: BoxFit.cover,
+                          width: imageSize,
+                          height: imageSize,
+                        )
+                      : Image.asset(
+                          AppAssetsPath.firePedIcon,
+                          width: imageSize,
+                          height: imageSize,
+                        ),
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: Text(
-                    data.userCompetitor?.profession ?? '-',
-                    style: const TextStyle(
-                      color: AppStyles.fontColor,
-                      fontWeight: FontWeight.normal,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: Text(
+                        data.userCompetitor?.name ??
+                            auth.userInfo.displayName ??
+                            AppStrings.commonWordAnonymous,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppStyles.fontColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: Text(
+                        data.userCompetitor?.profession ?? '-',
+                        style: const TextStyle(
+                          color: AppStyles.fontColor,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text(
-                            (data.userCompetitor?.score ?? 0).toString(),
-                            style: const TextStyle(fontSize: 28),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                (data.userCompetitor?.score ?? 0).toString(),
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const Text(
+                                AppStrings.commonWordPoints,
+                                style: TextStyle(height: 0.6),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            AppStrings.commonWordPoints,
-                            style: TextStyle(height: 0.6),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                (data.userCompetitor?.friends.length ?? 0)
+                                    .toString(),
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const Text(
+                                AppStrings.commonWordConnections,
+                                style: TextStyle(height: 0.6),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            (data.userCompetitor?.friends.length ?? 0)
-                                .toString(),
-                            style: const TextStyle(fontSize: 28),
-                          ),
-                          const Text(
-                            AppStrings.commonWordConnections,
-                            style: TextStyle(height: 0.6),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        );},
       ),
-    );
-  }
+    );  }
 }
+
+          
 
 class BodyProfile extends StatelessWidget {
   const BodyProfile({super.key});
