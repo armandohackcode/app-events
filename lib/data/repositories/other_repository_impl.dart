@@ -1,6 +1,7 @@
 import 'package:app_events/domain/datasources/other_datasource.dart';
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/domain/models/sponsor.dart';
+import 'package:app_events/domain/models/treasure_hunt_model.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 
@@ -28,5 +29,10 @@ class OtherRepositoryImpl implements OtherRepository {
   Future<void> addSponsor(Sponsor sponsor, String? sponsorImagePath) {
     final sponsorMap = sponsor.toJson();
     return _db.addSponsor(sponsorMap, sponsorImagePath);
+  }
+
+  @override
+  Future<List<TreasureHuntModel>> getTreasureHuntItems() {
+    return _db.getTreasureHuntItems();
   }
 }

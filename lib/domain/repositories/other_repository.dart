@@ -1,5 +1,6 @@
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/domain/models/sponsor.dart';
+import 'package:app_events/domain/models/treasure_hunt_model.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 
 abstract class OtherRepository {
@@ -14,4 +15,7 @@ abstract class OtherRepository {
 
   /// Adds a sponsor to the list
   Future<void> addSponsor(Sponsor sponsor, String? sponsorImagePath);
+
+  /// List treasure hunt items
+  Future<List<TreasureHuntModel>> getTreasureHuntItems();
 }

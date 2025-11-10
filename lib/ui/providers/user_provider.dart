@@ -95,21 +95,23 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addCompetitor(
-      {required String name,
-      required String token,
-      required String photoUrl}) async {
+  Future<void> addCompetitor({
+    required String name,
+    required String token,
+    required String photoUrl,
+  }) async {
     try {
       var user = UserCompetitor(
-          uuid: '',
-          name: name,
-          photoUrl: photoUrl,
-          profession: "",
-          aboutMe: "",
-          tokenAuthorization: token,
-          score: 0,
-          socialNetwork: [],
-          friends: []);
+        uuid: '',
+        name: name,
+        photoUrl: photoUrl,
+        profession: "",
+        aboutMe: "",
+        tokenAuthorization: token,
+        score: 0,
+        socialNetwork: [],
+        friends: [],
+      );
       await _repository.addCompetitor(user);
     } catch (e) {
       rethrow;
@@ -170,5 +172,27 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<bool> addItemTreasure(String itemId) async {
+    try {
+      if (userCompetitor == null) return false;
+      var updatedTreasures = List<String>.from(userCompetitor!.treasures);
+      if (!updatedTreasures.contains(itemId)) {
+        updatedTreasures.add(itemId);
+        var updatedUser = userCompetitor!.copyWith(treasures: updatedTreasures);
+        var result = await _repository.addItemTreasure(updatedUser);
+        if (result != null) {
+          userCompetitor = result;
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    return false;
   }
 }

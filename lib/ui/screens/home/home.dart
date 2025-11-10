@@ -9,6 +9,7 @@ import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
 import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
+import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
 import 'package:app_events/ui/widgets/utils/qr_scan_content.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,6 +56,16 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ButtonActivity(
+              icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
+              text: AppStrings.homeTreasureBunt,
+              onPressed: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
               text: AppStrings.homeMeetCommunity,
               onPressed: () {
@@ -63,6 +74,7 @@ class Home extends StatelessWidget {
                 );
               },
             ),
+
             const SizedBox(height: 20),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.discordIcon),

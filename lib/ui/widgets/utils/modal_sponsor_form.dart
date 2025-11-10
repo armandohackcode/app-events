@@ -32,7 +32,7 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
   }
 
   Future<void> _submit() async {
-    if (context.read<OtherProvider>().isLoading) return;
+    if (context.read<OtherProvider>().loadingSponsor) return;
 
     if (_formKey.currentState!.validate()) {
       final newSponsor = Sponsor(
@@ -75,7 +75,7 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
   @override
   Widget build(BuildContext context) {
     final otherProvider = context.watch<OtherProvider>();
-    final bool isSaving = otherProvider.isLoading;
+    final bool isSaving = otherProvider.loadingSponsor;
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final bottomPadding = mediaQuery.viewInsets.bottom > 0
@@ -129,8 +129,9 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
                       labelText: AppStrings.sponsorsLinkLabel,
                     ),
                     validator: (value) {
-                      if (value?.isEmpty ?? true)
+                      if (value?.isEmpty ?? true) {
                         return AppStrings.profileAboutMeValidate;
+                      }
                       if (!(Uri.tryParse(value!)?.isAbsolute ?? false)) {
                         return AppStrings.urlNotValidMessage;
                       }
@@ -187,7 +188,7 @@ class _AddSponsorFormState extends State<AddSponsorForm> {
           if (isSaving)
             Positioned.fill(
               child: Container(
-                color: AppStyles.backgroundColor.withOpacity(0.8),
+                color: AppStyles.backgroundColor.withAlpha((255 * 0.8).toInt()),
                 child: Center(
                   child: SizedBox(
                     width: 80,

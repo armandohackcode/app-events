@@ -65,7 +65,11 @@ class _SponsorsContentState extends State<SponsorsContent> {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.add_business, size: 32, color: AppStyles.borderColor),
+                        icon: const Icon(
+                          Icons.add_business,
+                          size: 32,
+                          color: AppStyles.borderColor,
+                        ),
                       ),
                   ],
                 ),
@@ -74,9 +78,8 @@ class _SponsorsContentState extends State<SponsorsContent> {
                 Container(
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppStyles.fontColor, width: 2),
                     borderRadius: BorderRadius.circular(15),
-                    color: const Color.fromARGB(255, 167, 167, 167),
+                    color: AppStyles.fontColor,
                   ),
                   child: Wrap(
                     children: [

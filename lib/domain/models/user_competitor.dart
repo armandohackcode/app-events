@@ -18,6 +18,7 @@ class UserCompetitor {
   bool scoreProfile;
   List<SocialNetwork> socialNetwork;
   List<Friend> friends;
+  List<String> treasures;
 
   UserCompetitor({
     required this.uuid,
@@ -30,6 +31,7 @@ class UserCompetitor {
     this.scoreProfile = false,
     required this.socialNetwork,
     required this.friends,
+    this.treasures = const [],
   });
 
   UserCompetitor copyWith({
@@ -43,51 +45,56 @@ class UserCompetitor {
     bool? scoreProfile,
     List<SocialNetwork>? socialNetwork,
     List<Friend>? friends,
-  }) =>
-      UserCompetitor(
-        uuid: uuid ?? this.uuid,
-        name: name ?? this.name,
-        photoUrl: photoUrl ?? this.photoUrl,
-        profession: profession ?? this.profession,
-        aboutMe: aboutMe ?? this.aboutMe,
-        tokenAuthorization: tokenAuthorization ?? this.tokenAuthorization,
-        score: score ?? this.score,
-        scoreProfile: scoreProfile ?? this.scoreProfile,
-        socialNetwork: socialNetwork ?? this.socialNetwork,
-        friends: friends ?? this.friends,
-      );
+    List<String>? treasures,
+  }) => UserCompetitor(
+    uuid: uuid ?? this.uuid,
+    name: name ?? this.name,
+    photoUrl: photoUrl ?? this.photoUrl,
+    profession: profession ?? this.profession,
+    aboutMe: aboutMe ?? this.aboutMe,
+    tokenAuthorization: tokenAuthorization ?? this.tokenAuthorization,
+    score: score ?? this.score,
+    scoreProfile: scoreProfile ?? this.scoreProfile,
+    socialNetwork: socialNetwork ?? this.socialNetwork,
+    friends: friends ?? this.friends,
+    treasures: treasures ?? this.treasures,
+  );
 
   factory UserCompetitor.fromJson(Map<String, dynamic> json) => UserCompetitor(
-        uuid: json["uuid"],
-        name: json["name"],
-        photoUrl: json["photoUrl"] ?? "",
-        profession: json["profession"] ?? "",
-        aboutMe: json["aboutMe"] ?? "",
-        tokenAuthorization: json["tokenAuthorization"] ?? "",
-        score: json["score"] ?? 0,
-        scoreProfile: json["scoreProfile"] ?? false,
-        socialNetwork: (json["socialNetwork"] == null)
-            ? []
-            : List<SocialNetwork>.from(
-                json["socialNetwork"].map((x) => SocialNetwork.fromJson(x))),
-        friends: (json["friends"] == null)
-            ? []
-            : List<Friend>.from(json["friends"].map((x) => Friend.fromJson(x))),
-      );
+    uuid: json["uuid"],
+    name: json["name"],
+    photoUrl: json["photoUrl"] ?? "",
+    profession: json["profession"] ?? "",
+    aboutMe: json["aboutMe"] ?? "",
+    tokenAuthorization: json["tokenAuthorization"] ?? "",
+    score: json["score"] ?? 0,
+    scoreProfile: json["scoreProfile"] ?? false,
+    socialNetwork: (json["socialNetwork"] == null)
+        ? []
+        : List<SocialNetwork>.from(
+            json["socialNetwork"].map((x) => SocialNetwork.fromJson(x)),
+          ),
+    friends: (json["friends"] == null)
+        ? []
+        : List<Friend>.from(json["friends"].map((x) => Friend.fromJson(x))),
+    treasures: (json["treasures"] == null)
+        ? []
+        : List<String>.from(json["treasures"].map((x) => x)),
+  );
 
   Map<String, dynamic> toJson() => {
-        "uuid": uuid,
-        "name": name,
-        "photoUrl": photoUrl,
-        "profession": profession,
-        "aboutMe": aboutMe,
-        "tokenAuthorization": tokenAuthorization,
-        "score": score,
-        "scoreProfile": scoreProfile,
-        "socialNetwork":
-            List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
-        "friends": List<dynamic>.from(friends.map((x) => x.toJson())),
-      };
+    "uuid": uuid,
+    "name": name,
+    "photoUrl": photoUrl,
+    "profession": profession,
+    "aboutMe": aboutMe,
+    "tokenAuthorization": tokenAuthorization,
+    "score": score,
+    "scoreProfile": scoreProfile,
+    "socialNetwork": List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
+    "friends": List<dynamic>.from(friends.map((x) => x.toJson())),
+    "treasures": List<dynamic>.from(treasures.map((x) => x)),
+  };
 }
 
 class Friend {
@@ -108,25 +115,24 @@ class Friend {
     String? name,
     String? token,
     String? photoUrl,
-  }) =>
-      Friend(
-        uuid: uuid ?? this.uuid,
-        name: name ?? this.name,
-        token: token ?? this.token,
-        photoUrl: photoUrl ?? this.photoUrl,
-      );
+  }) => Friend(
+    uuid: uuid ?? this.uuid,
+    name: name ?? this.name,
+    token: token ?? this.token,
+    photoUrl: photoUrl ?? this.photoUrl,
+  );
 
   factory Friend.fromJson(Map<String, dynamic> json) => Friend(
-        uuid: json["uuid"],
-        name: json["name"],
-        token: json["token"] ?? "",
-        photoUrl: json["photoUrl"] ?? "",
-      );
+    uuid: json["uuid"],
+    name: json["name"],
+    token: json["token"] ?? "",
+    photoUrl: json["photoUrl"] ?? "",
+  );
 
   Map<String, dynamic> toJson() => {
-        "uuid": uuid,
-        "name": name,
-        "token": token,
-        "photoUrl": photoUrl,
-      };
+    "uuid": uuid,
+    "name": name,
+    "token": token,
+    "photoUrl": photoUrl,
+  };
 }
