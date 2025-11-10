@@ -115,7 +115,10 @@ class _CardAttendeesState extends State<CardAttendees> {
   Widget build(BuildContext context) {
     final data = Provider.of<UserProvider>(context, listen: false);
     return ListTile(
-      title: Text(widget.item.name),
+      title: Text(
+        widget.item.name,
+        style: TextStyle(color: AppStyles.fontColor),
+      ),
       trailing: (loading)
           ? const CircularProgressIndicator()
           : ElevatedButton(

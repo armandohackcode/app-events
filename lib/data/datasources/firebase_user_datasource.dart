@@ -9,7 +9,9 @@ class FirebaseUserDatasource implements UserDatasource {
   FirebaseUserDatasource(this._db);
   @override
   Future<UserCompetitor?> addNewFriend(
-      String token, UserCompetitor userCompetitor) async {
+    String token,
+    UserCompetitor userCompetitor,
+  ) async {
     try {
       var friends = userCompetitor.friends;
 
@@ -35,7 +37,7 @@ class FirebaseUserDatasource implements UserDatasource {
         );
         await _db.collection("competitors").doc(uuid).update({
           'score': FieldValue.increment(10),
-          'friends': List<dynamic>.from(friends.map((x) => x.toJson()))
+          'friends': List<dynamic>.from(friends.map((x) => x.toJson())),
         });
         return user;
       }
@@ -70,12 +72,14 @@ class FirebaseUserDatasource implements UserDatasource {
           .doc(uuid)
           .collection("workshow")
           .doc()
-          .set(Friend(
-                  uuid: userCompetitor.uuid,
-                  name: userCompetitor.name,
-                  token: userCompetitor.tokenAuthorization,
-                  photoUrl: userCompetitor.photoUrl)
-              .toJson());
+          .set(
+            Friend(
+              uuid: userCompetitor.uuid,
+              name: userCompetitor.name,
+              token: userCompetitor.tokenAuthorization,
+              photoUrl: userCompetitor.photoUrl,
+            ).toJson(),
+          );
 
       return true;
     } catch (e) {
@@ -136,14 +140,17 @@ class FirebaseUserDatasource implements UserDatasource {
   Future<List<UserCompetitor>> searchAttendees({String? param}) async {
     try {
       var res = await _db.collection("competitors").get();
-      var attendees =
-          res.docs.map((e) => UserCompetitor.fromJson(e.data())).toList();
+      var attendees = res.docs
+          .map((e) => UserCompetitor.fromJson(e.data()))
+          .toList();
       var data = attendees;
       if ((param ?? "").isNotEmpty) {
         data = attendees
-            .where((element) => element.name
-                .toLowerCase()
-                .contains((param ?? "").toLowerCase()))
+            .where(
+              (element) => element.name.toLowerCase().contains(
+                (param ?? "").toLowerCase(),
+              ),
+            )
             .toList();
       }
 
@@ -161,7 +168,9 @@ class FirebaseUserDatasource implements UserDatasource {
 
   @override
   Future<bool> searchUserInWorkShop(
-      String uuid, UserCompetitor userCompetitor) async {
+    String uuid,
+    UserCompetitor userCompetitor,
+  ) async {
     try {
       var res = await _db
           .collection("schedule")
@@ -189,8 +198,11 @@ class FirebaseUserDatasource implements UserDatasource {
         .collection("competitors")
         .doc(userCompetitor.uuid)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.exists ? UserCompetitor.fromJson(snapshot.data()!) : null);
+        .map(
+          (snapshot) => snapshot.exists
+              ? UserCompetitor.fromJson(snapshot.data()!)
+              : null,
+        );
     yield* res;
   }
 
@@ -199,10 +211,9 @@ class FirebaseUserDatasource implements UserDatasource {
     try {
       var storage = await SharedPreferences.getInstance();
       var uuid = storage.getString('uid_user') ?? "";
-      await _db
-          .collection("competitors")
-          .doc(uuid)
-          .update({"tokenAuthorization": token});
+      await _db.collection("competitors").doc(uuid).update({
+        "tokenAuthorization": token,
+      });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -227,6 +238,22 @@ class FirebaseUserDatasource implements UserDatasource {
         print("Error querying admin information");
       }
       return false;
+    }
+  }
+
+  @override
+  Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor) async {
+    try {
+      var storage = await SharedPreferences.getInstance();
+      var uuid = storage.getString('uid_user') ?? "";
+      var treasures = userCompetitor.treasures;
+      await _db.collection("competitors").doc(uuid).update({
+        'treasures': List<dynamic>.from(treasures.map((x) => x)),
+        'score': FieldValue.increment(100),
+      });
+      return userCompetitor.copyWith(treasures: treasures);
+    } catch (e) {
+      rethrow;
     }
   }
 }

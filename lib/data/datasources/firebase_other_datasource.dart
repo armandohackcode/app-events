@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:app_events/domain/datasources/other_datasource.dart';
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/domain/models/sponsor.dart';
+import 'package:app_events/domain/models/treasure_hunt_model.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -35,8 +36,11 @@ class FirebaseOtherDatasource implements OtherDatasource {
           .orderBy("score", descending: true)
           .limit(10)
           .snapshots();
-      var res = data.map((snapshot) =>
-          snapshot.docs.map((e) => UserCompetitor.fromJson(e.data())).toList());
+      var res = data.map(
+        (snapshot) => snapshot.docs
+            .map((e) => UserCompetitor.fromJson(e.data()))
+            .toList(),
+      );
       yield* res;
     } catch (e) {
       rethrow;
@@ -58,7 +62,10 @@ class FirebaseOtherDatasource implements OtherDatasource {
   }
 
   @override
-  Future<void> addSponsor(Map<String, dynamic> sponsorData, String? sponsorImagePath) async {
+  Future<void> addSponsor(
+    Map<String, dynamic> sponsorData,
+    String? sponsorImagePath,
+  ) async {
     String photoUrl = sponsorData['photoUrl'] ?? '';
 
     if (sponsorImagePath != null && sponsorImagePath.isNotEmpty) {
@@ -76,6 +83,18 @@ class FirebaseOtherDatasource implements OtherDatasource {
     sponsorData['createdAt'] = FieldValue.serverTimestamp();
 
     await _db.collection('sponsors').add(sponsorData);
-    
+  }
+
+  @override
+  Future<List<TreasureHuntModel>> getTreasureHuntItems() async {
+    try {
+      var res = await _db.collection("treasure-hunt").get();
+      var info = res.docs
+          .map((e) => TreasureHuntModel.fromJson(e.data()))
+          .toList();
+      return info;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

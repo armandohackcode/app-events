@@ -8,7 +8,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<UserCompetitor?> addNewFriend(
-      String token, UserCompetitor userCompetitor) async {
+    String token,
+    UserCompetitor userCompetitor,
+  ) async {
     return _db.addNewFriend(token, userCompetitor);
   }
 
@@ -49,7 +51,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<bool> searchUserInWorkShop(
-      String uuid, UserCompetitor userCompetitor) async {
+    String uuid,
+    UserCompetitor userCompetitor,
+  ) async {
     return _db.searchUserInWorkShop(uuid, userCompetitor);
   }
 
@@ -66,5 +70,10 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<bool> validateIsAdmin(String uuid) async {
     return _db.validateIsAdmin(uuid);
+  }
+
+  @override
+  Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor) {
+    return _db.addItemTreasure(userCompetitor);
   }
 }

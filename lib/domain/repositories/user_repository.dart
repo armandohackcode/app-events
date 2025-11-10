@@ -9,7 +9,9 @@ abstract class UserRepository {
 
   /// Method to add a new friend
   Future<UserCompetitor?> addNewFriend(
-      String token, UserCompetitor userCompetitor);
+    String token,
+    UserCompetitor userCompetitor,
+  );
 
   /// Adds a workshop participant
   Future<bool> addWorkshop(String uuid, UserCompetitor userCompetitor);
@@ -37,4 +39,7 @@ abstract class UserRepository {
 
   /// Lists the attendees
   Future<List<UserCompetitor>> getAttendees();
+
+  /// Adds a treasure item to the user's collection
+  Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor);
 }

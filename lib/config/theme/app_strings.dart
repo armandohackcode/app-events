@@ -52,7 +52,28 @@ class AppStrings {
   static const String homeEventJoinActivities = "Únete a las actividades";
   static const String homeTournamentGDG = "Torneo GDG Sucre";
   static const String homeMeetCommunity = "Conoce a la comunidad";
+  static const String homeTreasureBunt = "Búsqueda del tesoro";
   static const String homeJoinDiscord = "Únete al canal en Discord";
+
+  // Trasure Bunt
+  static const String homeTreasureBuntDescription =
+      "¡Demuestra tu habilidad! Encuentra todos los QR ocultos, resuelve el acertijo y conquista la mayor cantidad de puntos.";
+  static const String homeTreasureBuntMsgScan =
+      "¿Encontraste algún objeto valioso?";
+  static const String homeTreasureBuntMsg =
+      "Escanea el código QR para descubrir el tesoro";
+  static const String homeTreasureBuntMsgNotValid =
+      "¡Ya has encontrado este objeto!";
+  static const String homeTreasureBuntQrNotValid = "El código QR no es válido.";
+  static const String homeTreasureBuntResponse = "Respuesta";
+  static const String homeTreasureBuntTryAgain =
+      "Respuesta incorrecta. Inténtalo de nuevo.";
+  static const String homeTreasureBuntConfirmAnswer = "Comprobar respuesta";
+  static const String homeTreasureBuntCongratulations = "¡Felicidades!";
+  static const String homeTreasureBuntMsgTitle =
+      "Has encontrado el objeto valioso:";
+  static const String homeTreasureBuntMsgYouWin =
+      "¡Increíble! Has encontrado todos los objetos valiosos y conquistado el tesoro completo!";
 
   // navbar
   static const String navBarHome = "Inicio";
@@ -153,9 +174,9 @@ class AppStrings {
   static const String urlNotValidMessage = "URL no válida";
   static const String sponsorsAddImageLabel = "Seleccionar logo";
   static const String sponsorsChangeImageLabel = "Cambiar logo";
-  
-  static const String sponsorSuccessMessage = "Sponsor registrado correctamente";
+
+  static const String sponsorSuccessMessage =
+      "Sponsor registrado correctamente";
   static const String sponsorErrorMessage =
       "Ocurrió un error al registrar el sponsor";
-
 }

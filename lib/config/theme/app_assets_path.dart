@@ -14,6 +14,7 @@ class AppAssetsPath {
   static const String discordIcon = 'assets/img/icon-discord.svg';
   static const String dinoWriteIcon = 'assets/img/dino-write.png';
   static const String dinoRunIcon = 'assets/img/dino-runs.png';
+  static const String firePedExplorerIcon = 'assets/img/sparky-explorer.png';
 
   static const String firePedIcon = 'assets/img/fire-ped.png';
 
@@ -34,9 +35,31 @@ class AppAssetsPath {
   static const String iconGithub = 'assets/img/github-142-svgrepo-com.svg';
   static const String iconWebRound = 'assets/img/web-round-svgrepo-com-2.svg';
 
-  // clean
+  // ranking
   static const String androidPed = 'assets/img/android-ped.png';
   static const String colorRed = "assets/img/color-red.png";
   static const String dashPed = 'assets/img/dash-ped.png';
   static const String partyAnimation = "assets/img/git-party.gif";
+  // treasure bunt
+  static const String treasureBuntImg1 =
+      'assets/img/treasure_bunt/img-android.png';
+  static const String treasureBuntImg2 =
+      'assets/img/treasure_bunt/img-chrome.png';
+  static const String treasureBuntImg3 =
+      'assets/img/treasure_bunt/img-drive.png';
+  static const String treasureBuntImg4 =
+      'assets/img/treasure_bunt/img-email.png';
+  static const String treasureBuntImg5 =
+      'assets/img/treasure_bunt/img-google.png';
+  static const String treasureBuntImg6 =
+      'assets/img/treasure_bunt/img-maps.png';
+  static const String treasureBuntImg7 =
+      'assets/img/treasure_bunt/img-meet.png';
+  static const String treasureBuntImg8 =
+      'assets/img/treasure_bunt/img-photos.png';
+  static const String treasureBuntImg9 =
+      'assets/img/treasure_bunt/img-translate.png';
+  static const String treasureBuntImg10 =
+      'assets/img/treasure_bunt/img-youtube.png';
+  static const String sparkyYouWin = 'assets/img/sparky-you-win.png';
 }

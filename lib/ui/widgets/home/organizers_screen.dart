@@ -126,6 +126,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
   }
 }
 
+// TO DO: Refactor logic get teamColor
 class TeamTag extends StatelessWidget {
   final String teamName;
 

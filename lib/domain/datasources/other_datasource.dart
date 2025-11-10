@@ -1,5 +1,6 @@
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/domain/models/sponsor.dart';
+import 'package:app_events/domain/models/treasure_hunt_model.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 
 abstract class OtherDatasource {
@@ -13,5 +14,11 @@ abstract class OtherDatasource {
   Stream<List<UserCompetitor>> getRanking();
 
   /// Adds a sponsor to the list
-  Future<void> addSponsor(Map<String, dynamic> sponsorData, String? sponsorImagePath);
+  Future<void> addSponsor(
+    Map<String, dynamic> sponsorData,
+    String? sponsorImagePath,
+  );
+
+  // List treasure hunt items
+  Future<List<TreasureHuntModel>> getTreasureHuntItems();
 }
