@@ -72,17 +72,17 @@ class ResourcesProvider with ChangeNotifier {
   Future<void> searchResource({required String param}) async {
     try {
       loadingResource = true;
-      if (activeWeb) {
-        param = 'Web';
-      } else if (activeMobile) {
-        param = 'Mobile';
-      } else if (activeCloud) {
-        param = 'Cloud';
-      } else if (activeIA) {
-        param = 'IA';
-      } else if (activeUIUX) {
-        param = 'UI/UX';
-      }
+      // if (activeWeb) {
+      //   param = 'Web';
+      // } else if (activeMobile) {
+      //   param = 'Mobile';
+      // } else if (activeCloud) {
+      //   param = 'Cloud';
+      // } else if (activeIA) {
+      //   param = 'IA';
+      // } else if (activeUIUX) {
+      //   param = 'UI/UX';
+      // }
       var data = await resourceRepository.searchResource(param: param);
       resources = data;
       loadingResource = false;

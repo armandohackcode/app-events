@@ -18,8 +18,9 @@ class FirebaseResourceDatasource implements ResourceDatasource {
   Future<List<ResourceLibrary>> getResources() async {
     try {
       var res = await _db.collection("resource-library").get();
-      var info =
-          res.docs.map((e) => ResourceLibrary.fromJson(e.data())).toList();
+      var info = res.docs
+          .map((e) => ResourceLibrary.fromJson(e.data()))
+          .toList();
       return info;
     } catch (e) {
       rethrow;
@@ -29,18 +30,25 @@ class FirebaseResourceDatasource implements ResourceDatasource {
   @override
   Future<List<ResourceLibrary>> searchResource({String? param}) async {
     try {
-      var res = await _db.collection("resource-library").get();
-      var info =
-          res.docs.map((e) => ResourceLibrary.fromJson(e.data())).toList();
+      var res = await _db
+          .collection("resource-library")
+          .where('keywords', arrayContains: param?.toLowerCase() ?? '')
+          .orderBy('title')
+          .get();
+      var info = res.docs
+          .map((e) => ResourceLibrary.fromJson(e.data()))
+          .toList();
       var data = info;
-      if ((param ?? "").isNotEmpty) {
-        data = info
-            .where((element) => element.title
-                .toLowerCase()
-                .contains((param ?? "").toLowerCase()))
-            .toList();
-        return data;
-      }
+      // if ((param ?? "").isNotEmpty) {
+      //   data = info
+      //       .where(
+      //         (element) => element.title.toLowerCase().contains(
+      //           (param ?? "").toLowerCase(),
+      //         ),
+      //       )
+      //       .toList();
+      //   return data;
+      // }
       return data;
     } catch (e) {
       rethrow;

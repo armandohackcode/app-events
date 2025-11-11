@@ -104,6 +104,10 @@ class _AddResourceState extends State<AddResource> {
                     title: _title.text,
                     link: _link.text,
                     type: technologyType ?? '',
+                    keywords: _title.text
+                        .split(RegExp(r'\s+'))
+                        .toSet()
+                        .toList(),
                   ),
                 );
                 if (context.mounted) {
