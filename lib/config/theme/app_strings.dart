@@ -179,4 +179,6 @@ class AppStrings {
       "Sponsor registrado correctamente";
   static const String sponsorErrorMessage =
       "Ocurrió un error al registrar el sponsor";
+
+  static String resourceLibraryNoData = "No hay recursos disponibles";
 }

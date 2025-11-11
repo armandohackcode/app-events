@@ -90,6 +90,23 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                 ),
               )
+            else if (resource.resources.isEmpty)
+              SliverToBoxAdapter(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  alignment: Alignment.center,
+                  child: Center(
+                    child: Text(
+                      AppStrings.resourceLibraryNoData,
+                      style: TextStyle(
+                        color: AppStyles.fontColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              )
             else
               SliverList.builder(
                 itemCount: resource.resources.length,
