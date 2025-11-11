@@ -13,7 +13,8 @@
         "gdgsucre",
         "googleusercontent",
         "svgrepo",
-        "trofeo"
+        "trofeo",
+        "UIUX"
     ],
     "ignorePaths": [
         "lib/config/theme/app_strings.dart"

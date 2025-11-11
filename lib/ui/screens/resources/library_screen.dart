@@ -57,47 +57,57 @@ class _LibraryScreenState extends State<LibraryScreen> {
         onRefresh: () async {
           await resource.loadResources();
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            FiltersLibrary(
-              paramSearch: _paramSearch,
-              resourcesProvider: resource,
+        displacement: 40,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: false,
+              floating: false,
+              expandedHeight: 75,
+              flexibleSpace: FlexibleSpaceBar(
+                background: FiltersLibrary(
+                  paramSearch: _paramSearch,
+                  resourcesProvider: resource,
+                ),
+              ),
             ),
+            // FiltersLibrary(
+            //   paramSearch: _paramSearch,
+            //   resourcesProvider: resource,
+            // ),
             if (resource.loadingResource)
-              Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                alignment: Alignment.center,
-                child: Center(
-                  child: LoadingAnimationWidget.twistingDots(
-                    leftDotColor: AppStyles.colorBaseBlue,
-                    rightDotColor: AppStyles.colorBaseYellow,
-                    size: 40,
+              SliverToBoxAdapter(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  alignment: Alignment.center,
+                  child: Center(
+                    child: LoadingAnimationWidget.twistingDots(
+                      leftDotColor: AppStyles.colorBaseBlue,
+                      rightDotColor: AppStyles.colorBaseYellow,
+                      size: 40,
+                    ),
                   ),
                 ),
               )
             else
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(15),
-                  itemCount: resource.resources.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    var item = resource.resources[index];
-                    return ZoomIn(
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: CardLibrary(
-                          key: UniqueKey(),
-                          width: MediaQuery.of(context).size.width,
-                          link: item.link,
-                          title: item.title,
-                          color: _getColor(item.type),
-                        ),
+              SliverList.builder(
+                itemCount: resource.resources.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var item = resource.resources[index];
+                  return ZoomIn(
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: CardLibrary(
+                        key: UniqueKey(),
+                        width: MediaQuery.of(context).size.width,
+                        link: item.link,
+                        title: item.title,
+                        color: _getColor(item.type),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
           ],
         ),
@@ -146,14 +156,14 @@ class FiltersLibrary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          TextFormField(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
             controller: _paramSearch,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
@@ -176,79 +186,78 @@ class FiltersLibrary extends StatelessWidget {
               await resourcesProvider.searchResource(param: value);
             },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ButtonLibrary(
-                color: AppStyles.colorBaseBlue,
-                active: resourcesProvider.activeWeb,
-                text: 'Web',
-                onPressed: () async {
-                  resourcesProvider.activeWeb = !resourcesProvider.activeWeb;
+        ),
 
-                  await resourcesProvider.searchResource(
-                    param: _paramSearch.text,
-                  );
-                },
-              ),
-              ButtonLibrary(
-                active: resourcesProvider.activeMobile,
-                color: AppStyles.colorBaseGreen,
-                text: 'Mobile',
-                onPressed: () async {
-                  resourcesProvider.activeMobile =
-                      !resourcesProvider.activeMobile;
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     ButtonLibrary(
+        //       color: AppStyles.colorBaseBlue,
+        //       active: resourcesProvider.activeWeb,
+        //       text: 'Web',
+        //       onPressed: () async {
+        //         resourcesProvider.activeWeb = !resourcesProvider.activeWeb;
 
-                  await resourcesProvider.searchResource(
-                    param: _paramSearch.text,
-                  );
-                },
-              ),
-              ButtonLibrary(
-                active: resourcesProvider.activeCloud,
-                color: AppStyles.colorBaseRed,
-                text: 'Cloud',
-                onPressed: () async {
-                  resourcesProvider.activeCloud =
-                      !resourcesProvider.activeCloud;
+        //         await resourcesProvider.searchResource(
+        //           param: _paramSearch.text,
+        //         );
+        //       },
+        //     ),
+        //     ButtonLibrary(
+        //       active: resourcesProvider.activeMobile,
+        //       color: AppStyles.colorBaseGreen,
+        //       text: 'Mobile',
+        //       onPressed: () async {
+        //         resourcesProvider.activeMobile =
+        //             !resourcesProvider.activeMobile;
 
-                  await resourcesProvider.searchResource(
-                    param: _paramSearch.text,
-                  );
-                },
-              ),
-              ButtonLibrary(
-                active: resourcesProvider.activeIA,
-                color: AppStyles.colorBaseYellow,
-                text: 'IA',
-                onPressed: () async {
-                  resourcesProvider.activeIA = !resourcesProvider.activeIA;
-                  await resourcesProvider.searchResource(
-                    param: _paramSearch.text,
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ButtonLibrary(
-                active: resourcesProvider.activeUIUX,
-                color: AppStyles.colorBasePurple,
-                text: 'UI/UX',
-                onPressed: () async {
-                  resourcesProvider.activeUIUX = !resourcesProvider.activeUIUX;
-                  await resourcesProvider.searchResource(
-                    param: _paramSearch.text,
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
+        //         await resourcesProvider.searchResource(
+        //           param: _paramSearch.text,
+        //         );
+        //       },
+        //     ),
+        //     ButtonLibrary(
+        //       active: resourcesProvider.activeCloud,
+        //       color: AppStyles.colorBaseRed,
+        //       text: 'Cloud',
+        //       onPressed: () async {
+        //         resourcesProvider.activeCloud = !resourcesProvider.activeCloud;
+
+        //         await resourcesProvider.searchResource(
+        //           param: _paramSearch.text,
+        //         );
+        //       },
+        //     ),
+        //     ButtonLibrary(
+        //       active: resourcesProvider.activeIA,
+        //       color: AppStyles.colorBaseYellow,
+        //       text: 'IA',
+        //       onPressed: () async {
+        //         resourcesProvider.activeIA = !resourcesProvider.activeIA;
+        //         await resourcesProvider.searchResource(
+        //           param: _paramSearch.text,
+        //         );
+        //       },
+        //     ),
+        //   ],
+        // ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     ButtonLibrary(
+        //       active: resourcesProvider.activeUIUX,
+        //       color: AppStyles.colorBasePurple,
+        //       text: 'UI/UX',
+        //       onPressed: () async {
+        //         resourcesProvider.activeUIUX = !resourcesProvider.activeUIUX;
+        //         await resourcesProvider.searchResource(
+        //           param: _paramSearch.text,
+        //         );
+        //       },
+        //     ),
+        //   ],
+        // ),
+      ],
     );
   }
 }
@@ -270,107 +279,73 @@ class CardLibrary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: const Alignment(0, -1),
-      children: [
-        InkWell(
-          onTap: () async {
-            await laucherUrlInfo(link);
-          },
-          child: Container(
-            padding: const EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              color: color,
-              border: Border.all(width: 1, color: AppStyles.fontColor),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            width: width ?? MediaQuery.of(context).size.width * 0.45,
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  width: width,
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(1),
-                  height: 60,
-                  child: AnyLinkPreview(
-                    urlLaunchMode: LaunchMode.externalApplication,
-                    placeholderWidget: Center(
-                      child: LoadingAnimationWidget.stretchedDots(
-                        color: AppStyles.colorBaseBlue,
-                        size: 40,
-                      ),
-                    ),
-                    link: link,
-                    previewHeight: 1,
-                    displayDirection: UIDirection.uiDirectionHorizontal,
-                    showMultimedia: true,
-                    bodyMaxLines: 5,
-                    bodyTextOverflow: TextOverflow.ellipsis,
-                    titleStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                    bodyStyle: const TextStyle(color: Colors.grey, fontSize: 9),
-                    errorBody: 'Show my custom error body',
-                    errorTitle: 'Show my custom error title',
-
-                    errorWidget: Row(
-                      children: [
-                        Image.network(
-                          'https://img.icons8.com/?size=512&id=92941&format=png',
-                          width: 60,
-                          height: 60,
-                        ),
-                        Container(color: Colors.grey[100], child: Text(title)),
-                      ],
-                    ),
-                    errorImage:
-                        "https://img.icons8.com/?size=512&id=92941&format=png",
-                    cache: const Duration(days: 1),
-                    backgroundColor: Colors.grey[100],
-                    borderRadius: 10,
-                    removeElevation: true,
-                    // This disables tap event
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Stack(
-          alignment: const Alignment(-0.90, 0),
+    return InkWell(
+      onTap: () async {
+        await laucherUrlInfo(link);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Column(
           children: [
-            Container(
-              height: 12,
-              width: width ?? MediaQuery.of(context).size.width * 0.45,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
+            // Container(
+            //   padding: const EdgeInsets.all(10),
+            //   width: width,
+            //   child: Text(
+            //     title,
+            //     textAlign: TextAlign.center,
+            //     style: const TextStyle(fontWeight: FontWeight.w500),
+            //   ),
+            // ),
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height * 0.35,
+              child: AnyLinkPreview(
+                urlLaunchMode: LaunchMode.externalApplication,
+                placeholderWidget: Center(
+                  child: LoadingAnimationWidget.stretchedDots(
+                    color: AppStyles.colorBaseBlue,
+                    size: 40,
+                  ),
                 ),
-                border: Border.all(color: AppStyles.borderColor, width: 1),
+                link: link,
+                previewHeight: 1,
+                displayDirection: UIDirection.uiDirectionVertical,
+                showMultimedia: true,
+                bodyMaxLines: 5,
+                bodyTextOverflow: TextOverflow.ellipsis,
+                titleStyle: TextStyle(
+                  color: AppStyles.fontColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+                bodyStyle: const TextStyle(
+                  color: AppStyles.fontColor,
+                  fontSize: 16,
+                ),
+                errorBody: 'Show my custom error body',
+                errorTitle: 'Show my custom error title',
+
+                errorWidget: Row(
+                  children: [
+                    Image.network(
+                      'https://img.icons8.com/?size=512&id=92941&format=png',
+                      width: 60,
+                      height: 60,
+                    ),
+                    Container(color: Colors.grey[100], child: Text(title)),
+                  ],
+                ),
+                errorImage:
+                    "https://img.icons8.com/?size=512&id=92941&format=png",
+                cache: const Duration(days: 1),
+                backgroundColor: AppStyles.backgroundColor,
+                borderRadius: 10,
+                removeElevation: true,
+                // This disables tap event
               ),
-            ),
-            const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.circle, size: 8, color: AppStyles.backgroundColor),
-                SizedBox(width: 3),
-                Icon(Icons.circle, size: 8, color: AppStyles.backgroundColor),
-              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
