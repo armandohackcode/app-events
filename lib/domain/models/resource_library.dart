@@ -16,7 +16,7 @@ class ResourceLibrary {
     required this.title,
     required this.link,
     required this.type,
-    required this.keywords,
+    this.keywords = const [],
   });
 
   ResourceLibrary copyWith({String? title, String? link, String? type}) =>
@@ -32,7 +32,9 @@ class ResourceLibrary {
         title: json["title"],
         link: json["link"],
         type: json["type"],
-        keywords: List<String>.from(json["keywords"].map((x) => x)),
+        keywords: json["keywords"] == null
+            ? []
+            : List<String>.from(json["keywords"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
