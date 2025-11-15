@@ -338,8 +338,8 @@ class CardLibrary extends StatelessWidget {
                   color: AppStyles.fontColor,
                   fontSize: 16,
                 ),
-                errorBody: 'Show my custom error body',
-                errorTitle: 'Show my custom error title',
+                errorBody: title,
+                errorTitle: title,
 
                 errorWidget: Row(
                   children: [
