@@ -267,6 +267,7 @@ class _EditProfileState extends State<EditProfile> {
               },
               child: const Text(AppStrings.commonWordSave),
             ),
+            const SizedBox(height: 50),
           ],
         ),
       ),

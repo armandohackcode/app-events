@@ -72,7 +72,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 await schedule.loadSchedule();
               },
               child: ListView.builder(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.only(
+                  left: 15,
+                  right: 15,
+                  top: 15,
+                  bottom: 60,
+                ),
                 itemCount: schedule.schedule.length,
                 itemBuilder: (BuildContext context, int index) {
                   var item = schedule.schedule[index];

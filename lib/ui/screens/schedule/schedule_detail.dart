@@ -19,22 +19,13 @@ class ScheduleDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(info.type),
-      ),
+      appBar: AppBar(title: Text(info.type)),
       body: ListView(
         padding: const EdgeInsets.all(15),
         children: [
-          CardSchedule(
-            info: info,
-            showTitle: true,
-            action: false,
-          ),
+          CardSchedule(info: info, showTitle: true, action: false),
           if (info.type == "Taller")
-            ButtonWorkshop(
-              uuid: info.uuid,
-              info: info,
-            ),
+            ButtonWorkshop(uuid: info.uuid, info: info),
           const SizedBox(height: 20),
           const Text(
             AppStrings.scheduleDescription,
@@ -65,9 +56,10 @@ class ScheduleDetail extends StatelessWidget {
                       await laucherUrlInfo(item.link);
                     },
                   ),
-                )
+                ),
             ],
-          )
+          ),
+          const SizedBox(height: 50),
         ],
       ),
     );
@@ -143,17 +135,18 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
     // print(DateTime.parse(widget.info.openDate!)
     //     .difference(DateTime.now())
     //     .inSeconds);
-    if ((DateTime.tryParse(widget.info.openDate!)
-                ?.difference(DateTime.now())
-                .inSeconds ??
+    if ((DateTime.tryParse(
+              widget.info.openDate!,
+            )?.difference(DateTime.now()).inSeconds ??
             0) >
         0) {
       return Center(
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: AppStyles.colorBaseYellow,
-              borderRadius: BorderRadius.circular(15)),
+            color: AppStyles.colorBaseYellow,
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Text(
             " ${AppStrings.scheduleRegistrationOpen} \n ${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}",
             textAlign: TextAlign.center,
