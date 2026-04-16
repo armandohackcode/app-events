@@ -56,19 +56,19 @@ class _RankingDataState extends State<RankingData> {
                               children: [
                                 Image.asset(
                                   AppAssetsPath.androidPed,
-                                  height: 55,
+                                  height: 100,
                                 ),
                                 Container(
                                   alignment: Alignment.center,
-                                  width: 50,
-                                  height: 80,
+                                  width: 80,
+                                  height: 100,
                                   decoration: const BoxDecoration(
                                     color: AppStyles.colorBaseGreen,
                                   ),
                                   child: const Text(
                                     "2",
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.w900,
                                       color: AppStyles.cardColor,
                                     ),
@@ -77,7 +77,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[1].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -89,19 +89,19 @@ class _RankingDataState extends State<RankingData> {
                               children: [
                                 Image.asset(
                                   AppAssetsPath.firePedIcon,
-                                  height: 50,
+                                  height: 100,
                                 ),
                                 Container(
                                   alignment: Alignment.center,
-                                  width: 50,
-                                  height: 110,
+                                  width: 80,
+                                  height: 160,
                                   decoration: const BoxDecoration(
                                     color: AppStyles.colorBaseYellow,
                                   ),
                                   child: const Text(
                                     "1",
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.w900,
                                       color: AppStyles.cardColor,
                                     ),
@@ -110,7 +110,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[0].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -120,18 +120,18 @@ class _RankingDataState extends State<RankingData> {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Image.asset(AppAssetsPath.dashPed, height: 50),
+                                Image.asset(AppAssetsPath.dashPed, height: 100),
                                 Container(
                                   alignment: Alignment.center,
-                                  width: 50,
-                                  height: 50,
+                                  width: 80,
+                                  height: 70,
                                   decoration: const BoxDecoration(
                                     color: AppStyles.colorBaseBlue,
                                   ),
                                   child: const Text(
                                     "3",
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.w900,
                                       color: AppStyles.cardColor,
                                     ),
@@ -140,7 +140,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[2].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -150,7 +150,7 @@ class _RankingDataState extends State<RankingData> {
                         ),
                       ],
                     ),
-                    Image.asset(AppAssetsPath.partyAnimation, height: 110),
+                    Image.asset(AppAssetsPath.partyAnimation, height: 150),
                   ],
                 ),
                 Expanded(
@@ -225,7 +225,7 @@ class CardRanking extends StatelessWidget {
         leading: Text(
           index.toString(),
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 30,
             fontWeight: FontWeight.w900,
             color: color,
           ),
@@ -233,7 +233,7 @@ class CardRanking extends StatelessWidget {
         trailing: Text(
           data.score.toString(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 30,
             fontWeight: FontWeight.w900,
             color: color,
           ),
@@ -241,7 +241,7 @@ class CardRanking extends StatelessWidget {
         title: Text(
           data.name,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
             color: color,
           ),
