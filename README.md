@@ -2,77 +2,174 @@
 
 [![G|GDG Sucre](https://res.cloudinary.com/startup-grind/image/upload/dpr_2.0,fl_sanitize/v1/gcs/platform-data-goog/contentbuilder/logo_dark_QmPdj9K.svg)](https://gdg.community.dev/gdg-sucre/)
 
-[![F|FLutter](https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg)](https://docs.flutter.dev/)
+[![F|Flutter](https://storage.googleapis.com/cms-storage-bucket/6a07d8a62f4308d2b854.svg)](https://docs.flutter.dev/)
 
+![Badge en Desarrollo](https://img.shields.io/badge/STATUS-EN%20DESAROLLO-green)
 
-Este es un proyecto desarrollado en Flutter con Firebase, cuyo enfoque principal es el proporcionar un entorno en donde se pueda informar los detalles de los eventos de la comunidad GDG Sucre y adicionalmente tener un mecanismo para hacer networking entre los asistentes a los eventos basado en una interacción a través de código QR y competncia por puntos, en este ejemplo se ha utilizado un diseño propio inspirado en el branding guidelines proporcionado por el programa de GDG community, el proyecto fué desarrollado con el unico propósito de mojarar la experiencia de los asistentes a los eventos de la GDG Sucre y es de código abierto.
+Aplicación móvil desarrollada en Flutter + Firebase para comunidades GDG. Permite a los organizadores gestionar el contenido de sus eventos y ofrece a los asistentes una experiencia enriquecida con agenda, networking por QR, gamificación y una biblioteca de recursos.
 
-![Badge en Desarollo](https://img.shields.io/badge/STATUS-EN%20DESAROLLO-green)
-## Empezar
-Este proyecto es un punto de partida para una aplicación Flutter.
-Algunos recursos para comenzar si este es su primer proyecto de Flutter:
+El proyecto es de código abierto e inspirado en los guidelines de branding de GDG Community.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-Para obtener ayuda para comenzar con el desarrollo de Flutter, consulte el
-[documentación en línea](https://docs.flutter.dev/), que ofrece tutoriales,
-muestras, orientación sobre desarrollo móvil y una referencia completa de la API.
+## Funcionalidades
+
+| Feature | Descripción |
+|---|---|
+| **Agenda del evento** | Visualización del cronograma con detalle de cada sesión y speaker |
+| **Gamificación** | Sistema de puntos, ranking de asistentes y treasure hunt |
+| **Networking por QR** | Escaneo de QR entre asistentes para conectar y ganar puntos |
+| **Biblioteca de recursos** | Materiales, links y recursos compartidos por los organizadores |
+| **Panel de administración** | Gestión de contenido dinámico (agenda, speakers, recursos, puntos) |
+| **Autenticación** | Inicio de sesión con Google y Apple |
+
+---
+
+## Arquitectura
+
+El proyecto sigue los principios de **Clean Architecture** con el objetivo de mantener un **bajo acoplamiento** entre capas. Cada capa se comunica únicamente a través de contratos abstractos (interfaces), lo que permite cambiar la implementación subyacente (por ejemplo, reemplazar Firebase) sin afectar al resto de la aplicación.
+
+### Capas
+
 ```
-# para descargar todos los paquetes del proyecto
+lib/
+├── domain/      ← Reglas de negocio: modelos, interfaces abstractas (datasources y repositories)
+├── data/        ← Implementaciones concretas: Firebase (datasources y repositories)
+├── ui/          ← Presentación: screens, widgets y providers (state management)
+└── config/      ← Configuración transversal: DI, tema, rutas, assets
+```
+
+**La capa `domain` no depende de ninguna implementación concreta.** Define los contratos que `data` implementa. La capa `ui` nunca accede a Firebase directamente — solo interactúa con los repositorios abstractos inyectados.
+
+### Flujo de datos
+
+```
+Firebase
+  └─→ FirebaseDatasource  (data/datasources/)
+        └─→ RepositoryImpl  (data/repositories/)
+              └─→ Provider / ChangeNotifier  (ui/providers/)
+                    └─→ Widget  (ui/screens/ y ui/widgets/)
+```
+
+### State Management
+
+Se utiliza **Provider + ChangeNotifier** como capa de estado. Cada feature tiene su propio provider que actúa como ViewModel:
+
+- `SignInSocialNetworkProvider` — estado de autenticación
+- `UserProvider` — datos del usuario y perfil del competidor
+- `ScheduleProvider` — agenda del evento
+- `ResourcesProvider` — biblioteca de recursos
+- `OtherProvider` — organizadores, sponsors y treasure hunt
+
+### Inyección de Dependencias
+
+Se usa **GetIt** como service locator. La configuración está centralizada en [`lib/config/di/service_locator.dart`](lib/config/di/service_locator.dart). Todos los datasources, repositories y providers se registran como lazy singletons o factories, garantizando que ninguna capa instancie sus dependencias directamente.
+
+---
+
+## Prerrequisitos
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Dart `^3.9.2`)
+- Cuenta de Firebase (plan **Blaze** recomendado para producción)
+- [Firebase CLI](https://firebase.google.com/docs/cli)
+- Android Studio con emulador Android o Xcode con simulador iOS
+
+---
+
+## Configuración
+
+### 1. Clonar y descargar dependencias
+
+```bash
+git clone <url-del-repositorio>
+cd app_events
 flutter pub get
 ```
 
-## Configuración
-Es necesario hacer la configuración y la vinculación con una cuenta de firebase particular, y utilizar las firmas correspondientes de autorización de tu cuenta.
- - [Consulta la documentación Flutter con Firebase](https://firebase.flutter.dev/docs/overview)
+### 2. Crear y configurar el proyecto Firebase
 
-#### Instala Firebase CLI con dart
-Mediante el comando `flutterfire configure` selecciona el proyecto de firebase existen con el cual trabajarás o en su defecto crea uno nuevo, seleciona para que entornos obtendras la configuración 
-"android, IOS, MacOS, Linux, Windons, Web", NOTA : la aplicación solo esta pensada para entorno mobile Andriod, IOS, si se desea adaptar el diseño para otros entornos, se debe pensar en considerar diseño responsivo.
-```
-# Install the CLI if not already done so
+Desde la [consola de Firebase](https://console.firebase.google.com/), crea un nuevo proyecto y activa los siguientes servicios:
+
+- **Authentication** — habilita los proveedores Google y Apple
+- **Cloud Firestore** — base de datos en tiempo real
+- **Firebase Storage** — almacenamiento de imágenes
+
+### 3. Vincular Firebase con la app
+
+```bash
+# Instalar la CLI de FlutterFire (solo la primera vez)
 dart pub global activate flutterfire_cli
-# Run the `configure` command, select a Firebase project and platforms
+
+# Vincular el proyecto Firebase y generar firebase_options.dart
 flutterfire configure
 ```
-con el proyecto vinculado y previamente descargado los paquetes de flutter, solo queda ejecutar el proyecto. 
-```
+
+Selecciona las plataformas que necesites (Android, iOS). El archivo `firebase_options.dart` se genera automáticamente.
+
+### 4. Ejecutar la aplicación
+
+```bash
 flutter run
 ```
 
-`Nota: si se desea utilizar el proyecto en un entorno en producción debe preveer los gasto por el uso de firestore, añadiendo una tarjeta a la cuenta Blaze, debido a que el uso masivo podría ocasiónar costos en algun punto.`
+> **Nota sobre costos:** En producción con uso masivo, el plan gratuito de Firebase puede generar costos. Se recomienda añadir una tarjeta al plan Blaze y configurar alertas de presupuesto en la consola de Firebase.
 
-#### Controles
-Dentro de la aplicaicón existen dos roles, uno de administrador y participante, el usuario administrador tienes mas opciones para controlar el contenido dinámico dentro de la aplicación.
-- Añadir nuevos speakers
-- Añadir recursos
-- Ver lista de Participantes
-- Regalar puntos a los participantes
+---
 
-Para habilitar un usuario como administrador se necesita hacer un proceso manual
-donde se necesista el `uuid` del usuario autentificado en firebase (buscar en el apartador de Usuarios authentificados de Firesase)
-y añadir la siguiente colección en firestore
-crea una collection con el nombre de `users-admin` y añade un document con el siguiente formato
-```
+## Configuración de Firestore
+
+La mayoría de las colecciones se crean automáticamente cuando los usuarios interactúan con la app. Las siguientes deben configurarse **manualmente** antes del primer uso:
+
+### Colección `users-admin`
+
+Define quiénes tienen rol de administrador. Crea un documento por cada admin con el UUID del usuario autenticado (lo encuentras en **Firebase Console → Authentication → Users**).
+
+```json
 {
-    "name":"Cantinflas el Padrecito",
-    "uuid": uuidEXAMPLELasdadsasdasdafdsdf
+  "name": "Nombre del administrador",
+  "uuid": "UID_DEL_USUARIO_EN_FIREBASE"
 }
 ```
-##### Añadir organizers
-Los organizers del evento se registran de forma manual por el momento, directamente desde firestore.
-Crea una collection con el nombre de `organizers` y añade por cada organizador un nuevo documeto con los siguientes datos y formato.
-```
+
+### Colección `organizers`
+
+Registra a los organizadores del evento que aparecerán en la pantalla principal.
+
+```json
 {
-    "name":"El chavo",
-    "photoUrl":"https://example.com/img-fulanot.png",
-    "link":"https://github.com/armandohackcode",
-    "type": 1
-    
+  "name": "Nombre del organizador",
+  "photoUrl": "https://ejemplo.com/foto.png",
+  "link": "https://github.com/usuario",
+  "type": 1
 }
-/// type 1: organizer
-/// type 2: Lead Organizer
 ```
 
+| Valor `type` | Rol |
+|---|---|
+| `1` | Organizer |
+| `2` | Lead Organizer |
 
+---
+
+## Roles de usuario
+
+| Rol | Capacidades |
+|---|---|
+| **Participante** | Ver agenda · Networking QR · Ranking · Biblioteca de recursos · Treasure hunt |
+| **Administrador** | Todo lo anterior + Agregar speakers · Agregar recursos · Ver lista de participantes · Regalar puntos |
+
+---
+
+## Contribuir
+
+El proyecto está abierto a contribuciones. Para orientarte rápidamente en el código, ten en cuenta:
+
+1. **Agrega una feature nueva** siguiendo las capas: modelo en `domain/models/`, contrato en `domain/datasources/` y `domain/repositories/`, implementación Firebase en `data/`, provider en `ui/providers/`, y UI en `ui/screens/` o `ui/widgets/`.
+2. **Registra las nuevas dependencias** en `lib/config/di/service_locator.dart`.
+3. **No acoples la UI a Firebase directamente** — toda la lógica de acceso a datos debe ir a través del repositorio correspondiente.
+
+---
+
+## Licencia
+
+[Apache 2.0](LICENCE.md)
