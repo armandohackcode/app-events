@@ -86,7 +86,23 @@ cd app_events
 flutter pub get
 ```
 
-### 2. Crear y configurar el proyecto Firebase
+### 2. Configurar variables de entorno
+
+Copia el archivo de ejemplo y reemplaza el valor del Client ID:
+
+```bash
+cp lib/env_example.dart lib/env.dart
+```
+
+Abre `lib/env.dart` y reemplaza `SERVICE_CLIENT_ID` con el **Web Client ID** de tu proyecto Firebase (lo encuentras en Firebase Console → Authentication → Método de acceso → Google → ID de cliente web):
+
+```dart
+final String serviceClientId = 'TU_CLIENT_ID.apps.googleusercontent.com';
+```
+
+> Este valor es necesario para la autenticación con Google. Sin él, la app no compilará.
+
+### 3. Crear y configurar el proyecto Firebase
 
 Desde la [consola de Firebase](https://console.firebase.google.com/), crea un nuevo proyecto y activa los siguientes servicios:
 
@@ -94,7 +110,7 @@ Desde la [consola de Firebase](https://console.firebase.google.com/), crea un nu
 - **Cloud Firestore** — base de datos en tiempo real
 - **Firebase Storage** — almacenamiento de imágenes
 
-### 3. Vincular Firebase con la app
+### 4. Vincular Firebase con la app
 
 ```bash
 # Instalar la CLI de FlutterFire (solo la primera vez)
@@ -106,7 +122,7 @@ flutterfire configure
 
 Selecciona las plataformas que necesites (Android, iOS). El archivo `firebase_options.dart` se genera automáticamente.
 
-### 4. Ejecutar la aplicación
+### 5. Ejecutar la aplicación
 
 ```bash
 flutter run
