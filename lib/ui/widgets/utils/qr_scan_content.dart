@@ -306,7 +306,7 @@ class _QRScanContentState extends State<QRScanContent>
           ),
         );
         Future.delayed(const Duration(seconds: 3), () {
-          if (mounted) {
+          if (context.mounted) {
             Navigator.pop(context);
           }
         });
