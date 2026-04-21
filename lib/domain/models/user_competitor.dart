@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_events/domain/models/event_badge.dart';
 import 'package:app_events/domain/models/speaker.dart';
 
 UserCompetitor userCompetitorFromJson(String str) =>
@@ -16,9 +17,11 @@ class UserCompetitor {
   String tokenAuthorization;
   int score;
   bool scoreProfile;
+  String? currentEventId;
   List<SocialNetwork> socialNetwork;
   List<Friend> friends;
   List<String> treasures;
+  List<EventBadge> badges;
 
   UserCompetitor({
     required this.uuid,
@@ -29,9 +32,11 @@ class UserCompetitor {
     required this.tokenAuthorization,
     required this.score,
     this.scoreProfile = false,
+    this.currentEventId,
     required this.socialNetwork,
     required this.friends,
     this.treasures = const [],
+    this.badges = const [],
   });
 
   UserCompetitor copyWith({
@@ -43,9 +48,11 @@ class UserCompetitor {
     String? tokenAuthorization,
     int? score,
     bool? scoreProfile,
+    String? currentEventId,
     List<SocialNetwork>? socialNetwork,
     List<Friend>? friends,
     List<String>? treasures,
+    List<EventBadge>? badges,
   }) => UserCompetitor(
     uuid: uuid ?? this.uuid,
     name: name ?? this.name,
@@ -55,9 +62,11 @@ class UserCompetitor {
     tokenAuthorization: tokenAuthorization ?? this.tokenAuthorization,
     score: score ?? this.score,
     scoreProfile: scoreProfile ?? this.scoreProfile,
+    currentEventId: currentEventId ?? this.currentEventId,
     socialNetwork: socialNetwork ?? this.socialNetwork,
     friends: friends ?? this.friends,
     treasures: treasures ?? this.treasures,
+    badges: badges ?? this.badges,
   );
 
   factory UserCompetitor.fromJson(Map<String, dynamic> json) => UserCompetitor(
@@ -69,6 +78,7 @@ class UserCompetitor {
     tokenAuthorization: json["tokenAuthorization"] ?? "",
     score: json["score"] ?? 0,
     scoreProfile: json["scoreProfile"] ?? false,
+    currentEventId: json["currentEventId"],
     socialNetwork: (json["socialNetwork"] == null)
         ? []
         : List<SocialNetwork>.from(
@@ -80,6 +90,11 @@ class UserCompetitor {
     treasures: (json["treasures"] == null)
         ? []
         : List<String>.from(json["treasures"].map((x) => x)),
+    badges: (json["badges"] == null)
+        ? []
+        : List<EventBadge>.from(
+            json["badges"].map((x) => EventBadge.fromJson(x)),
+          ),
   );
 
   Map<String, dynamic> toJson() => {
@@ -91,9 +106,11 @@ class UserCompetitor {
     "tokenAuthorization": tokenAuthorization,
     "score": score,
     "scoreProfile": scoreProfile,
+    "currentEventId": currentEventId,
     "socialNetwork": List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
     "friends": List<dynamic>.from(friends.map((x) => x.toJson())),
     "treasures": List<dynamic>.from(treasures.map((x) => x)),
+    "badges": List<dynamic>.from(badges.map((x) => x.toJson())),
   };
 }
 

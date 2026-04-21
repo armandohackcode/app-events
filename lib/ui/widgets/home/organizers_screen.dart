@@ -1,4 +1,5 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
@@ -63,7 +64,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                                   placeholder: const AssetImage(
                                     AppAssetsPath.loadingSmallImage,
                                   ),
-                                  image: NetworkImage(item.photoUrl),
+                                  image: CachedNetworkImageProvider(item.photoUrl),
                                 ),
                                 if (item.lead)
                                   Align(
@@ -210,7 +211,7 @@ class CardCommunity extends StatelessWidget {
                     placeholder: const AssetImage(
                       AppAssetsPath.loadingSmallImage,
                     ),
-                    image: const NetworkImage(
+                    image: const CachedNetworkImageProvider(
                       "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/banner%2Fbanner.jpg?alt=media&token=23be97a8-c096-4f12-bfe7-6d7adb1604c7",
                     ),
                   ),

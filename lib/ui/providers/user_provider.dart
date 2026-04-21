@@ -1,3 +1,4 @@
+import 'package:app_events/domain/models/event_badge.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -8,9 +9,7 @@ class UserProvider with ChangeNotifier {
 
   UserCompetitor? _userCompetitor;
   List<UserCompetitor> _attendees = [];
-
   bool _isAdmin = false;
-
   bool _loadingAttendees = false;
 
   bool get loadingAttendees => _loadingAttendees;
@@ -40,13 +39,9 @@ class UserProvider with ChangeNotifier {
   Future<void> validateIsAdmin(String uuid) async {
     try {
       var res = await _repository.validateIsAdmin(uuid);
-      if (res) {
-        isAdmin = true;
-      }
+      if (res) isAdmin = true;
       var data = await _repository.getUserInfo(uuid);
-      if (data != null) {
-        userCompetitor = data;
-      }
+      if (data != null) userCompetitor = data;
     } catch (e) {
       rethrow;
     }
@@ -60,36 +55,43 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<UserCompetitor?> joinEvent(String eventId) async {
+    try {
+      if (userCompetitor == null) return null;
+      final updated = await _repository.joinEvent(eventId, userCompetitor!);
+      if (updated != null) userCompetitor = updated;
+      return updated;
+    } catch (e) {
+      if (kDebugMode) print(e);
+      return null;
+    }
+  }
+
   Future<UserCompetitor?> addNewFriend(String token) async {
     try {
       var user = await _repository.addNewFriend(token, userCompetitor!);
       return user;
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      if (kDebugMode) print(e);
       return null;
     }
   }
 
-  Future<bool> addWorkshop(String uuid) async {
+  Future<bool> addWorkshop(String eventId, String speakerUuid) async {
     try {
       if (userCompetitor == null) return false;
-      var res = await _repository.addWorkshop(uuid, userCompetitor!);
-      return res;
+      return await _repository.addWorkshop(eventId, speakerUuid, userCompetitor!);
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      if (kDebugMode) print(e);
       return false;
     }
   }
 
-  Future<bool> searchUserInWorkshop(String uuid) async {
+  Future<bool> searchUserInWorkshop(String eventId, String speakerUuid) async {
     try {
       if (userCompetitor == null) return false;
-      var res = await _repository.searchUserInWorkShop(uuid, userCompetitor!);
-      return res;
+      return await _repository.searchUserInWorkShop(
+          eventId, speakerUuid, userCompetitor!);
     } catch (e) {
       return false;
     }
@@ -105,8 +107,8 @@ class UserProvider with ChangeNotifier {
         uuid: '',
         name: name,
         photoUrl: photoUrl,
-        profession: "",
-        aboutMe: "",
+        profession: '',
+        aboutMe: '',
         tokenAuthorization: token,
         score: 0,
         socialNetwork: [],
@@ -120,20 +122,15 @@ class UserProvider with ChangeNotifier {
 
   Future<UserCompetitor?> getUserInfo(String uuid) async {
     try {
-      var data = await _repository.getUserInfo(uuid);
-      return data;
+      return await _repository.getUserInfo(uuid);
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      if (kDebugMode) print(e);
       return null;
     }
   }
 
   Stream<UserCompetitor?> streamInfoUser() {
-    if (userCompetitor == null) {
-      throw Exception("UserCompetitor is null");
-    }
+    if (userCompetitor == null) throw Exception('UserCompetitor is null');
     return _repository.streamInfoUser(userCompetitor!);
   }
 
@@ -148,8 +145,7 @@ class UserProvider with ChangeNotifier {
   Future<void> getAttendees() async {
     try {
       loadingAttendees = true;
-      var data = await _repository.getAttendees();
-      attendees = data;
+      attendees = await _repository.getAttendees();
       loadingAttendees = false;
     } catch (e) {
       loadingAttendees = false;
@@ -159,8 +155,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> searchAttendees({String? param}) async {
     try {
-      var data = await _repository.searchAttendees(param: param);
-      attendees = data;
+      attendees = await _repository.searchAttendees(param: param);
     } catch (e) {
       rethrow;
     }
@@ -180,8 +175,8 @@ class UserProvider with ChangeNotifier {
       var updatedTreasures = List<String>.from(userCompetitor!.treasures);
       if (!updatedTreasures.contains(itemId)) {
         updatedTreasures.add(itemId);
-        var updatedUser = userCompetitor!.copyWith(treasures: updatedTreasures);
-        var result = await _repository.addItemTreasure(updatedUser);
+        var result = await _repository
+            .addItemTreasure(userCompetitor!.copyWith(treasures: updatedTreasures));
         if (result != null) {
           userCompetitor = result;
           return true;
@@ -189,10 +184,26 @@ class UserProvider with ChangeNotifier {
       }
       return false;
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      if (kDebugMode) print(e);
+      return false;
     }
-    return false;
+  }
+
+  /// Admin: awards a badge to a specific competitor
+  Future<void> awardBadge(String competitorUuid, EventBadge badge) async {
+    try {
+      await _repository.awardBadge(competitorUuid, badge);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Admin: resets all competitors after badges have been awarded
+  Future<void> resetAllCompetitors() async {
+    try {
+      await _repository.resetAllCompetitors();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

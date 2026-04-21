@@ -1,3 +1,4 @@
+import 'package:app_events/domain/models/event_badge.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 
 abstract class UserRepository {
@@ -7,6 +8,9 @@ abstract class UserRepository {
   /// Updates the authorization token
   Future<void> updateToken(String token);
 
+  /// Joins the user to an active event, creating competitor record if needed
+  Future<UserCompetitor?> joinEvent(String eventId, UserCompetitor user);
+
   /// Method to add a new friend
   Future<UserCompetitor?> addNewFriend(
     String token,
@@ -14,10 +18,18 @@ abstract class UserRepository {
   );
 
   /// Adds a workshop participant
-  Future<bool> addWorkshop(String uuid, UserCompetitor userCompetitor);
+  Future<bool> addWorkshop(
+    String eventId,
+    String speakerUuid,
+    UserCompetitor userCompetitor,
+  );
 
-  /// Monitors changes in speaker data
-  Future<bool> searchUserInWorkShop(String uuid, UserCompetitor userCompetitor);
+  /// Checks if user is already registered in a workshop
+  Future<bool> searchUserInWorkShop(
+    String eventId,
+    String speakerUuid,
+    UserCompetitor userCompetitor,
+  );
 
   /// Retrieves information about a user by their UUID
   Future<UserCompetitor?> getUserInfo(String uuid);
@@ -25,7 +37,7 @@ abstract class UserRepository {
   /// Streams user information
   Stream<UserCompetitor?> streamInfoUser(UserCompetitor userCompetitor);
 
-  /// creates a new competitor user
+  /// Creates a new competitor user
   Future<UserCompetitor?> addCompetitor(UserCompetitor user);
 
   /// Updates and edits user information
@@ -34,7 +46,7 @@ abstract class UserRepository {
   /// Awards 10 points for participating in quizzes
   Future<void> addScoreAdmin(String uuid);
 
-  /// Searches for a resource in the library
+  /// Searches attendees by name
   Future<List<UserCompetitor>> searchAttendees({String? param});
 
   /// Lists the attendees
@@ -42,4 +54,10 @@ abstract class UserRepository {
 
   /// Adds a treasure item to the user's collection
   Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor);
+
+  /// Awards an event badge to a competitor (admin action)
+  Future<void> awardBadge(String competitorUuid, EventBadge badge);
+
+  /// Resets all competitors (admin action, called after all badges are awarded)
+  Future<void> resetAllCompetitors();
 }

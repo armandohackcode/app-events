@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
@@ -98,7 +99,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                                 placeholder: const AssetImage(
                                   AppAssetsPath.loadingSmallImage,
                                 ),
-                                image: NetworkImage(item.photoUrl),
+                                image: CachedNetworkImageProvider(item.photoUrl),
                               ),
                             ),
                           ),
