@@ -99,6 +99,7 @@ class Speaker {
   );
 
   Map<String, dynamic> toJson() => {
+    "uuid": uuid,
     "limit": limit,
     "current": current,
     "title": title,

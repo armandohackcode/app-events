@@ -1,10 +1,10 @@
-// import 'package:app_events/constants.dart';
 import 'dart:async';
 
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ScheduleDetail extends StatelessWidget {
+  final String eventId;
   final Speaker info;
-  const ScheduleDetail({super.key, required this.info});
+  const ScheduleDetail({super.key, required this.eventId, required this.info});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class ScheduleDetail extends StatelessWidget {
         children: [
           CardSchedule(info: info, showTitle: true, action: false),
           if (info.type == "Taller")
-            ButtonWorkshop(uuid: info.uuid, info: info),
+            ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
           const SizedBox(height: 20),
           const Text(
             AppStrings.scheduleDescription,
@@ -45,17 +46,9 @@ class ScheduleDetail extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               for (var item in info.socialNetwork)
-                SizedBox(
-                  child: InkWell(
-                    child: SvgPicture.asset(
-                      getSVG(item),
-                      width: 60,
-                      height: 40,
-                    ),
-                    onTap: () async {
-                      await laucherUrlInfo(item.link);
-                    },
-                  ),
+                InkWell(
+                  child: SvgPicture.asset(getSVG(item), width: 60, height: 40),
+                  onTap: () async => laucherUrlInfo(item.link),
                 ),
             ],
           ),
@@ -67,9 +60,15 @@ class ScheduleDetail extends StatelessWidget {
 }
 
 class ButtonWorkshop extends StatefulWidget {
+  final String eventId;
   final Speaker info;
   final String uuid;
-  const ButtonWorkshop({super.key, required this.uuid, required this.info});
+  const ButtonWorkshop({
+    super.key,
+    required this.eventId,
+    required this.uuid,
+    required this.info,
+  });
 
   @override
   State<ButtonWorkshop> createState() => _ButtonWorkshopState();
@@ -82,33 +81,31 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final data = Provider.of<ScheduleProvider>(context, listen: false);
-      data.currentSpeaker = null;
-      _sub = data.speakerStream(widget.uuid).listen((speaker) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final scheduleProvider =
+          Provider.of<ScheduleProvider>(context, listen: false);
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+      scheduleProvider.currentSpeaker = null;
+      _sub = scheduleProvider
+          .speakerStream(widget.eventId, widget.uuid)
+          .listen((speaker) {
         if (speaker != null) {
-          data.currentSpeaker = speaker;
-          if (data.currentSpeaker?.current == data.currentSpeaker?.limit) {
+          scheduleProvider.currentSpeaker = speaker;
+          if (scheduleProvider.currentSpeaker?.current ==
+              scheduleProvider.currentSpeaker?.limit) {
             _sub?.cancel();
           }
         }
       });
-      // TO DO
-      // var res = await data.searchUserInWorkShop(widget.uuid);
-      // if (res) {
-      //   setState(() {
-      //     loading = false;
-      //     showMs = true;
-      //   });
-      // } else {
-      //   setState(() {
-      //     loading = false;
-      //     showMs = false;
-      //   });
-      // }
+
+      final alreadyRegistered = await userProvider.searchUserInWorkshop(
+        widget.eventId,
+        widget.uuid,
+      );
       setState(() {
         loading = false;
-        showMs = false;
+        showMs = alreadyRegistered;
       });
     });
     super.initState();
@@ -122,22 +119,20 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<ScheduleProvider>(context);
+    final scheduleProvider = Provider.of<ScheduleProvider>(context);
 
     if (loading) {
       return Center(
         child: LoadingAnimationWidget.staggeredDotsWave(
-          color: Colors.white,
+          color: AppStyles.colorBaseBlue,
           size: 20,
         ),
       );
     }
-    // print(DateTime.parse(widget.info.openDate!)
-    //     .difference(DateTime.now())
-    //     .inSeconds);
-    if ((DateTime.tryParse(
-              widget.info.openDate!,
-            )?.difference(DateTime.now()).inSeconds ??
+
+    if ((DateTime.tryParse(widget.info.openDate ?? '')
+                ?.difference(DateTime.now())
+                .inSeconds ??
             0) >
         0) {
       return Center(
@@ -148,12 +143,13 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
-            " ${AppStrings.scheduleRegistrationOpen} \n ${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}",
+            '${AppStrings.scheduleRegistrationOpen}\n${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}',
             textAlign: TextAlign.center,
           ),
         ),
       );
     }
+
     if (showMs) {
       return const Padding(
         padding: EdgeInsets.all(8.0),
@@ -168,11 +164,12 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
         ),
       );
     }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if ((data.currentSpeaker?.current ?? 0) >=
-            (data.currentSpeaker?.limit ?? -1))
+        if ((scheduleProvider.currentSpeaker?.current ?? 0) >=
+            (scheduleProvider.currentSpeaker?.limit ?? -1))
           const Text(
             AppStrings.scheduleSoldOut,
             style: TextStyle(fontSize: 18, color: AppStyles.colorBaseRed),
@@ -187,16 +184,16 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
               ),
             ),
             onPressed: () async {
-              // TO DO
-              // await data.addWorkshop(widget.uuid);
-              // setState(() {
-              //   showMs = true;
-              // });
+              final userProvider =
+                  Provider.of<UserProvider>(context, listen: false);
+              final ok =
+                  await userProvider.addWorkshop(widget.eventId, widget.uuid);
+              if (ok) setState(() => showMs = true);
             },
             label: const Text(AppStrings.scheduleRegisterNow),
           ),
         Text(
-          "${data.currentSpeaker?.current}/${data.currentSpeaker?.limit}",
+          '${scheduleProvider.currentSpeaker?.current}/${scheduleProvider.currentSpeaker?.limit}',
           style: const TextStyle(fontSize: 18),
         ),
       ],

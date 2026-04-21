@@ -3,7 +3,7 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/attendees_screen.dart';
-import 'package:app_events/ui/screens/schedule/schedule_screen.dart';
+import 'package:app_events/ui/screens/events/events_screen.dart';
 import 'package:app_events/ui/widgets/button_activity.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
@@ -31,7 +31,7 @@ class Home extends StatelessWidget {
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.only(bottom: 5),
-          child: Image.asset(AppAssetsPath.titleEvent, height: 50),
+          child: Image.asset(AppAssetsPath.headerImage, height: 40),
         ),
       ),
       body: SafeArea(
@@ -176,7 +176,7 @@ class CardSchedule extends StatelessWidget {
         onPressed: () {
           Navigator.of(
             context,
-          ).push(CupertinoPageRoute(builder: (_) => const ScheduleScreen()));
+          ).push(CupertinoPageRoute(builder: (_) => const EventsScreen()));
         },
         child: Stack(
           alignment: const Alignment(0, 0),
@@ -184,7 +184,7 @@ class CardSchedule extends StatelessWidget {
             Positioned(
               left: 15,
               child: Image.asset(
-                AppAssetsPath.scheduleIcon,
+                AppAssetsPath.computerIcon,
                 height: MediaQuery.of(context).size.height * 0.08,
               ),
             ),
@@ -200,40 +200,12 @@ class CardSchedule extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Stack(
-                  alignment: Alignment(0, 1.2),
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-
-                      margin: EdgeInsets.only(bottom: 15),
-                      decoration: BoxDecoration(
-                        color: AppStyles.colorBaseRed,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        AppStrings.homeEventDay,
-                        style: TextStyle(
-                          fontSize: 50,
-                          color: AppStyles.fontColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      AppStrings.homeEventMonth,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppStyles.fontColor,
-                      ),
-                    ),
-                  ],
-                ),
                 SizedBox(width: 20),
                 Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: Text(
                     AppStrings.scheduleSchedule,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
