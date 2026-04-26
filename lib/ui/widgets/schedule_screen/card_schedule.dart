@@ -1,19 +1,20 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
-import 'package:app_events/ui/screens/schedule/schedule_detail.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CardSchedule extends StatelessWidget {
   final Speaker info;
   final bool showTitle;
   final bool action;
+  final VoidCallback? onTap;
 
   const CardSchedule({
     required this.info,
     this.showTitle = false,
     this.action = true,
+    this.onTap,
     super.key,
   });
 
@@ -39,14 +40,7 @@ class CardSchedule extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: TextButton(
-        onPressed: () {
-          if (!action) {
-            return;
-          }
-          Navigator.of(context).push(
-            CupertinoPageRoute(builder: (_) => ScheduleDetail(info: info)),
-          );
-        },
+        onPressed: action ? onTap : null,
         style: TextButton.styleFrom(
           padding: const EdgeInsets.all(0),
           shape: RoundedRectangleBorder(
@@ -58,7 +52,7 @@ class CardSchedule extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
-              alignment: Alignment(1, 1),
+              alignment: const Alignment(1, 1),
               children: [
                 Container(
                   decoration: BoxDecoration(
@@ -70,12 +64,11 @@ class CardSchedule extends StatelessWidget {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.width * 0.5,
-
                       child: FadeInImage(
                         placeholder: const AssetImage(
                           AppAssetsPath.loadingSmallImage,
                         ),
-                        image: NetworkImage(info.photoUrl),
+                        image: CachedNetworkImageProvider(info.photoUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -89,7 +82,7 @@ class CardSchedule extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: colorTag(info.technologyType),
                         border: Border.all(color: AppStyles.fontColor),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
                         ),
                       ),
@@ -103,11 +96,11 @@ class CardSchedule extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: AppStyles.colorBaseRed,
                         border: Border.all(color: AppStyles.fontColor),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomRight: Radius.circular(5),
                         ),
                       ),
@@ -136,7 +129,7 @@ class CardSchedule extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     child: Text(
                       info.title,
-                      maxLines: (showTitle) ? 8 : 2,
+                      maxLines: showTitle ? 8 : 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 18,

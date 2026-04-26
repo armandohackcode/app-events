@@ -13,10 +13,18 @@ class CardContent extends StatelessWidget {
       alignment: const Alignment(-0.95, -0.85),
       children: [
         Container(
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: AppStyles.cardColor,
-            border: Border.all(width: 1.5, color: AppStyles.borderColor),
+            border: Border.all(width: 1.5, color: AppStyles.fontColor),
             borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x14000000),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
           height: height,
           width: width,

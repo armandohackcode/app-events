@@ -1,4 +1,5 @@
 import 'package:app_events/domain/datasources/user_datasource.dart';
+import 'package:app_events/domain/models/event_badge.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 
@@ -7,73 +8,71 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this._db);
 
   @override
+  Future<UserCompetitor?> joinEvent(String eventId, UserCompetitor user) =>
+      _db.joinEvent(eventId, user);
+
+  @override
   Future<UserCompetitor?> addNewFriend(
     String token,
     UserCompetitor userCompetitor,
-  ) async {
-    return _db.addNewFriend(token, userCompetitor);
-  }
+  ) =>
+      _db.addNewFriend(token, userCompetitor);
 
   @override
-  Future<void> addScoreAdmin(String uuid) async {
-    return _db.addScoreAdmin(uuid);
-  }
+  Future<void> addScoreAdmin(String uuid) => _db.addScoreAdmin(uuid);
 
   @override
-  Future<bool> addWorkshop(String uuid, UserCompetitor userCompetitor) async {
-    return _db.addWorkshop(uuid, userCompetitor);
-  }
+  Future<bool> addWorkshop(
+    String eventId,
+    String speakerUuid,
+    UserCompetitor userCompetitor,
+  ) =>
+      _db.addWorkshop(eventId, speakerUuid, userCompetitor);
 
   @override
-  Future<UserCompetitor?> addCompetitor(UserCompetitor user) {
-    return _db.addCompetitor(user);
-  }
+  Future<UserCompetitor?> addCompetitor(UserCompetitor user) =>
+      _db.addCompetitor(user);
 
   @override
-  Future<void> editCompetitor(UserCompetitor user) async {
-    return _db.editCompetitor(user);
-  }
+  Future<void> editCompetitor(UserCompetitor user) =>
+      _db.editCompetitor(user);
 
   @override
-  Future<List<UserCompetitor>> getAttendees() async {
-    return _db.getAttendees();
-  }
+  Future<List<UserCompetitor>> getAttendees() => _db.getAttendees();
 
   @override
-  Future<UserCompetitor?> getUserInfo(String uuid) async {
-    return _db.getUserInfo(uuid);
-  }
+  Future<UserCompetitor?> getUserInfo(String uuid) => _db.getUserInfo(uuid);
 
   @override
-  Future<List<UserCompetitor>> searchAttendees({String? param}) async {
-    return _db.searchAttendees(param: param);
-  }
+  Future<List<UserCompetitor>> searchAttendees({String? param}) =>
+      _db.searchAttendees(param: param);
 
   @override
   Future<bool> searchUserInWorkShop(
-    String uuid,
+    String eventId,
+    String speakerUuid,
     UserCompetitor userCompetitor,
-  ) async {
-    return _db.searchUserInWorkShop(uuid, userCompetitor);
-  }
+  ) =>
+      _db.searchUserInWorkShop(eventId, speakerUuid, userCompetitor);
 
   @override
-  Stream<UserCompetitor?> streamInfoUser(UserCompetitor userCompetitor) async* {
-    yield* _db.streamInfoUser(userCompetitor);
-  }
+  Stream<UserCompetitor?> streamInfoUser(UserCompetitor userCompetitor) =>
+      _db.streamInfoUser(userCompetitor);
 
   @override
-  Future<void> updateToken(String token) async {
-    return _db.updateToken(token);
-  }
+  Future<void> updateToken(String token) => _db.updateToken(token);
 
   @override
-  Future<bool> validateIsAdmin(String uuid) async {
-    return _db.validateIsAdmin(uuid);
-  }
+  Future<bool> validateIsAdmin(String uuid) => _db.validateIsAdmin(uuid);
 
   @override
-  Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor) {
-    return _db.addItemTreasure(userCompetitor);
-  }
+  Future<UserCompetitor?> addItemTreasure(UserCompetitor userCompetitor) =>
+      _db.addItemTreasure(userCompetitor);
+
+  @override
+  Future<void> awardBadge(String competitorUuid, EventBadge badge) =>
+      _db.awardBadge(competitorUuid, badge);
+
+  @override
+  Future<void> resetAllCompetitors() => _db.resetAllCompetitors();
 }

@@ -16,25 +16,25 @@ class AppTheme {
       fontFamily: 'GoogleSans',
     ),
     inputDecorationTheme: InputDecorationTheme(
-      hintStyle: const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+      hintStyle: const TextStyle(color: AppStyles.fontSecondaryColor),
       border: InputBorder.none,
       contentPadding: const EdgeInsets.all(9),
-      fillColor: const Color.fromARGB(255, 33, 33, 33),
+      fillColor: Colors.white,
       filled: true,
-      enabledBorder: borderInput(),
-      focusedErrorBorder: borderInput(),
-      focusedBorder: borderInput(),
+      enabledBorder: borderInput(color: AppStyles.borderColor),
+      focusedErrorBorder: borderInput(color: AppStyles.colorBaseBlue),
+      focusedBorder: borderInput(color: AppStyles.colorBaseBlue),
       errorBorder: borderInput(color: Colors.red),
     ),
     dropdownMenuTheme: DropdownMenuThemeData(
       inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
         contentPadding: const EdgeInsets.all(9),
-        fillColor: const Color.fromARGB(255, 77, 77, 77),
+        fillColor: Colors.white,
         filled: true,
-        enabledBorder: borderInput(),
-        focusedErrorBorder: borderInput(),
-        focusedBorder: borderInput(),
+        enabledBorder: borderInput(color: AppStyles.borderColor),
+        focusedErrorBorder: borderInput(color: AppStyles.colorBaseBlue),
+        focusedBorder: borderInput(color: AppStyles.colorBaseBlue),
         errorBorder: borderInput(color: Colors.red),
       ),
     ),
@@ -44,6 +44,8 @@ class AppTheme {
       centerTitle: true,
       elevation: 0,
       foregroundColor: AppStyles.fontColor,
+      shadowColor: AppStyles.borderColor,
+      surfaceTintColor: Colors.transparent,
       titleTextStyle: TextStyle(
         color: AppStyles.fontColor,
         fontSize: 22,
@@ -51,7 +53,7 @@ class AppTheme {
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: AppStyles.fontColor,
+      foregroundColor: Colors.white,
       backgroundColor: AppStyles.colorBaseBlue,
     ),
     textButtonTheme: TextButtonThemeData(
@@ -59,13 +61,14 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        foregroundColor: AppStyles.fontSecondaryColor,
+        backgroundColor: AppStyles.colorBaseBlue,
+        foregroundColor: Colors.white,
       ),
     ),
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: AppStyles.colorBaseRed,
-      circularTrackColor: const Color.fromARGB(255, 237, 175, 169),
+      color: AppStyles.colorBaseBlue,
+      circularTrackColor: const Color(0xFFBBD6FF),
     ),
-    primarySwatch: Colors.red,
+    primarySwatch: Colors.blue,
   );
 }

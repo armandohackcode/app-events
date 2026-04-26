@@ -86,6 +86,7 @@ class AppStrings {
       "Escanea el código QR de tu manilla";
   static const String scanMessageAddedFriend = "Añadiste a un nuevo amigo";
   static const String scanMessageInvalidQR = "QR no válido";
+  static const String scanCameraPermissionDenied = "Permiso de cámara denegado";
 
   // resource library
 
@@ -181,4 +182,32 @@ class AppStrings {
       "Ocurrió un error al registrar el sponsor";
 
   static String resourceLibraryNoData = "No hay recursos disponibles";
+
+  // Events
+  static const String eventsTitle = 'Eventos';
+  static const String eventsNoData = 'No hay eventos disponibles';
+  static const String eventNew = 'Nuevo evento';
+  static const String eventStartDate = 'Fecha de inicio';
+  static const String eventEndDate = 'Fecha de cierre';
+  static const String eventSelectDate = 'Seleccionar fecha';
+  static const String eventLocationUrl = 'Link de ubicación (Google Maps)';
+  static const String eventImageUrl = 'URL de imagen del evento';
+  static const String eventValidationRequired =
+      'Título y fechas son obligatorios';
+  static const String eventViewSchedule = 'Ver agenda';
+  static const String eventJoin = 'Unirse';
+  static const String eventViewLocation = 'Ver ubicación';
+  static const String eventJoinSuccess = '¡Te uniste al evento ';
+  static const String eventStatusUpcoming = 'Próximo';
+  static const String eventStatusActive = 'Activo';
+  static const String eventStatusFinished = 'Finalizado';
+  static const String eventAdminMarkUpcoming = 'Marcar como próximo';
+  static const String eventAdminActivate = 'Activar evento';
+  static const String eventAdminClose = 'Cerrar evento';
+  static const String eventSelectImage = 'Seleccionar imagen';
+  static const String eventChangeImage = 'Cambiar imagen';
+  static const String eventEdit = 'Editar evento';
+  static const String eventSaveChanges = 'Guardar cambios';
+  static const String eventUpdatedSuccess = 'Evento actualizado correctamente';
+  static const String eventAlreadyJoined = 'Ya te uniste a este evento';
 }

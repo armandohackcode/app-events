@@ -50,7 +50,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       appBar: AppBar(
         title: Padding(
           padding: const EdgeInsets.only(bottom: 5),
-          child: Image.asset(AppAssetsPath.titleEvent, height: 50),
+          child: Image.asset(AppAssetsPath.headerImage, height: 40),
         ),
       ),
       body: RefreshIndicator(

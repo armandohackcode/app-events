@@ -9,7 +9,6 @@ class ScheduleProvider with ChangeNotifier {
   Speaker? _currentSpeaker;
   List<Speaker> _schedule = [];
   bool _loadingSchedule = false;
-
   bool _loadingNewSchedule = false;
 
   bool get loadingSchedule => _loadingSchedule;
@@ -25,7 +24,6 @@ class ScheduleProvider with ChangeNotifier {
   }
 
   List<Speaker> get schedule => _schedule;
-
   set schedule(List<Speaker> list) {
     _schedule = list;
     notifyListeners();
@@ -37,28 +35,27 @@ class ScheduleProvider with ChangeNotifier {
     notifyListeners();
   }
 
-// Load schedule from repository
-  Future<void> loadSchedule() async {
+  Future<void> loadSchedule(String eventId) async {
     try {
       loadingSchedule = true;
-      var data = await _repository.getListSchedule();
-      schedule = data;
+      schedule = await _repository.getListSchedule(eventId);
       loadingSchedule = false;
     } catch (e) {
+      loadingSchedule = false;
       rethrow;
     }
   }
 
-  Stream<Speaker?> speakerStream(String uuid) {
-    return _repository.speakerStream(uuid);
-  }
+  Stream<Speaker?> speakerStream(String eventId, String speakerUuid) =>
+      _repository.speakerStream(eventId, speakerUuid);
 
-  Future<void> addNewSchedule(Speaker speaker) async {
+  Future<void> addNewSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
     try {
       loadingNewSchedule = true;
-      await _repository.addNewSchedule(speaker);
+      await _repository.addNewSchedule(eventId, speaker, imagePath: imagePath);
       loadingNewSchedule = false;
     } catch (e) {
+      loadingNewSchedule = false;
       rethrow;
     }
   }

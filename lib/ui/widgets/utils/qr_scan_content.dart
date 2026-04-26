@@ -301,7 +301,7 @@ class _QRScanContentState extends State<QRScanContent>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Permiso de cámara denegado'),
+            content: Text(AppStrings.scanCameraPermissionDenied),
             duration: Duration(seconds: 3),
           ),
         );
@@ -318,6 +318,7 @@ class _QRScanContentState extends State<QRScanContent>
     try {
       await _subscription?.cancel();
       await controller?.pauseCamera();
+      // ignore: deprecated_member_use
       controller?.dispose();
     } catch (e) {
       log('Error cleaning up camera: $e');

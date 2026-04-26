@@ -3,8 +3,8 @@ class AppAssetsPath {
   static const String logoGDGSucre = 'assets/img/gdgsucre-logo.png';
   static const String loadingAnimation = 'assets/img/devfest-animation.gif';
   static const String loadingSmallImage = 'assets/img/loading-google.gif';
-  static const String titleEvent = 'assets/img/title-devfest.png';
-  static const String headerImage = 'assets/img/header-image.png';
+  static const String titleEvent = 'assets/img/title-event.png';
+  static const String headerImage = 'assets/img/gdg-header.png';
   static const String footerImage = 'assets/img/footer-image.png';
   static const String centerImage = 'assets/img/center-login.png';
 
@@ -15,6 +15,7 @@ class AppAssetsPath {
   static const String dinoWriteIcon = 'assets/img/dino-write.png';
   static const String dinoRunIcon = 'assets/img/dino-runs.png';
   static const String firePedExplorerIcon = 'assets/img/sparky-explorer.png';
+  static const String computerIcon = 'assets/img/computer-icon.png';
 
   static const String firePedIcon = 'assets/img/fire-ped.png';
 

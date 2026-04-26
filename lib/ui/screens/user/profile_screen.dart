@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
@@ -58,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final data = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(AppAssetsPath.titleEvent, height: 50),
+        title: Image.asset(AppAssetsPath.headerImage, height: 40),
         actions: [
           IconButton(
             onPressed: () async {
@@ -99,20 +101,25 @@ class HeaderProfile extends StatelessWidget {
     final data = Provider.of<UserProvider>(context);
     return CardContent(
       child: LayoutBuilder(
-        builder: (context, constraints){
+        builder: (context, constraints) {
           final imageSize = constraints.maxWidth * 0.20;
           return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(constraints.maxWidth * 0.02),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(constraints.maxWidth * 0.02),
                 child: ClipOval(
                   child: (auth.userInfo.photoURL != null)
-                      ? Image.network(
-                          auth.userInfo.photoURL!,
+                      ? CachedNetworkImage(
+                          imageUrl: auth.userInfo.photoURL!,
                           fit: BoxFit.cover,
                           width: imageSize,
                           height: imageSize,
+                          errorWidget: (ctx, url, err) => Image.asset(
+                            AppAssetsPath.firePedIcon,
+                            width: imageSize,
+                            height: imageSize,
+                          ),
                         )
                       : Image.asset(
                           AppAssetsPath.firePedIcon,
@@ -120,90 +127,90 @@ class HeaderProfile extends StatelessWidget {
                           height: imageSize,
                         ),
                 ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Text(
-                        data.userCompetitor?.name ??
-                            auth.userInfo.displayName ??
-                            AppStrings.commonWordAnonymous,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppStyles.fontColor,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Text(
+                          data.userCompetitor?.name ??
+                              auth.userInfo.displayName ??
+                              AppStrings.commonWordAnonymous,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppStyles.fontColor,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Text(
-                        data.userCompetitor?.profession ?? '-',
-                        style: const TextStyle(
-                          color: AppStyles.fontColor,
-                          fontWeight: FontWeight.normal,
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Text(
+                          data.userCompetitor?.profession ?? '-',
+                          style: const TextStyle(
+                            color: AppStyles.fontColor,
+                            fontWeight: FontWeight.normal,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                (data.userCompetitor?.score ?? 0).toString(),
-                                style: const TextStyle(fontSize: 28),
-                              ),
-                              const Text(
-                                AppStrings.commonWordPoints,
-                                style: TextStyle(height: 0.6),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                (data.userCompetitor?.friends.length ?? 0)
-                                    .toString(),
-                                style: const TextStyle(fontSize: 28),
-                              ),
-                              const Text(
-                                AppStrings.commonWordConnections,
-                                style: TextStyle(height: 0.6),
-                              ),
-                            ],
-                          ),
-                        ],
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  (data.userCompetitor?.score ?? 0).toString(),
+                                  style: const TextStyle(fontSize: 28),
+                                ),
+                                const Text(
+                                  AppStrings.commonWordPoints,
+                                  style: TextStyle(height: 0.6),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  (data.userCompetitor?.friends.length ?? 0)
+                                      .toString(),
+                                  style: const TextStyle(fontSize: 28),
+                                ),
+                                const Text(
+                                  AppStrings.commonWordConnections,
+                                  style: TextStyle(height: 0.6),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        );},
+            ],
+          );
+        },
       ),
-    );  }
+    );
+  }
 }
-
-          
 
 class BodyProfile extends StatelessWidget {
   const BodyProfile({super.key});
@@ -444,7 +451,7 @@ class CardNetworking extends StatelessWidget {
                           placeholder: const AssetImage(
                             AppAssetsPath.loadingSmallImage,
                           ),
-                          image: NetworkImage(friend.photoUrl),
+                          image: CachedNetworkImageProvider(friend.photoUrl),
                         ),
                 ),
               ),
