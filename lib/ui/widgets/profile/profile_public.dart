@@ -52,6 +52,7 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                             left: 20,
                             right: 20,
                           ),
+                          padding: const EdgeInsets.all(15),
                           // height: 200,
                           width: 300,
                           decoration: BoxDecoration(
@@ -59,7 +60,7 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
                               width: 1.5,
-                              color: AppStyles.borderColor,
+                              color: AppStyles.fontColor,
                             ),
                           ),
                           child: Column(
@@ -88,7 +89,7 @@ class _ModalProfilePublicState extends State<ModalProfilePublic> {
                         ),
                       ],
                     ),
-                    Image.asset(AppAssetsPath.dinoWriteIcon, width: 120),
+                    Image.asset(AppAssetsPath.dinoRunIcon, width: 120),
                   ],
                 ),
               ],

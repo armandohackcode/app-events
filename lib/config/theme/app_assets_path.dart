@@ -14,9 +14,8 @@ class AppAssetsPath {
   static const String discordIcon = 'assets/img/icon-discord.svg';
   static const String dinoWriteIcon = 'assets/img/dino-write.png';
   static const String dinoRunIcon = 'assets/img/dino-runs.png';
-  static const String firePedExplorerIcon = 'assets/img/sparky-explorer.png';
+  static const String firePedExplorerIcon = 'assets/img/sparky-explorerwhite.png';
   static const String computerIcon = 'assets/img/computer-icon.png';
-
   static const String firePedIcon = 'assets/img/fire-ped.png';
 
   // icons
@@ -29,8 +28,7 @@ class AppAssetsPath {
   static const String iconGoogle = "assets/img/icon-google.svg";
   static const String iconApple = "assets/img/icon-apple.svg";
   static const String iconFacebook = "assets/img/facebook-1-svgrepo-com.svg";
-  static const String iconInstagram =
-      "assets/img/instagram-2016-logo-svgrepo-com.svg";
+  static const String iconInstagram ="assets/img/instagram-2016-logo-svgrepo-com.svg";
   static const String iconLinkedIn = "assets/img/linkedin-svgrepo-com.svg";
   static const String iconTwitter = "assets/img/twitter-3-logo-svgrepo-com.svg";
   static const String iconGithub = 'assets/img/github-142-svgrepo-com.svg';

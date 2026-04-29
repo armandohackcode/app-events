@@ -69,7 +69,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                         icon: const Icon(
                           Icons.add_business,
                           size: 32,
-                          color: AppStyles.borderColor,
+                          color: Color.fromARGB(255, 12, 11, 11),
                         ),
                       ),
                   ],
@@ -80,7 +80,11 @@ class _SponsorsContentState extends State<SponsorsContent> {
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: AppStyles.fontColor,
+                    color: AppStyles.cardColor,
+                    border: Border.all(
+                      width: 1.5,
+                      color: AppStyles.fontColor,
+                    ),
                   ),
                   child: Wrap(
                     children: [
