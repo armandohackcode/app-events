@@ -52,7 +52,7 @@ class Home extends StatelessWidget {
                 ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
               },
               text: AppStrings.homeTournamentGDG,
-              icon: Image.asset(AppAssetsPath.trophyIcon, height: 60),
+              icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
             ),
             const SizedBox(height: 20),
             ButtonActivity(
