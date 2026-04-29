@@ -87,21 +87,97 @@ class _SponsorsContentState extends State<SponsorsContent> {
                       for (var item in dataCenter.sponsors)
                         Tooltip(
                           message: item.name,
-                          child: TextButton(
-                            onPressed: () async {
-                              await laucherUrlInfo(item.link);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.all(5),
-                              width: MediaQuery.of(context).size.width * 0.35,
-                              // height: MediaQuery.of(context).size.width * 0.35,
-                              child: FadeInImage(
-                                placeholder: const AssetImage(
-                                  AppAssetsPath.loadingSmallImage,
+                          child: Stack(
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  await laucherUrlInfo(item.link);
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.all(5),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.35,
+                                  child: FadeInImage(
+                                    placeholder: const AssetImage(
+                                      AppAssetsPath.loadingSmallImage,
+                                    ),
+                                    image: CachedNetworkImageProvider(
+                                      item.photoUrl,
+                                    ),
+                                  ),
                                 ),
-                                image: CachedNetworkImageProvider(item.photoUrl),
                               ),
-                            ),
+                              if (userProvider.isAdmin)
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      if (item.id == null) return;
+
+                                      final confirm = await showDialog<bool>(
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                          title: const Text('Eliminar sponsor'),
+                                          content: Text(
+                                            '¿Estás seguro de eliminar a ${item.name}?',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(
+                                                context,
+                                              ).pop(false),
+                                              child: const Text('Cancelar'),
+                                            ),
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppStyles.colorBaseRed,
+                                              ),
+                                              onPressed: () => Navigator.of(
+                                                context,
+                                              ).pop(true),
+                                              child: const Text(
+                                                'Eliminar',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
+                                      if (confirm != true) {
+                                        return;
+                                      }
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (_) => const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+
+                                      await dataCenter.deleteSponsor(item.id!);
+
+                                      if (context.mounted) {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      }
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: AppStyles.colorBaseRed,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                     ],

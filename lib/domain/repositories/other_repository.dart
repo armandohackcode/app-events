@@ -18,4 +18,7 @@ abstract class OtherRepository {
 
   /// List treasure hunt items
   Future<List<TreasureHuntModel>> getTreasureHuntItems();
+
+  /// Deletes a sponsor by id
+  Future<void> deleteSponsor(String sponsorId);
 }

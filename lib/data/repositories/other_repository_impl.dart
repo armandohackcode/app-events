@@ -35,4 +35,9 @@ class OtherRepositoryImpl implements OtherRepository {
   Future<List<TreasureHuntModel>> getTreasureHuntItems() {
     return _db.getTreasureHuntItems();
   }
+
+  @override
+  Future<void> deleteSponsor(String sponsorId) async {
+    await _db.deleteSponsor(sponsorId);
+  }
 }

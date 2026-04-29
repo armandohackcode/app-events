@@ -54,7 +54,11 @@ class FirebaseOtherDatasource implements OtherDatasource {
           .collection("sponsors")
           .orderBy("createdAt", descending: false)
           .get();
-      var info = res.docs.map((e) => Sponsor.fromJson(e.data())).toList();
+      var info = res.docs.map((e) {
+        final data = e.data();
+        data['id'] = e.id;
+        return Sponsor.fromJson(data);
+      }).toList();
       return info;
     } catch (e) {
       rethrow;
@@ -93,6 +97,15 @@ class FirebaseOtherDatasource implements OtherDatasource {
           .map((e) => TreasureHuntModel.fromJson(e.data()))
           .toList();
       return info;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteSponsor(String sponsorId) async {
+    try {
+      await _db.collection('sponsors').doc(sponsorId).delete();
     } catch (e) {
       rethrow;
     }
