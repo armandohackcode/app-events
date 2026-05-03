@@ -134,7 +134,7 @@ class _QRScanContentState extends State<QRScanContent>
                           Container(
                             margin: const EdgeInsets.all(8),
                             child: IconButton(
-                              color: const Color.fromARGB(255, 216, 25, 11),
+                              color: AppStyles.colorFlashRed,
                               onPressed: () async {
                                 await controller?.toggleFlash();
                                 setState(() {});
@@ -237,8 +237,8 @@ class _QRScanContentState extends State<QRScanContent>
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
                               widget.msg,
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 0, 0, 0),
+                              style: TextStyle(
+                                color: AppStyles.fontColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
