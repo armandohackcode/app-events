@@ -80,7 +80,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                   padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    color: AppStyles.fontColor,
+                    color: AppStyles.colorCardBlue,
                   ),
                   child: Wrap(
                     children: [

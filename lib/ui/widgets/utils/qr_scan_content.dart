@@ -238,7 +238,7 @@ class _QRScanContentState extends State<QRScanContent>
                             child: Text(
                               widget.msg,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: AppStyles.fontColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
