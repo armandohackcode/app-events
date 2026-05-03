@@ -81,6 +81,18 @@ class OtherProvider with ChangeNotifier {
     }
   }
 
+  Future<void> deleteSponsor(String sponsorId) async {
+    loadingSponsor = true;
+    try {
+      await _otherRepository.deleteSponsor(sponsorId);
+      sponsors = await _otherRepository.getSponsors();
+    } catch (e) {
+      rethrow;
+    } finally {
+      loadingSponsor = false;
+    }
+  }
+
   Future<void> getTreasureHuntItems() async {
     try {
       loadingTreasureHunt = true;
