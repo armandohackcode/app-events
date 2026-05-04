@@ -69,7 +69,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                         icon: const Icon(
                           Icons.add_business,
                           size: 32,
-                          color: AppStyles.borderColor,
+                          color: AppStyles.fontColor,
                         ),
                       ),
                   ],

@@ -134,7 +134,7 @@ class _QRScanContentState extends State<QRScanContent>
                           Container(
                             margin: const EdgeInsets.all(8),
                             child: IconButton(
-                              color: Colors.red,
+                              color: AppStyles.colorFlashRed,
                               onPressed: () async {
                                 await controller?.toggleFlash();
                                 setState(() {});
