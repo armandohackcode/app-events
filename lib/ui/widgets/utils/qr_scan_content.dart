@@ -237,7 +237,7 @@ class _QRScanContentState extends State<QRScanContent>
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
                               widget.msg,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppStyles.fontColor,
                                 fontWeight: FontWeight.bold,
                               ),
