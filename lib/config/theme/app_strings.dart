@@ -45,12 +45,21 @@ class AppStrings {
 
   static const String scheduleSoldOut = "⚠️ Entradas agotadas";
   static const String scheduleRegisterNow = "Obtener un entrada";
+  static const String scheduleEditEntry = 'Editar actividad';
+  static const String scheduleDeleteEntry = 'Eliminar actividad';
+  static const String scheduleDeleteConfirmTitle = '¿Eliminar esta actividad?';
+  static const String scheduleDeleteConfirmBody =
+      'Esta acción no se puede deshacer.';
+  static const String scheduleDeleteSuccess = 'Actividad eliminada';
+  static const String scheduleUpdateSuccess =
+      'Actividad actualizada correctamente';
 
   // home
   static const String homeEventDay = "15";
   static const String homeEventMonth = "Noviembre";
   static const String homeEventJoinActivities = "Únete a las actividades";
   static const String homeTournamentGDG = "Torneo GDG Sucre";
+  static const String homeSpeedRunBuild = "SpeedRun Build";
   static const String homeMeetCommunity = "Conoce a la comunidad";
   static const String homeTreasureBunt = "Búsqueda del tesoro";
   static const String homeJoinDiscord = "Únete al canal en Discord";
@@ -182,6 +191,19 @@ class AppStrings {
       "Ocurrió un error al registrar el sponsor";
 
   static String resourceLibraryNoData = "No hay recursos disponibles";
+
+  // SpeedRun Build
+  static const String speedRunTitle = 'SpeedRun Build';
+  static const String speedRunNoData = 'No hay challenges disponibles';
+  static const String speedRunChallengeActive = 'Activo';
+  static const String speedRunChallengeInactive = 'Inactivo';
+  static const String speedRunAddChallenge = 'Nuevo Challenge';
+  static const String speedRunChallengeContent = 'Contenido (HTML)';
+  static const String speedRunChallengePosition = 'Posición';
+  static const String speedRunChallengeState = 'Estado';
+  static const String speedRunAddSuccess = 'Challenge creado correctamente';
+  static const String speedRunAddValidation =
+      'El título y el contenido son obligatorios';
 
   // Events
   static const String eventsTitle = 'Eventos';

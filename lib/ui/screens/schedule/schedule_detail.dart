@@ -6,7 +6,9 @@ import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
+import 'package:app_events/ui/widgets/schedule_screen/edit_schedule.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -17,10 +19,64 @@ class ScheduleDetail extends StatelessWidget {
   final Speaker info;
   const ScheduleDetail({super.key, required this.eventId, required this.info});
 
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text(AppStrings.scheduleDeleteConfirmTitle),
+        content: const Text(AppStrings.scheduleDeleteConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text(AppStrings.commonWordCancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppStyles.colorBaseRed,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(AppStrings.commonWordDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !context.mounted) return;
+    final scheduleProvider =
+        Provider.of<ScheduleProvider>(context, listen: false);
+    await scheduleProvider.deleteSchedule(eventId, info.uuid);
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+    customSnackbar(context, AppStrings.scheduleDeleteSuccess);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isAdmin = Provider.of<UserProvider>(context, listen: false).isAdmin;
     return Scaffold(
-      appBar: AppBar(title: Text(info.type)),
+      appBar: AppBar(
+        title: Text(info.type),
+        actions: [
+          if (isAdmin) ...[
+            IconButton(
+              tooltip: AppStrings.scheduleEditEntry,
+              icon: const Icon(Icons.edit_outlined, size: 22),
+              onPressed: () => Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (_) =>
+                      EditSchedule(eventId: eventId, info: info),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: AppStrings.scheduleDeleteEntry,
+              icon: const Icon(Icons.delete_outline, size: 22),
+              onPressed: () => _confirmDelete(context),
+            ),
+          ],
+        ],
+      ),
+
       body: ListView(
         padding: const EdgeInsets.all(15),
         children: [
@@ -82,22 +138,24 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final scheduleProvider =
-          Provider.of<ScheduleProvider>(context, listen: false);
+      final scheduleProvider = Provider.of<ScheduleProvider>(
+        context,
+        listen: false,
+      );
       final userProvider = Provider.of<UserProvider>(context, listen: false);
 
       scheduleProvider.currentSpeaker = null;
-      _sub = scheduleProvider
-          .speakerStream(widget.eventId, widget.uuid)
-          .listen((speaker) {
-        if (speaker != null) {
-          scheduleProvider.currentSpeaker = speaker;
-          if (scheduleProvider.currentSpeaker?.current ==
-              scheduleProvider.currentSpeaker?.limit) {
-            _sub?.cancel();
+      _sub = scheduleProvider.speakerStream(widget.eventId, widget.uuid).listen(
+        (speaker) {
+          if (speaker != null) {
+            scheduleProvider.currentSpeaker = speaker;
+            if (scheduleProvider.currentSpeaker?.current ==
+                scheduleProvider.currentSpeaker?.limit) {
+              _sub?.cancel();
+            }
           }
-        }
-      });
+        },
+      );
 
       final alreadyRegistered = await userProvider.searchUserInWorkshop(
         widget.eventId,
@@ -130,9 +188,9 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
       );
     }
 
-    if ((DateTime.tryParse(widget.info.openDate ?? '')
-                ?.difference(DateTime.now())
-                .inSeconds ??
+    if ((DateTime.tryParse(
+              widget.info.openDate ?? '',
+            )?.difference(DateTime.now()).inSeconds ??
             0) >
         0) {
       return Center(
@@ -184,10 +242,14 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
               ),
             ),
             onPressed: () async {
-              final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
-              final ok =
-                  await userProvider.addWorkshop(widget.eventId, widget.uuid);
+              final userProvider = Provider.of<UserProvider>(
+                context,
+                listen: false,
+              );
+              final ok = await userProvider.addWorkshop(
+                widget.eventId,
+                widget.uuid,
+              );
               if (ok) setState(() => showMs = true);
             },
             label: const Text(AppStrings.scheduleRegisterNow),

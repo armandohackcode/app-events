@@ -21,4 +21,12 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   @override
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid) =>
       _db.speakerStream(eventId, speakerUuid);
+
+  @override
+  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) =>
+      _db.updateSchedule(eventId, speaker, imagePath: imagePath);
+
+  @override
+  Future<void> deleteSchedule(String eventId, String speakerUuid) =>
+      _db.deleteSchedule(eventId, speakerUuid);
 }

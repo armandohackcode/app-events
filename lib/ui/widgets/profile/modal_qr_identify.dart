@@ -13,12 +13,15 @@ class ModalQrIdentify extends StatelessWidget {
       backgroundColor: AppStyles.backgroundColor,
       children: [
         // const SizedBox(height: 15),
-        Image.asset(AppAssetsPath.titleEvent),
+        Padding(
+          padding: const EdgeInsets.all(15),
+          child: Image.asset(AppAssetsPath.titleEvent),
+        ),
         const SizedBox(height: 15),
         Container(
           margin: const EdgeInsets.all(15),
           alignment: Alignment.bottomCenter,
-          decoration: const BoxDecoration(color: AppStyles.fontColor),
+          decoration: const BoxDecoration(color: AppStyles.cardColor),
           child: SizedBox(
             width: 260,
             height: 260,

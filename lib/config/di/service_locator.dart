@@ -2,24 +2,29 @@ import 'package:app_events/data/datasources/firebase_event_datasource.dart';
 import 'package:app_events/data/datasources/firebase_other_datasource.dart';
 import 'package:app_events/data/datasources/firebase_resource_datasource.dart';
 import 'package:app_events/data/datasources/firebase_schedule_datasource.dart';
+import 'package:app_events/data/datasources/firebase_speed_run_datasource.dart';
 import 'package:app_events/data/datasources/firebase_user_datasource.dart';
 import 'package:app_events/data/repositories/event_repository_impl.dart';
 import 'package:app_events/data/repositories/other_repository_impl.dart';
 import 'package:app_events/data/repositories/resource_repository_impl.dart';
 import 'package:app_events/data/repositories/schedule_repository_impl.dart';
+import 'package:app_events/data/repositories/speed_run_repository_impl.dart';
 import 'package:app_events/data/repositories/user_repository_impl.dart';
 import 'package:app_events/domain/datasources/event_datasource.dart';
 import 'package:app_events/domain/datasources/other_datasource.dart';
 import 'package:app_events/domain/datasources/resource_datasource.dart';
 import 'package:app_events/domain/datasources/schedule_datasource.dart';
+import 'package:app_events/domain/datasources/speed_run_datasource.dart';
 import 'package:app_events/domain/datasources/user_datasource.dart';
 import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
+import 'package:app_events/domain/repositories/speed_run_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/speed_run_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,6 +53,9 @@ void setupServiceLocator() {
   sl.registerLazySingleton<OtherDatasource>(
     () => FirebaseOtherDatasource(sl(), sl()),
   );
+  sl.registerLazySingleton<SpeedRunDatasource>(
+    () => FirebaseSpeedRunDatasource(sl(), sl()),
+  );
 
   sl.registerLazySingleton<EventRepository>(() => EventRepositoryImpl(sl()));
   sl.registerLazySingleton<ScheduleRepository>(
@@ -58,8 +66,12 @@ void setupServiceLocator() {
   );
   sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
   sl.registerLazySingleton<OtherRepository>(() => OtherRepositoryImpl(sl()));
+  sl.registerLazySingleton<SpeedRunRepository>(
+    () => SpeedRunRepositoryImpl(sl()),
+  );
 
   sl.registerFactory(() => EventProvider(sl<EventRepository>()));
+  sl.registerFactory(() => SpeedRunProvider(sl<SpeedRunRepository>()));
   sl.registerFactory(() => UserProvider(sl<UserRepository>()));
   sl.registerFactory(
     () => SignInSocialNetworkProvider(
