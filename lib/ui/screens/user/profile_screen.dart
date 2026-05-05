@@ -10,7 +10,7 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/delete_account.dart';
-import 'package:app_events/ui/screens/home/home.dart';
+// import 'package:app_events/ui/screens/home/home.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/profile/edit_profile.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
@@ -84,9 +84,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (data.userCompetitor != null) const BodyProfile(),
         ],
       ),
-      floatingActionButton: (data.userCompetitor != null)
-          ? const ButtonScan()
-          : null,
+
+      // floatingActionButton: (data.userCompetitor != null)
+      //     ? const ButtonScan()
+      //     : null,
     );
   }
 }

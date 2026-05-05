@@ -6,11 +6,13 @@ import 'package:app_events/config/theme/app_theme.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
+import 'package:app_events/domain/repositories/speed_run_repository.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/speed_run_provider.dart';
 import 'package:app_events/firebase_options.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/home/bottom_custom_nav.dart';
@@ -44,6 +46,9 @@ class MyApp extends StatelessWidget {
       ),
       ChangeNotifierProvider(
         create: (_) => ResourcesProvider(sl<ResourceRepository>()),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => SpeedRunProvider(sl<SpeedRunRepository>()),
       ),
     ];
   }

@@ -13,4 +13,10 @@ abstract class ScheduleRepository {
 
   /// Listens for changes in a specific speaker within the given event
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid);
+
+  /// Updates an existing schedule entry. Uploads a new photo if [imagePath] is provided.
+  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath});
+
+  /// Permanently deletes a schedule entry from the given event.
+  Future<void> deleteSchedule(String eventId, String speakerUuid);
 }

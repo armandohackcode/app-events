@@ -57,4 +57,33 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
           (e) => e.exists ? Speaker.fromJson(e.data()!) : null,
         );
   }
+
+  @override
+  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+    try {
+      String photoUrl = speaker.photoUrl;
+      if (imagePath != null && imagePath.isNotEmpty) {
+        final storageRef = _storage
+            .ref()
+            .child('speakers')
+            .child('${DateTime.now().millisecondsSinceEpoch}');
+        await storageRef.putFile(File(imagePath));
+        photoUrl = await storageRef.getDownloadURL();
+      }
+      await _scheduleRef(eventId)
+          .doc(speaker.uuid)
+          .update(speaker.copyWith(photoUrl: photoUrl).toJson());
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteSchedule(String eventId, String speakerUuid) async {
+    try {
+      await _scheduleRef(eventId).doc(speakerUuid).delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

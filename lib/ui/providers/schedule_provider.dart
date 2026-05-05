@@ -59,4 +59,25 @@ class ScheduleProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+    try {
+      loadingNewSchedule = true;
+      await _repository.updateSchedule(eventId, speaker, imagePath: imagePath);
+      await loadSchedule(eventId);
+      loadingNewSchedule = false;
+    } catch (e) {
+      loadingNewSchedule = false;
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSchedule(String eventId, String speakerUuid) async {
+    try {
+      await _repository.deleteSchedule(eventId, speakerUuid);
+      schedule = schedule.where((s) => s.uuid != speakerUuid).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

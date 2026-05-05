@@ -4,12 +4,13 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/attendees_screen.dart';
 import 'package:app_events/ui/screens/events/events_screen.dart';
+import 'package:app_events/ui/screens/speed_run/speed_run_screen.dart';
 import 'package:app_events/ui/widgets/button_activity.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
-import 'package:app_events/ui/widgets/home/ranking_data.dart';
+// import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
-import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
+// import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
 import 'package:app_events/ui/widgets/utils/qr_scan_content.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,24 +47,32 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ButtonActivity(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
-              },
-              text: AppStrings.homeTournamentGDG,
-              icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
+              onPressed: () => Navigator.of(context).push(
+                CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
+              ),
+              text: AppStrings.homeSpeedRunBuild,
+              icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
             ),
-            const SizedBox(height: 20),
-            ButtonActivity(
-              icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
-              text: AppStrings.homeTreasureBunt,
-              onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
-                );
-              },
-            ),
+            // const SizedBox(height: 20),
+            // ButtonActivity(
+            //   onPressed: () {
+            //     Navigator.of(
+            //       context,
+            //     ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
+            //   },
+            //   text: AppStrings.homeTournamentGDG,
+            //   icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
+            // ),
+            // const SizedBox(height: 20),
+            // ButtonActivity(
+            //   icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
+            //   text: AppStrings.homeTreasureBunt,
+            //   onPressed: () {
+            //     Navigator.of(context).push(
+            //       CupertinoPageRoute(builder: (_) => const TreasureBunt()),
+            //     );
+            //   },
+            // ),
             const SizedBox(height: 20),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
@@ -122,9 +131,9 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: (dataCenter.userCompetitor != null)
-          ? const ButtonScan()
-          : null,
+      // floatingActionButton: (dataCenter.userCompetitor != null)
+      //     ? const ButtonScan()
+      //     : null,
     );
   }
 }

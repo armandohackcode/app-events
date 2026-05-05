@@ -77,7 +77,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[1].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -110,7 +110,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[0].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -140,7 +140,7 @@ class _RankingDataState extends State<RankingData> {
                                 Text(
                                   data.ranking[2].score.toString(),
                                   style: const TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -225,7 +225,7 @@ class CardRanking extends StatelessWidget {
         leading: Text(
           index.toString(),
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 16,
             fontWeight: FontWeight.w900,
             color: color,
           ),
@@ -233,7 +233,7 @@ class CardRanking extends StatelessWidget {
         trailing: Text(
           data.score.toString(),
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 16,
             fontWeight: FontWeight.w900,
             color: color,
           ),
@@ -241,7 +241,7 @@ class CardRanking extends StatelessWidget {
         title: Text(
           data.name,
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: color,
           ),
