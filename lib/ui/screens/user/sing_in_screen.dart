@@ -167,7 +167,7 @@ class ModalGDG extends StatelessWidget {
         const Text(
           AppStrings.signInGDGDescription,
           textAlign: TextAlign.center,
-          style: TextStyle(color: AppStyles.backgroundColor),
+          style: TextStyle(color: AppStyles.fontColor),
         ),
       ],
     );
