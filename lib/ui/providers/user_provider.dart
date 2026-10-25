@@ -80,7 +80,11 @@ class UserProvider with ChangeNotifier {
   Future<bool> addWorkshop(String eventId, String speakerUuid) async {
     try {
       if (userCompetitor == null) return false;
-      return await _repository.addWorkshop(eventId, speakerUuid, userCompetitor!);
+      return await _repository.addWorkshop(
+        eventId,
+        speakerUuid,
+        userCompetitor!,
+      );
     } catch (e) {
       if (kDebugMode) print(e);
       return false;
@@ -91,7 +95,10 @@ class UserProvider with ChangeNotifier {
     try {
       if (userCompetitor == null) return false;
       return await _repository.searchUserInWorkShop(
-          eventId, speakerUuid, userCompetitor!);
+        eventId,
+        speakerUuid,
+        userCompetitor!,
+      );
     } catch (e) {
       return false;
     }
@@ -175,8 +182,9 @@ class UserProvider with ChangeNotifier {
       var updatedTreasures = List<String>.from(userCompetitor!.treasures);
       if (!updatedTreasures.contains(itemId)) {
         updatedTreasures.add(itemId);
-        var result = await _repository
-            .addItemTreasure(userCompetitor!.copyWith(treasures: updatedTreasures));
+        var result = await _repository.addItemTreasure(
+          userCompetitor!.copyWith(treasures: updatedTreasures),
+        );
         if (result != null) {
           userCompetitor = result;
           return true;

@@ -23,7 +23,10 @@ class _AddChallengeScreenState extends State<AddChallengeScreen> {
   String? _imagePath;
   bool _loading = false;
 
-  final _labelStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  final _labelStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
 
   @override
   void dispose() {

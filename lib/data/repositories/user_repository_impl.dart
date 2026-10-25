@@ -15,8 +15,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserCompetitor?> addNewFriend(
     String token,
     UserCompetitor userCompetitor,
-  ) =>
-      _db.addNewFriend(token, userCompetitor);
+  ) => _db.addNewFriend(token, userCompetitor);
 
   @override
   Future<void> addScoreAdmin(String uuid) => _db.addScoreAdmin(uuid);
@@ -26,16 +25,14 @@ class UserRepositoryImpl implements UserRepository {
     String eventId,
     String speakerUuid,
     UserCompetitor userCompetitor,
-  ) =>
-      _db.addWorkshop(eventId, speakerUuid, userCompetitor);
+  ) => _db.addWorkshop(eventId, speakerUuid, userCompetitor);
 
   @override
   Future<UserCompetitor?> addCompetitor(UserCompetitor user) =>
       _db.addCompetitor(user);
 
   @override
-  Future<void> editCompetitor(UserCompetitor user) =>
-      _db.editCompetitor(user);
+  Future<void> editCompetitor(UserCompetitor user) => _db.editCompetitor(user);
 
   @override
   Future<List<UserCompetitor>> getAttendees() => _db.getAttendees();
@@ -52,8 +49,7 @@ class UserRepositoryImpl implements UserRepository {
     String eventId,
     String speakerUuid,
     UserCompetitor userCompetitor,
-  ) =>
-      _db.searchUserInWorkShop(eventId, speakerUuid, userCompetitor);
+  ) => _db.searchUserInWorkShop(eventId, speakerUuid, userCompetitor);
 
   @override
   Stream<UserCompetitor?> streamInfoUser(UserCompetitor userCompetitor) =>

@@ -48,3 +48,13 @@ app.*.map.json
 ### firma de firebase
 lib/firebase_options.dart
 lib/env.dart
+macos/Runner/GoogleService-Info.plist
+
+# Test coverage (tool/ci/coverage_helper.sh generates the helper test)
+coverage/
+test/coverage_helper_test.dart
+
+# Unsupported platforms: the app targets Android, iOS and Web only
+/macos/
+/windows/
+/linux/

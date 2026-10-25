@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// "workshow" is the existing Firestore sub-collection name: renaming it
+// would orphan the stored data. cspell:ignore workshow
 class FirebaseUserDatasource implements UserDatasource {
   final FirebaseFirestore _db;
   FirebaseUserDatasource(this._db);
@@ -15,19 +17,15 @@ class FirebaseUserDatasource implements UserDatasource {
   CollectionReference<Map<String, dynamic>> _workshopRef(
     String eventId,
     String speakerUuid,
-  ) =>
-      _db
-          .collection('events')
-          .doc(eventId)
-          .collection('schedule')
-          .doc(speakerUuid)
-          .collection('workshow');
+  ) => _db
+      .collection('events')
+      .doc(eventId)
+      .collection('schedule')
+      .doc(speakerUuid)
+      .collection('workshow');
 
   @override
-  Future<UserCompetitor?> joinEvent(
-    String eventId,
-    UserCompetitor user,
-  ) async {
+  Future<UserCompetitor?> joinEvent(String eventId, UserCompetitor user) async {
     try {
       var storage = await SharedPreferences.getInstance();
       var uuid = storage.getString('uid_user') ?? "";
@@ -58,16 +56,17 @@ class FirebaseUserDatasource implements UserDatasource {
       }
       var storage = await SharedPreferences.getInstance();
       var uuid = storage.getString('uid_user') ?? "";
-      var res =
-          await _competitors.where('uuid', isEqualTo: token).get();
+      var res = await _competitors.where('uuid', isEqualTo: token).get();
       if (res.docs.isNotEmpty) {
         var user = UserCompetitor.fromJson(res.docs.first.data());
-        friends.add(Friend(
-          uuid: user.uuid,
-          name: user.name,
-          token: user.tokenAuthorization,
-          photoUrl: user.photoUrl,
-        ));
+        friends.add(
+          Friend(
+            uuid: user.uuid,
+            name: user.name,
+            token: user.tokenAuthorization,
+            photoUrl: user.photoUrl,
+          ),
+        );
         await _competitors.doc(uuid).update({
           'score': FieldValue.increment(10),
           'friends': List<dynamic>.from(friends.map((x) => x.toJson())),
@@ -84,9 +83,7 @@ class FirebaseUserDatasource implements UserDatasource {
   @override
   Future<void> addScoreAdmin(String uuid) async {
     try {
-      await _competitors.doc(uuid).update({
-        'score': FieldValue.increment(10),
-      });
+      await _competitors.doc(uuid).update({'score': FieldValue.increment(10)});
     } catch (e) {
       rethrow;
     }
@@ -106,13 +103,13 @@ class FirebaseUserDatasource implements UserDatasource {
           .doc(speakerUuid)
           .update({'current': FieldValue.increment(1)});
       await _workshopRef(eventId, speakerUuid).doc().set(
-            Friend(
-              uuid: userCompetitor.uuid,
-              name: userCompetitor.name,
-              token: userCompetitor.tokenAuthorization,
-              photoUrl: userCompetitor.photoUrl,
-            ).toJson(),
-          );
+        Friend(
+          uuid: userCompetitor.uuid,
+          name: userCompetitor.name,
+          token: userCompetitor.tokenAuthorization,
+          photoUrl: userCompetitor.photoUrl,
+        ).toJson(),
+      );
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -151,8 +148,7 @@ class FirebaseUserDatasource implements UserDatasource {
   @override
   Future<UserCompetitor?> getUserInfo(String uuid) async {
     try {
-      var data =
-          await _competitors.where('uuid', isEqualTo: uuid).get();
+      var data = await _competitors.where('uuid', isEqualTo: uuid).get();
       if (data.docs.isNotEmpty) {
         return UserCompetitor.fromJson(data.docs.first.data());
       }
@@ -166,12 +162,12 @@ class FirebaseUserDatasource implements UserDatasource {
   Future<List<UserCompetitor>> searchAttendees({String? param}) async {
     try {
       var res = await _competitors.get();
-      var attendees =
-          res.docs.map((e) => UserCompetitor.fromJson(e.data())).toList();
+      var attendees = res.docs
+          .map((e) => UserCompetitor.fromJson(e.data()))
+          .toList();
       if ((param ?? "").isEmpty) return attendees;
       return attendees
-          .where((e) =>
-              e.name.toLowerCase().contains(param!.toLowerCase()))
+          .where((e) => e.name.toLowerCase().contains(param!.toLowerCase()))
           .toList();
     } catch (e) {
       rethrow;
@@ -191,9 +187,10 @@ class FirebaseUserDatasource implements UserDatasource {
     UserCompetitor userCompetitor,
   ) async {
     try {
-      var res = await _workshopRef(eventId, speakerUuid)
-          .where('uuid', isEqualTo: userCompetitor.uuid)
-          .get();
+      var res = await _workshopRef(
+        eventId,
+        speakerUuid,
+      ).where('uuid', isEqualTo: userCompetitor.uuid).get();
       return res.docs.isNotEmpty;
     } catch (e) {
       if (kDebugMode) print(e);
@@ -203,7 +200,10 @@ class FirebaseUserDatasource implements UserDatasource {
 
   @override
   Stream<UserCompetitor?> streamInfoUser(UserCompetitor userCompetitor) {
-    return _competitors.doc(userCompetitor.uuid).snapshots().map(
+    return _competitors
+        .doc(userCompetitor.uuid)
+        .snapshots()
+        .map(
           (snapshot) => snapshot.exists
               ? UserCompetitor.fromJson(snapshot.data()!)
               : null,

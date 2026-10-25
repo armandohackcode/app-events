@@ -83,8 +83,9 @@ class _AddScheduleState extends State<AddSchedule> {
             dropdownColor: AppStyles.colorAppbar,
             initialValue: type,
             items: EventTypeSpeaker.values
-                .map((e) =>
-                    DropdownMenuItem(value: e.value, child: Text(e.value)))
+                .map(
+                  (e) => DropdownMenuItem(value: e.value, child: Text(e.value)),
+                )
                 .toList(),
             onChanged: (value) => setState(() => type = value),
           ),
@@ -163,7 +164,8 @@ class _AddScheduleState extends State<AddSchedule> {
               foregroundColor: AppStyles.colorBaseBlue,
               side: const BorderSide(color: AppStyles.colorBaseBlue),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: _pickImage,
           ),
@@ -256,10 +258,7 @@ class _AddScheduleState extends State<AddSchedule> {
     return Row(
       children: [
         Icon(Icons.circle, color: color),
-        Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Text(text),
-        ),
+        Padding(padding: const EdgeInsets.only(left: 10), child: Text(text)),
       ],
     );
   }

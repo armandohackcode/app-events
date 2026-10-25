@@ -49,7 +49,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         : 1.0;
 
     final appBarBg = Color.lerp(Colors.transparent, AppStyles.colorAppbar, t)!;
-    final fgColor = Color.lerp(Colors.white, AppStyles.fontColor, t)!;
+    final fgColor = Color.lerp(
+      AppStyles.onAccentColor,
+      AppStyles.fontColor,
+      t,
+    )!;
 
     return Scaffold(
       body: CustomScrollView(
@@ -101,7 +105,10 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment(0, 0.45),
-                              colors: [Color(0x99000000), Colors.transparent],
+                              colors: [
+                                AppStyles.imageOverlayColor,
+                                Colors.transparent,
+                              ],
                             ),
                           ),
                         ),

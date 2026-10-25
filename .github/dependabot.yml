@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      firebase:
+        # fake_cloud_firestore caps the cloud_firestore version: upgrade together.
+        patterns: ['firebase_*', 'cloud_firestore', 'fake_cloud_firestore']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

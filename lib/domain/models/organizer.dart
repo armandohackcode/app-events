@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-List<Organizer> sponsorFromJson(String str) =>
+List<Organizer> organizerFromJson(String str) =>
     List<Organizer>.from(json.decode(str).map((x) => Organizer.fromJson(x)));
 
-String sponsorToJson(List<Organizer> data) =>
+String organizerToJson(List<Organizer> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Organizer {
@@ -44,14 +44,14 @@ class Organizer {
   );
 
   factory Organizer.fromJson(Map<String, dynamic> json) => Organizer(
-        id: json["id"],
-        type: json["type"],
-        name: json["name"],
-        photoUrl: json["photoUrl"],
-        link: json["link"] ?? "",
-        team: List<String>.from(json["team"] ?? []),
-        lead: json["lead"] ?? false,
-      );
+    id: json["id"],
+    type: json["type"],
+    name: json["name"],
+    photoUrl: json["photoUrl"],
+    link: json["link"] ?? "",
+    team: List<String>.from(json["team"] ?? []),
+    lead: json["lead"] ?? false,
+  );
 
   Map<String, dynamic> toJson() => {
     "id": id,

@@ -25,9 +25,12 @@ class EventProvider with ChangeNotifier {
   Future<void> loadEvents() async {
     _loading = true;
     notifyListeners();
-    _events = await _repository.getEvents();
-    _loading = false;
-    notifyListeners();
+    try {
+      _events = await _repository.getEvents();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> addEvent(Event event, {String? imagePath}) async {

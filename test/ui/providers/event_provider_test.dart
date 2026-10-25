@@ -14,14 +14,14 @@ class _FakeEventRepository implements EventRepository {
   bool updateStatusCalled = false;
   String? lastUpdatedStatus;
 
-  _FakeEventRepository([List<Event>? initial])
-      : _store = initial ?? [];
+  _FakeEventRepository([List<Event>? initial]) : _store = initial ?? [];
 
   @override
   Future<List<Event>> getEvents() async => List.unmodifiable(_store);
 
   @override
-  Stream<List<Event>> getEventsStream() => Stream.value(List.unmodifiable(_store));
+  Stream<List<Event>> getEventsStream() =>
+      Stream.value(List.unmodifiable(_store));
 
   @override
   Future<void> addEvent(Event event, {String? imagePath}) async {
@@ -54,17 +54,16 @@ Event _makeEvent({
   String id = 'evt-1',
   String title = 'GDG DevFest',
   EventStatus status = EventStatus.upcoming,
-}) =>
-    Event(
-      id: id,
-      title: title,
-      description: 'Descripción',
-      startDate: DateTime(2025, 11, 15),
-      endDate: DateTime(2025, 11, 15, 23),
-      locationUrl: '',
-      imageUrl: '',
-      status: status,
-    );
+}) => Event(
+  id: id,
+  title: title,
+  description: 'Description',
+  startDate: DateTime(2025, 11, 15),
+  endDate: DateTime(2025, 11, 15, 23),
+  locationUrl: '',
+  imageUrl: '',
+  status: status,
+);
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -109,7 +108,9 @@ void main() {
 
     test('addEvent passes imagePath to repository', () async {
       String? capturedPath;
-      final capturingRepo = _CapturingRepo(onAdd: (path) => capturedPath = path);
+      final capturingRepo = _CapturingRepo(
+        onAdd: (path) => capturedPath = path,
+      );
       final p = EventProvider(capturingRepo);
 
       await p.addEvent(_makeEvent(), imagePath: '/tmp/image.jpg');
@@ -180,6 +181,14 @@ void main() {
       });
     });
 
+    test('loadEvents resets loading when the repository fails', () async {
+      final failing = EventProvider(_FailingRepo());
+
+      await expectLater(failing.loadEvents(), throwsException);
+      expect(failing.loading, isFalse);
+      failing.dispose();
+    });
+
     test('eventsStream emits the repository stream', () async {
       repo = _FakeEventRepository([_makeEvent()]);
       provider = EventProvider(repo);
@@ -188,6 +197,13 @@ void main() {
       expect(events, hasLength(1));
     });
   });
+}
+
+class _FailingRepo extends _CapturingRepo {
+  _FailingRepo() : super(onAdd: (_) {});
+
+  @override
+  Future<List<Event>> getEvents() async => throw Exception('offline');
 }
 
 // Helper to capture imagePath without full fake implementation
@@ -200,7 +216,8 @@ class _CapturingRepo implements EventRepository {
   @override
   Stream<List<Event>> getEventsStream() => const Stream.empty();
   @override
-  Future<void> addEvent(Event event, {String? imagePath}) async => onAdd(imagePath);
+  Future<void> addEvent(Event event, {String? imagePath}) async =>
+      onAdd(imagePath);
   @override
   Future<void> updateEvent(Event event, {String? imagePath}) async {}
   @override

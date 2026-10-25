@@ -14,7 +14,11 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
       _db.collection('events').doc(eventId).collection('schedule');
 
   @override
-  Future<void> addNewSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+  Future<void> addNewSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) async {
     try {
       String photoUrl = speaker.photoUrl;
       if (imagePath != null && imagePath.isNotEmpty) {
@@ -25,9 +29,9 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
         await storageRef.putFile(File(imagePath));
         photoUrl = await storageRef.getDownloadURL();
       }
-      await _scheduleRef(eventId)
-          .doc(speaker.uuid)
-          .set(speaker.copyWith(photoUrl: photoUrl).toJson());
+      await _scheduleRef(
+        eventId,
+      ).doc(speaker.uuid).set(speaker.copyWith(photoUrl: photoUrl).toJson());
     } catch (e) {
       rethrow;
     }
@@ -45,7 +49,10 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
 
   @override
   Stream<List<Speaker>> getListScheduleStream(String eventId) {
-    return _scheduleRef(eventId).orderBy('position').snapshots().map(
+    return _scheduleRef(eventId)
+        .orderBy('position')
+        .snapshots()
+        .map(
           (snapshot) =>
               snapshot.docs.map((e) => Speaker.fromJson(e.data())).toList(),
         );
@@ -53,13 +60,18 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
 
   @override
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid) {
-    return _scheduleRef(eventId).doc(speakerUuid).snapshots().map(
-          (e) => e.exists ? Speaker.fromJson(e.data()!) : null,
-        );
+    return _scheduleRef(eventId)
+        .doc(speakerUuid)
+        .snapshots()
+        .map((e) => e.exists ? Speaker.fromJson(e.data()!) : null);
   }
 
   @override
-  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+  Future<void> updateSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) async {
     try {
       String photoUrl = speaker.photoUrl;
       if (imagePath != null && imagePath.isNotEmpty) {
@@ -70,9 +82,9 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
         await storageRef.putFile(File(imagePath));
         photoUrl = await storageRef.getDownloadURL();
       }
-      await _scheduleRef(eventId)
-          .doc(speaker.uuid)
-          .update(speaker.copyWith(photoUrl: photoUrl).toJson());
+      await _scheduleRef(
+        eventId,
+      ).doc(speaker.uuid).update(speaker.copyWith(photoUrl: photoUrl).toJson());
     } catch (e) {
       rethrow;
     }

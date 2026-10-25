@@ -33,7 +33,7 @@ class ScheduleDetail extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppStyles.colorBaseRed,
-              foregroundColor: Colors.white,
+              foregroundColor: AppStyles.onAccentColor,
             ),
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text(AppStrings.commonWordDelete),
@@ -42,8 +42,10 @@ class ScheduleDetail extends StatelessWidget {
       ),
     );
     if (confirm != true || !context.mounted) return;
-    final scheduleProvider =
-        Provider.of<ScheduleProvider>(context, listen: false);
+    final scheduleProvider = Provider.of<ScheduleProvider>(
+      context,
+      listen: false,
+    );
     await scheduleProvider.deleteSchedule(eventId, info.uuid);
     if (!context.mounted) return;
     Navigator.of(context).pop();
@@ -63,8 +65,7 @@ class ScheduleDetail extends StatelessWidget {
               icon: const Icon(Icons.edit_outlined, size: 22),
               onPressed: () => Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (_) =>
-                      EditSchedule(eventId: eventId, info: info),
+                  builder: (_) => EditSchedule(eventId: eventId, info: info),
                 ),
               ),
             ),
@@ -104,7 +105,7 @@ class ScheduleDetail extends StatelessWidget {
               for (var item in info.socialNetwork)
                 InkWell(
                   child: SvgPicture.asset(getSVG(item), width: 60, height: 40),
-                  onTap: () async => laucherUrlInfo(item.link),
+                  onTap: () async => launcherUrlInfo(item.link),
                 ),
             ],
           ),
@@ -201,7 +202,7 @@ class _ButtonWorkshopState extends State<ButtonWorkshop> {
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
-            '${AppStrings.scheduleRegistrationOpen}\n${dateformat.format(DateTime.tryParse(widget.info.openDate!)!)}',
+            '${AppStrings.scheduleRegistrationOpen}\n${dateFormat.format(DateTime.tryParse(widget.info.openDate!)!)}',
             textAlign: TextAlign.center,
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_links.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
@@ -298,7 +299,7 @@ class CardLibrary extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        await laucherUrlInfo(link);
+        await launcherUrlInfo(link);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
@@ -344,15 +345,17 @@ class CardLibrary extends StatelessWidget {
                 errorWidget: Row(
                   children: [
                     Image.network(
-                      'https://img.icons8.com/?size=512&id=92941&format=png',
+                      AppLinks.resourcePlaceholderImage,
                       width: 60,
                       height: 60,
                     ),
-                    Container(color: Colors.grey[100], child: Text(title)),
+                    Container(
+                      color: AppStyles.placeholderColor,
+                      child: Text(title),
+                    ),
                   ],
                 ),
-                errorImage:
-                    "https://img.icons8.com/?size=512&id=92941&format=png",
+                errorImage: AppLinks.resourcePlaceholderImage,
                 cache: const Duration(days: 1),
                 backgroundColor: AppStyles.backgroundColor,
                 borderRadius: 10,

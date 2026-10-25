@@ -24,25 +24,24 @@ class Sponsor {
     String? name,
     String? photoUrl,
     String? link,
-  }) =>
-      Sponsor(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        photoUrl: photoUrl ?? this.photoUrl,
-        link: link ?? this.link,
-      );
+  }) => Sponsor(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    photoUrl: photoUrl ?? this.photoUrl,
+    link: link ?? this.link,
+  );
 
   factory Sponsor.fromJson(Map<String, dynamic> json) => Sponsor(
-        id: json["id"],
-        name: json["name"],
-        photoUrl: json["photoUrl"],
-        link: json["link"],
-      );
+    id: json["id"],
+    name: json["name"],
+    photoUrl: json["photoUrl"],
+    link: json["link"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id" : id,
-        "name": name,
-        "photoUrl": photoUrl,
-        "link": link,
-      };
+    "id": id,
+    "name": name,
+    "photoUrl": photoUrl,
+    "link": link,
+  };
 }

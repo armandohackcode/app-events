@@ -1,0 +1,3 @@
+# Administrators: every pull request to main needs the approval of one of them
+# (enforced by the "Protect main" ruleset in the repository settings).
+* @armandohackcode @heidy-sseth

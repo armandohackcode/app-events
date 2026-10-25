@@ -1,25 +1,24 @@
+import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/attendees_screen.dart';
 import 'package:app_events/ui/screens/events/events_screen.dart';
-import 'package:app_events/ui/screens/speed_run/speed_run_screen.dart';
+// import 'package:app_events/ui/screens/speed_run/speed_run_screen.dart';
 import 'package:app_events/ui/widgets/button_activity.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
-// import 'package:app_events/ui/widgets/home/ranking_data.dart';
+import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
-// import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
-import 'package:app_events/ui/widgets/utils/qr_scan_content.dart';
+import 'package:app_events/ui/widgets/shared/button_scan.dart';
+import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -46,33 +45,34 @@ class Home extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
+            // No delete
+            // ButtonActivity(
+            //   onPressed: () => Navigator.of(context).push(
+            //     CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
+            //   ),
+            //   text: AppStrings.homeSpeedRunBuild,
+            //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
+            // ),
+            const SizedBox(height: 20),
             ButtonActivity(
-              onPressed: () => Navigator.of(context).push(
-                CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
-              ),
-              text: AppStrings.homeSpeedRunBuild,
-              icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
+              },
+              text: AppStrings.homeTournamentGDG,
+              icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
             ),
-            // const SizedBox(height: 20),
-            // ButtonActivity(
-            //   onPressed: () {
-            //     Navigator.of(
-            //       context,
-            //     ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
-            //   },
-            //   text: AppStrings.homeTournamentGDG,
-            //   icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
-            // ),
-            // const SizedBox(height: 20),
-            // ButtonActivity(
-            //   icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
-            //   text: AppStrings.homeTreasureBunt,
-            //   onPressed: () {
-            //     Navigator.of(context).push(
-            //       CupertinoPageRoute(builder: (_) => const TreasureBunt()),
-            //     );
-            //   },
-            // ),
+            const SizedBox(height: 20),
+            ButtonActivity(
+              icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
+              text: AppStrings.homeTreasureBunt,
+              onPressed: () {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
+                );
+              },
+            ),
             const SizedBox(height: 20),
             ButtonActivity(
               icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
@@ -89,7 +89,7 @@ class Home extends StatelessWidget {
               icon: SvgPicture.asset(AppAssetsPath.discordIcon),
               text: AppStrings.homeJoinDiscord,
               onPressed: () async {
-                await laucherUrlInfo("https://discord.gg/c6gC5W4wtx");
+                await launcherUrlInfo(AppLinks.gdgDiscord);
               },
             ),
             const SizedBox(height: 20),
@@ -121,9 +121,7 @@ class Home extends StatelessWidget {
             TextButton(
               style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
               onPressed: () async {
-                await laucherUrlInfo(
-                  "https://www.linkedin.com/in/armandohackcode/",
-                );
+                await launcherUrlInfo(AppLinks.developerLinkedIn);
               },
               child: const Text(AppStrings.developedBy),
             ),
@@ -131,44 +129,9 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: (dataCenter.userCompetitor != null)
-      //     ? const ButtonScan()
-      //     : null,
-    );
-  }
-}
-
-class ButtonScan extends StatelessWidget {
-  const ButtonScan({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: AppStyles.colorBaseBlue,
-      child: const Icon(Icons.qr_code_scanner, size: 32),
-      onPressed: () async {
-        final dataCenter = Provider.of<UserProvider>(context, listen: false);
-        var res = await Navigator.of(context).push<Barcode?>(
-          MaterialPageRoute(
-            builder: (context) =>
-                const QRScanContent(msg: AppStrings.scanMessage),
-          ),
-        );
-        if (res != null) {
-          var info = await dataCenter.addNewFriend(res.code!);
-          if (info != null && context.mounted) {
-            customSnackbar(context, AppStrings.scanMessageAddedFriend);
-          } else {
-            if (context.mounted) {
-              customSnackbar(
-                context,
-                AppStrings.scanMessageInvalidQR,
-                color: AppStyles.colorBaseRed,
-              );
-            }
-          }
-        }
-      },
+      floatingActionButton: (dataCenter.userCompetitor != null)
+          ? const ButtonScan()
+          : null,
     );
   }
 }

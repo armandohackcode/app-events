@@ -10,7 +10,7 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/delete_account.dart';
-// import 'package:app_events/ui/screens/home/home.dart';
+import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/card_content.dart';
 import 'package:app_events/ui/widgets/profile/edit_profile.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
@@ -85,9 +85,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
 
-      // floatingActionButton: (data.userCompetitor != null)
-      //     ? const ButtonScan()
-      //     : null,
+      floatingActionButton: (data.userCompetitor != null)
+          ? const ButtonScan()
+          : null,
     );
   }
 }
@@ -110,9 +110,9 @@ class HeaderProfile extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(constraints.maxWidth * 0.02),
                 child: ClipOval(
-                  child: (auth.userInfo.photoURL != null)
+                  child: (auth.userInfo.photoUrl != null)
                       ? CachedNetworkImage(
-                          imageUrl: auth.userInfo.photoURL!,
+                          imageUrl: auth.userInfo.photoUrl!,
                           fit: BoxFit.cover,
                           width: imageSize,
                           height: imageSize,
@@ -331,7 +331,7 @@ class BodyProfile extends StatelessWidget {
                           ),
                         ),
                         onTap: () async {
-                          await laucherUrlInfo(item.link);
+                          await launcherUrlInfo(item.link);
                         },
                       ),
                     ),

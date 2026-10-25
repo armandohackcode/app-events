@@ -42,9 +42,7 @@ class _SpeedRunScreenState extends State<SpeedRunScreen> {
       floatingActionButton: isAdmin
           ? FloatingActionButton(
               onPressed: () => Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (_) => const AddChallengeScreen(),
-                ),
+                CupertinoPageRoute(builder: (_) => const AddChallengeScreen()),
               ),
               child: const Icon(Icons.add),
             )

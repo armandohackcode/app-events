@@ -15,6 +15,10 @@ class AppStrings {
   static const String commonWordConnections = 'Conexiones';
   static const String commonWordShare = 'Compartir';
   static const String commonWordSeeMore = 'Ver más';
+  static const String commonWordYes = 'SI';
+  static const String commonWordNo = 'NO';
+  static const String commonWordLoading = 'loading';
+  static const String rankingTitle = 'Ranking';
 
   // schedule
   static const String scheduleAddSpeakerOrActivity =
@@ -189,6 +193,8 @@ class AppStrings {
       "Sponsor registrado correctamente";
   static const String sponsorErrorMessage =
       "Ocurrió un error al registrar el sponsor";
+  static const String sponsorDeleteTitle = "Eliminar sponsor";
+  static const String sponsorDeleteConfirm = "¿Estás seguro de eliminar a";
 
   static String resourceLibraryNoData = "No hay recursos disponibles";
 

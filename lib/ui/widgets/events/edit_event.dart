@@ -105,8 +105,10 @@ class _EditEventState extends State<EditEvent> {
               _dateFmtEdit.format(_startDate),
               style: const TextStyle(color: AppStyles.fontColor),
             ),
-            trailing: const Icon(Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor),
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
+            ),
             onTap: () => _pickDate(context, true),
           ),
           Text(AppStrings.eventEndDate, style: _textStyle),
@@ -116,8 +118,10 @@ class _EditEventState extends State<EditEvent> {
               _dateFmtEdit.format(_endDate),
               style: const TextStyle(color: AppStyles.fontColor),
             ),
-            trailing: const Icon(Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor),
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
+            ),
             onTap: () => _pickDate(context, false),
           ),
           const SizedBox(height: 10),
@@ -148,7 +152,8 @@ class _EditEventState extends State<EditEvent> {
               foregroundColor: AppStyles.colorBaseBlue,
               side: const BorderSide(color: AppStyles.colorBaseBlue),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: _pickImage,
           ),
@@ -161,7 +166,8 @@ class _EditEventState extends State<EditEvent> {
                 if (_title.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text(AppStrings.eventValidationRequired)),
+                      content: Text(AppStrings.eventValidationRequired),
+                    ),
                   );
                   return;
                 }

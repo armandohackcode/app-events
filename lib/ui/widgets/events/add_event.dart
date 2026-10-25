@@ -40,10 +40,7 @@ class _AddEventState extends State<AddEvent> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      builder: (ctx, child) => Theme(
-        data: ThemeData.light(),
-        child: child!,
-      ),
+      builder: (ctx, child) => Theme(data: ThemeData.light(), child: child!),
     );
     if (picked != null) {
       setState(() {
@@ -94,8 +91,10 @@ class _AddEventState extends State<AddEvent> {
                   : AppStrings.eventSelectDate,
               style: const TextStyle(color: AppStyles.fontColor),
             ),
-            trailing: const Icon(Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor),
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
+            ),
             onTap: () => _pickDate(context, true),
           ),
           Text(AppStrings.eventEndDate, style: _textStyle),
@@ -107,8 +106,10 @@ class _AddEventState extends State<AddEvent> {
                   : AppStrings.eventSelectDate,
               style: const TextStyle(color: AppStyles.fontColor),
             ),
-            trailing: const Icon(Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor),
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
+            ),
             onTap: () => _pickDate(context, false),
           ),
           const SizedBox(height: 10),
@@ -146,7 +147,8 @@ class _AddEventState extends State<AddEvent> {
               foregroundColor: AppStyles.colorBaseBlue,
               side: const BorderSide(color: AppStyles.colorBaseBlue),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: _pickImage,
           ),

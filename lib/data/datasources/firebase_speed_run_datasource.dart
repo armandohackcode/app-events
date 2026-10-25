@@ -33,10 +33,10 @@ class FirebaseSpeedRunDatasource implements SpeedRunDatasource {
     String? imagePath,
   }) async {
     String imageUrl = '';
-    if (imagePath != null) {
-      final ref = _storage
-          .ref()
-          .child('speedRunBuild/${DateTime.now().millisecondsSinceEpoch}');
+    if (imagePath != null && imagePath.isNotEmpty) {
+      final ref = _storage.ref().child(
+        'speedRunBuild/${DateTime.now().millisecondsSinceEpoch}',
+      );
       await ref.putFile(File(imagePath));
       imageUrl = await ref.getDownloadURL();
     }

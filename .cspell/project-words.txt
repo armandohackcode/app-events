@@ -1,0 +1,13 @@
+# Project dictionary shared by the VS Code cSpell extension and CI.
+# Code, comments and tests are written in English. Spanish UI text belongs
+# only in lib/config/theme/app_strings.dart, which is not spell checked.
+# Do not add Spanish words here: move the text to AppStrings instead.
+
+# Names and brands
+devfest
+DEVFESTSUCRE
+gdgsucre
+googleusercontent
+UIUX
+Appbar
+

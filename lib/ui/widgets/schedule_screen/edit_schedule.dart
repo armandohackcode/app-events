@@ -39,8 +39,10 @@ class _EditScheduleState extends State<EditSchedule> {
   bool _loading = false;
 
   String _linkFor(String type) => widget.info.socialNetwork
-      .firstWhere((s) => s.type == type,
-          orElse: () => SocialNetwork(type: type, link: ''))
+      .firstWhere(
+        (s) => s.type == type,
+        orElse: () => SocialNetwork(type: type, link: ''),
+      )
       .link;
 
   @override
@@ -67,16 +69,29 @@ class _EditScheduleState extends State<EditSchedule> {
   @override
   void dispose() {
     for (final c in [
-      _title, _description, _name, _profession, _aboutMe,
-      _schedule, _position, _github, _facebook, _instagram,
-      _linkedin, _twitter, _blog,
+      _title,
+      _description,
+      _name,
+      _profession,
+      _aboutMe,
+      _schedule,
+      _position,
+      _github,
+      _facebook,
+      _instagram,
+      _linkedin,
+      _twitter,
+      _blog,
     ]) {
       c.dispose();
     }
     super.dispose();
   }
 
-  final _labelStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  final _labelStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
 
   Future<void> _pickImage() async {
     final picked = await ImagePicker().pickImage(
@@ -89,12 +104,17 @@ class _EditScheduleState extends State<EditSchedule> {
   Future<void> _save() async {
     setState(() => _loading = true);
     final social = <SocialNetwork>[
-      if (_github.text.isNotEmpty) SocialNetwork(type: 'GITHUB', link: _github.text),
-      if (_instagram.text.isNotEmpty) SocialNetwork(type: 'INSTAGRAM', link: _instagram.text),
-      if (_linkedin.text.isNotEmpty) SocialNetwork(type: 'LINKEDIN', link: _linkedin.text),
-      if (_twitter.text.isNotEmpty) SocialNetwork(type: 'TWITTER', link: _twitter.text),
+      if (_github.text.isNotEmpty)
+        SocialNetwork(type: 'GITHUB', link: _github.text),
+      if (_instagram.text.isNotEmpty)
+        SocialNetwork(type: 'INSTAGRAM', link: _instagram.text),
+      if (_linkedin.text.isNotEmpty)
+        SocialNetwork(type: 'LINKEDIN', link: _linkedin.text),
+      if (_twitter.text.isNotEmpty)
+        SocialNetwork(type: 'TWITTER', link: _twitter.text),
       if (_blog.text.isNotEmpty) SocialNetwork(type: 'BLOG', link: _blog.text),
-      if (_facebook.text.isNotEmpty) SocialNetwork(type: 'FACEBOOK', link: _facebook.text),
+      if (_facebook.text.isNotEmpty)
+        SocialNetwork(type: 'FACEBOOK', link: _facebook.text),
     ];
     final updated = widget.info.copyWith(
       title: _title.text,
@@ -108,12 +128,17 @@ class _EditScheduleState extends State<EditSchedule> {
       technologyType: _technologyType ?? widget.info.technologyType,
       socialNetwork: social,
     );
-    final scheduleProvider =
-        Provider.of<ScheduleProvider>(context, listen: false);
+    final scheduleProvider = Provider.of<ScheduleProvider>(
+      context,
+      listen: false,
+    );
     final nav = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     await scheduleProvider.updateSchedule(
-        widget.eventId, updated, imagePath: _newImagePath);
+      widget.eventId,
+      updated,
+      imagePath: _newImagePath,
+    );
     setState(() => _loading = false);
     nav.pop();
     messenger.showSnackBar(
@@ -133,7 +158,9 @@ class _EditScheduleState extends State<EditSchedule> {
             dropdownColor: AppStyles.colorAppbar,
             initialValue: _type,
             items: EventTypeSpeaker.values
-                .map((e) => DropdownMenuItem(value: e.value, child: Text(e.value)))
+                .map(
+                  (e) => DropdownMenuItem(value: e.value, child: Text(e.value)),
+                )
                 .toList(),
             onChanged: (v) => setState(() => _type = v),
           ),
@@ -152,11 +179,13 @@ class _EditScheduleState extends State<EditSchedule> {
               }.entries)
                 DropdownMenuItem(
                   value: entry.key,
-                  child: Row(children: [
-                    Icon(Icons.circle, color: entry.value),
-                    const SizedBox(width: 10),
-                    Text(entry.key),
-                  ]),
+                  child: Row(
+                    children: [
+                      Icon(Icons.circle, color: entry.value),
+                      const SizedBox(width: 10),
+                      Text(entry.key),
+                    ],
+                  ),
                 ),
             ],
             onChanged: (v) => setState(() => _technologyType = v),
@@ -166,8 +195,12 @@ class _EditScheduleState extends State<EditSchedule> {
           TextFormField(controller: _title),
           const SizedBox(height: 10),
           Text(AppStrings.scheduleDescription, style: _labelStyle),
-          TextFormField(controller: _description, minLines: 4, maxLines: 6,
-              textInputAction: TextInputAction.done),
+          TextFormField(
+            controller: _description,
+            minLines: 4,
+            maxLines: 6,
+            textInputAction: TextInputAction.done,
+          ),
           const SizedBox(height: 10),
           Text(AppStrings.scheduleNameSpeaker, style: _labelStyle),
           TextFormField(controller: _name),
@@ -183,27 +216,40 @@ class _EditScheduleState extends State<EditSchedule> {
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
-            icon: Icon(_newImagePath == null && widget.info.photoUrl.isEmpty
-                ? Icons.add_photo_alternate
-                : Icons.edit, size: 18),
-            label: Text(_newImagePath == null && widget.info.photoUrl.isEmpty
-                ? AppStrings.eventSelectImage
-                : AppStrings.eventChangeImage),
+            icon: Icon(
+              _newImagePath == null && widget.info.photoUrl.isEmpty
+                  ? Icons.add_photo_alternate
+                  : Icons.edit,
+              size: 18,
+            ),
+            label: Text(
+              _newImagePath == null && widget.info.photoUrl.isEmpty
+                  ? AppStrings.eventSelectImage
+                  : AppStrings.eventChangeImage,
+            ),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppStyles.colorBaseBlue,
               side: const BorderSide(color: AppStyles.colorBaseBlue),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: _pickImage,
           ),
           const SizedBox(height: 10),
           Text(AppStrings.scheduleDescriptionProfession, style: _labelStyle),
-          TextFormField(controller: _aboutMe, minLines: 4, maxLines: 6,
-              textInputAction: TextInputAction.done),
+          TextFormField(
+            controller: _aboutMe,
+            minLines: 4,
+            maxLines: 6,
+            textInputAction: TextInputAction.done,
+          ),
           const SizedBox(height: 10),
           Text(AppStrings.schedulePosition, style: _labelStyle),
-          TextFormField(controller: _position,
-              keyboardType: const TextInputType.numberWithOptions()),
+          TextFormField(
+            controller: _position,
+            keyboardType: const TextInputType.numberWithOptions(),
+          ),
           const SizedBox(height: 10),
           Text(AppStrings.scheduleHours, style: _labelStyle),
           TextFormField(controller: _schedule),
@@ -243,23 +289,34 @@ class _EditScheduleState extends State<EditSchedule> {
 class _PhotoPreview extends StatelessWidget {
   final String? newImagePath;
   final String existingPhotoUrl;
-  const _PhotoPreview({required this.newImagePath, required this.existingPhotoUrl});
+  const _PhotoPreview({
+    required this.newImagePath,
+    required this.existingPhotoUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (newImagePath != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.file(File(newImagePath!), height: 180,
-            width: double.infinity, fit: BoxFit.cover),
+        child: Image.file(
+          File(newImagePath!),
+          height: 180,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        ),
       );
     }
     if (existingPhotoUrl.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: CachedNetworkImage(imageUrl: existingPhotoUrl, height: 180,
-            width: double.infinity, fit: BoxFit.cover,
-            errorWidget: (ctx, url, err) => const SizedBox.shrink()),
+        child: CachedNetworkImage(
+          imageUrl: existingPhotoUrl,
+          height: 180,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorWidget: (ctx, url, err) => const SizedBox.shrink(),
+        ),
       );
     }
     return const SizedBox.shrink();

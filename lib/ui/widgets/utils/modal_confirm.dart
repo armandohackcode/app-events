@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -11,30 +12,28 @@ class ModalConfirm extends StatelessWidget {
       backgroundColor: AppStyles.backgroundColor,
       contentPadding: const EdgeInsets.all(15),
       children: [
-        Text(
-          text,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(
-          height: 15,
-        ),
+        Text(text, textAlign: TextAlign.center),
+        const SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: const Text("NO")),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(AppStrings.commonWordNo),
+            ),
             ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppStyles.colorBaseRed),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text("SI")),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppStyles.colorBaseRed,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text(AppStrings.commonWordYes),
+            ),
           ],
-        )
+        ),
       ],
     );
   }

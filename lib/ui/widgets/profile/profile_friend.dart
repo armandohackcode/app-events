@@ -118,7 +118,7 @@ class _ModalProfileFriendState extends State<ModalProfileFriend> {
                                             height: 40,
                                           ),
                                           onTap: () async {
-                                            await laucherUrlInfo(item.link);
+                                            await launcherUrlInfo(item.link);
                                           },
                                         ),
                                       ),
