@@ -63,9 +63,8 @@ class ResourcesProvider with ChangeNotifier {
       loadingResource = true;
       var data = await resourceRepository.getResources();
       resources = data;
+    } finally {
       loadingResource = false;
-    } catch (e) {
-      rethrow;
     }
   }
 
@@ -85,9 +84,8 @@ class ResourcesProvider with ChangeNotifier {
       // }
       var data = await resourceRepository.searchResource(param: param);
       resources = data;
+    } finally {
       loadingResource = false;
-    } catch (e) {
-      rethrow;
     }
   }
 

@@ -50,7 +50,7 @@ String getSVG(SocialNetwork item) {
   }
 }
 
-Future<void> laucherUrlInfo(String url) async {
+Future<void> launcherUrlInfo(String url) async {
   try {
     var link = Uri.parse(url);
     if (await canLaunchUrl(link)) {

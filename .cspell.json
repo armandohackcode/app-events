@@ -3,21 +3,31 @@
     "language": "en",
     "files": [
         "lib/**/*.dart",
-        "lib/**/**/*.dart",
-        "lib/**/**/**/*.dart"
-    ],
-    "words": [
-        "cronograma",
-        "devfest",
-        "DEVFESTSUCRE",
-        "explorerwhite",
-        "gdgsucre",
-        "googleusercontent",
-        "svgrepo",
-        "trofeo",
-        "UIUX"
+        "test/**/*.dart"
     ],
     "ignorePaths": [
-        "lib/config/theme/app_strings.dart"
+        "lib/config/theme/app_strings.dart",
+        "lib/env.dart",
+        "lib/firebase_options.dart",
+        "test/coverage_helper_test.dart"
+    ],
+    "patterns": [
+        {
+            "name": "AssetPath",
+            "pattern": "/['\"]assets\\/[^'\"]*['\"]/g"
+        }
+    ],
+    "ignoreRegExpList": [
+        "AssetPath"
+    ],
+    "dictionaryDefinitions": [
+        {
+            "name": "project-words",
+            "path": "./.cspell/project-words.txt",
+            "addWords": true
+        }
+    ],
+    "dictionaries": [
+        "project-words"
     ]
 }

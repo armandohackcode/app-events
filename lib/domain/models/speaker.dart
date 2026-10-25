@@ -93,9 +93,11 @@ class Speaker {
     schedule: json["schedule"] ?? "",
     position: json["position"] ?? 0,
     openDate: json["openDate"] ?? "",
-    socialNetwork: List<SocialNetwork>.from(
-      json["SocialNetwork"].map((x) => SocialNetwork.fromJson(x)),
-    ),
+    socialNetwork: (json["SocialNetwork"] == null)
+        ? []
+        : List<SocialNetwork>.from(
+            json["SocialNetwork"].map((x) => SocialNetwork.fromJson(x)),
+          ),
   );
 
   Map<String, dynamic> toJson() => {

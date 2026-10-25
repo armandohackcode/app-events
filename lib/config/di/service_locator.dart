@@ -1,21 +1,25 @@
+import 'package:app_events/data/datasources/firebase_auth_datasource.dart';
 import 'package:app_events/data/datasources/firebase_event_datasource.dart';
 import 'package:app_events/data/datasources/firebase_other_datasource.dart';
 import 'package:app_events/data/datasources/firebase_resource_datasource.dart';
 import 'package:app_events/data/datasources/firebase_schedule_datasource.dart';
 import 'package:app_events/data/datasources/firebase_speed_run_datasource.dart';
 import 'package:app_events/data/datasources/firebase_user_datasource.dart';
+import 'package:app_events/data/repositories/auth_repository_impl.dart';
 import 'package:app_events/data/repositories/event_repository_impl.dart';
 import 'package:app_events/data/repositories/other_repository_impl.dart';
 import 'package:app_events/data/repositories/resource_repository_impl.dart';
 import 'package:app_events/data/repositories/schedule_repository_impl.dart';
 import 'package:app_events/data/repositories/speed_run_repository_impl.dart';
 import 'package:app_events/data/repositories/user_repository_impl.dart';
+import 'package:app_events/domain/datasources/auth_datasource.dart';
 import 'package:app_events/domain/datasources/event_datasource.dart';
 import 'package:app_events/domain/datasources/other_datasource.dart';
 import 'package:app_events/domain/datasources/resource_datasource.dart';
 import 'package:app_events/domain/datasources/schedule_datasource.dart';
 import 'package:app_events/domain/datasources/speed_run_datasource.dart';
 import 'package:app_events/domain/datasources/user_datasource.dart';
+import 'package:app_events/domain/repositories/auth_repository.dart';
 import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
@@ -40,6 +44,9 @@ void setupServiceLocator() {
   sl.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn.instance);
   sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
+  sl.registerLazySingleton<AuthDatasource>(
+    () => FirebaseAuthDatasource(sl(), sl()),
+  );
   sl.registerLazySingleton<EventDatasource>(
     () => FirebaseEventDatasource(sl(), sl()),
   );
@@ -57,6 +64,7 @@ void setupServiceLocator() {
     () => FirebaseSpeedRunDatasource(sl(), sl()),
   );
 
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<EventRepository>(() => EventRepositoryImpl(sl()));
   sl.registerLazySingleton<ScheduleRepository>(
     () => ScheduleRepositoryImpl(sl()),
@@ -74,10 +82,6 @@ void setupServiceLocator() {
   sl.registerFactory(() => SpeedRunProvider(sl<SpeedRunRepository>()));
   sl.registerFactory(() => UserProvider(sl<UserRepository>()));
   sl.registerFactory(
-    () => SignInSocialNetworkProvider(
-      sl<GoogleSignIn>(),
-      sl<FirebaseAuth>(),
-      sl<UserProvider>(),
-    ),
+    () => SignInSocialNetworkProvider(sl<AuthRepository>(), sl<UserProvider>()),
   );
 }

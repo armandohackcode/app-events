@@ -81,13 +81,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         : 1.0;
 
     final appBarBg = Color.lerp(Colors.transparent, AppStyles.colorAppbar, t)!;
-    final fgColor = Color.lerp(Colors.white, AppStyles.fontColor, t)!;
+    final fgColor = Color.lerp(
+      AppStyles.onAccentColor,
+      AppStyles.fontColor,
+      t,
+    )!;
 
     return Scaffold(
       floatingActionButton: canJoin
           ? FloatingActionButton.extended(
               backgroundColor: AppStyles.colorBaseGreen,
-              foregroundColor: Colors.white,
+              foregroundColor: AppStyles.onAccentColor,
               icon: const Icon(Icons.play_arrow),
               label: const Text(AppStrings.eventJoin),
               onPressed: () async {
@@ -177,7 +181,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment(0, 0.45),
-                                colors: [Color(0x99000000), Colors.transparent],
+                                colors: [
+                                  AppStyles.imageOverlayColor,
+                                  Colors.transparent,
+                                ],
                               ),
                             ),
                           ),
@@ -329,7 +336,7 @@ class _EventInfoSection extends StatelessWidget {
           if (event.locationUrl.isNotEmpty) ...[
             const SizedBox(height: 8),
             GestureDetector(
-              onTap: () => laucherUrlInfo(event.locationUrl),
+              onTap: () => launcherUrlInfo(event.locationUrl),
               child: const Row(
                 children: [
                   Icon(

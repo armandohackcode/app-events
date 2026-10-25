@@ -29,7 +29,7 @@ class CardChallenge extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x14000000),
+                  color: AppStyles.shadowColor,
                   blurRadius: 8,
                   offset: Offset(0, 2),
                 ),
@@ -63,8 +63,10 @@ class CardChallenge extends StatelessWidget {
                       errorWidget: (ctx, url, err) => Container(
                         height: 160,
                         color: AppStyles.borderColor,
-                        child: const Icon(Icons.broken_image_outlined,
-                            color: AppStyles.fontSecondaryColor),
+                        child: const Icon(
+                          Icons.broken_image_outlined,
+                          color: AppStyles.fontSecondaryColor,
+                        ),
                       ),
                     ),
                   ),

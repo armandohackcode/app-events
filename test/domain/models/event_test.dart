@@ -26,7 +26,7 @@ void main() {
     final validJson = {
       'id': 'evt-1',
       'title': 'GDG DevFest 2025',
-      'description': 'Gran evento de Google',
+      'description': 'Big Google event',
       'startDate': '2025-11-15T00:00:00.000',
       'endDate': '2025-11-15T23:59:00.000',
       'locationUrl': 'https://maps.google.com/test',
@@ -39,7 +39,7 @@ void main() {
 
       expect(event.id, 'evt-1');
       expect(event.title, 'GDG DevFest 2025');
-      expect(event.description, 'Gran evento de Google');
+      expect(event.description, 'Big Google event');
       expect(event.startDate, DateTime.parse('2025-11-15T00:00:00.000'));
       expect(event.endDate, DateTime.parse('2025-11-15T23:59:00.000'));
       expect(event.locationUrl, 'https://maps.google.com/test');
@@ -81,7 +81,7 @@ void main() {
     final event = Event(
       id: 'evt-1',
       title: 'GDG DevFest 2025',
-      description: 'Gran evento',
+      description: 'Big event',
       startDate: DateTime(2025, 11, 15),
       endDate: DateTime(2025, 11, 15, 23, 59),
       locationUrl: 'https://maps.google.com/test',
@@ -89,12 +89,12 @@ void main() {
       status: EventStatus.active,
     );
 
-    test('serialises all fields', () {
+    test('serializes all fields', () {
       final json = event.toJson();
 
       expect(json['id'], 'evt-1');
       expect(json['title'], 'GDG DevFest 2025');
-      expect(json['description'], 'Gran evento');
+      expect(json['description'], 'Big event');
       expect(json['locationUrl'], 'https://maps.google.com/test');
       expect(json['imageUrl'], 'https://storage.example.com/event.jpg');
       expect(json['status'], 'active');
@@ -128,7 +128,10 @@ void main() {
     );
 
     test('returns new instance with only changed fields updated', () {
-      final updated = original.copyWith(title: 'Updated', status: EventStatus.active);
+      final updated = original.copyWith(
+        title: 'Updated',
+        status: EventStatus.active,
+      );
 
       expect(updated.title, 'Updated');
       expect(updated.status, EventStatus.active);
@@ -148,7 +151,9 @@ void main() {
     });
 
     test('copyWith imageUrl replaces existing value', () {
-      final withImage = original.copyWith(imageUrl: 'https://img.example.com/a.jpg');
+      final withImage = original.copyWith(
+        imageUrl: 'https://img.example.com/a.jpg',
+      );
       expect(withImage.imageUrl, 'https://img.example.com/a.jpg');
     });
   });

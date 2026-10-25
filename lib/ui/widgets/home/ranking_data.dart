@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_strings.dart';
 import 'dart:async';
 
 import 'package:app_events/config/theme/app_assets_path.dart';
@@ -37,7 +38,7 @@ class _RankingDataState extends State<RankingData> {
   Widget build(BuildContext context) {
     final data = Provider.of<OtherProvider>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Ranking")),
+      appBar: AppBar(title: const Text(AppStrings.rankingTitle)),
       body: data.ranking.length >= 3
           ? Column(
               children: [

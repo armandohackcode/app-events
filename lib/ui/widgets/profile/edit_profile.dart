@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -16,10 +17,12 @@ class _EditProfileState extends State<EditProfile> {
   final _name = TextEditingController();
   final _aboutMe = TextEditingController();
   final _profession = TextEditingController();
-  final _facebook = TextEditingController(text: "https://www.facebook.com/");
-  final _instagram = TextEditingController(text: "https://www.instagram.com/");
-  final _github = TextEditingController(text: "https://github.com/");
-  final _linkedin = TextEditingController(text: "https://www.linkedin.com/in/");
+  final _facebook = TextEditingController(text: AppLinks.facebookProfilePrefix);
+  final _instagram = TextEditingController(
+    text: AppLinks.instagramProfilePrefix,
+  );
+  final _github = TextEditingController(text: AppLinks.githubProfilePrefix);
+  final _linkedin = TextEditingController(text: AppLinks.linkedInProfilePrefix);
 
   final keyForm = GlobalKey<FormState>();
   bool loading = false;
@@ -117,7 +120,8 @@ class _EditProfileState extends State<EditProfile> {
             TextFormField(
               controller: _facebook,
               validator: (value) {
-                if (value != "https://www.facebook.com/" && value!.isNotEmpty) {
+                if (value != AppLinks.facebookProfilePrefix &&
+                    value!.isNotEmpty) {
                   RegExp facebookRegex = RegExp(
                     r"^(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/.+",
                     caseSensitive: false,
@@ -135,7 +139,7 @@ class _EditProfileState extends State<EditProfile> {
             TextFormField(
               controller: _instagram,
               validator: (value) {
-                if (value != "https://www.instagram.com/" &&
+                if (value != AppLinks.instagramProfilePrefix &&
                     value!.isNotEmpty) {
                   RegExp instagramRegex = RegExp(
                     r"^(?:https?:\/\/)?(?:www\.)?instagram\.com\/[a-zA-Z0-9_\.]+\/?$",
@@ -154,7 +158,8 @@ class _EditProfileState extends State<EditProfile> {
             TextFormField(
               controller: _github,
               validator: (value) {
-                if (value != "https://github.com/" && value!.isNotEmpty) {
+                if (value != AppLinks.githubProfilePrefix &&
+                    value!.isNotEmpty) {
                   RegExp githubRegex = RegExp(
                     r"^(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_-]+\/?[a-zA-Z0-9_\-\/]+?$",
                     caseSensitive: false,
@@ -172,7 +177,7 @@ class _EditProfileState extends State<EditProfile> {
             TextFormField(
               controller: _linkedin,
               validator: (value) {
-                if (value != "https://www.linkedin.com/in/" &&
+                if (value != AppLinks.linkedInProfilePrefix &&
                     value!.isNotEmpty) {
                   RegExp linkedinRegex = RegExp(
                     r"^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$",
@@ -217,25 +222,25 @@ class _EditProfileState extends State<EditProfile> {
 
                   var socialNetworks = <SocialNetwork>[];
 
-                  if (_linkedin.text != "https://www.linkedin.com/in/" &&
+                  if (_linkedin.text != AppLinks.linkedInProfilePrefix &&
                       _linkedin.text.isNotEmpty) {
                     socialNetworks.add(
                       SocialNetwork(type: "LINKEDIN", link: _linkedin.text),
                     );
                   }
-                  if (_github.text != "https://github.com/" &&
+                  if (_github.text != AppLinks.githubProfilePrefix &&
                       _github.text.isNotEmpty) {
                     socialNetworks.add(
                       SocialNetwork(type: "GITHUB", link: _github.text),
                     );
                   }
-                  if (_instagram.text != "https://www.instagram.com/" &&
+                  if (_instagram.text != AppLinks.instagramProfilePrefix &&
                       _instagram.text.isNotEmpty) {
                     socialNetworks.add(
                       SocialNetwork(type: "INSTAGRAM", link: _instagram.text),
                     );
                   }
-                  if (_facebook.text != "https://www.facebook.com/" &&
+                  if (_facebook.text != AppLinks.facebookProfilePrefix &&
                       _facebook.text.isNotEmpty) {
                     socialNetworks.add(
                       SocialNetwork(type: "FACEBOOK", link: _facebook.text),

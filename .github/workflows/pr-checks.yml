@@ -1,0 +1,32 @@
+name: PR checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  conventions:
+    name: Branch & description
+    runs-on: ubuntu-latest
+    steps:
+      - name: Branch name follows the convention
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          pattern='^((feature|fix|hotfix|refactor|test|docs|chore|ci)/[a-z0-9._-]+|dependabot/.+)$'
+          if [[ ! "$BRANCH" =~ $pattern ]]; then
+            echo "::error::Branch '$BRANCH' must match $pattern (e.g. feature/41-change-assets)"
+            exit 1
+          fi
+
+      - name: PR has a description
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [[ ${#BODY} -lt 30 ]]; then
+            echo "::error::Describe what changed and why (use the PR template)."
+            exit 1
+          fi

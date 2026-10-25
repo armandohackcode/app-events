@@ -7,8 +7,11 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   ScheduleRepositoryImpl(this._db);
 
   @override
-  Future<void> addNewSchedule(String eventId, Speaker speaker, {String? imagePath}) =>
-      _db.addNewSchedule(eventId, speaker, imagePath: imagePath);
+  Future<void> addNewSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) => _db.addNewSchedule(eventId, speaker, imagePath: imagePath);
 
   @override
   Future<List<Speaker>> getListSchedule(String eventId) =>
@@ -23,8 +26,11 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
       _db.speakerStream(eventId, speakerUuid);
 
   @override
-  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) =>
-      _db.updateSchedule(eventId, speaker, imagePath: imagePath);
+  Future<void> updateSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) => _db.updateSchedule(eventId, speaker, imagePath: imagePath);
 
   @override
   Future<void> deleteSchedule(String eventId, String speakerUuid) =>

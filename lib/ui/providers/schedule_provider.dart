@@ -49,7 +49,11 @@ class ScheduleProvider with ChangeNotifier {
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid) =>
       _repository.speakerStream(eventId, speakerUuid);
 
-  Future<void> addNewSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+  Future<void> addNewSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) async {
     try {
       loadingNewSchedule = true;
       await _repository.addNewSchedule(eventId, speaker, imagePath: imagePath);
@@ -60,7 +64,11 @@ class ScheduleProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath}) async {
+  Future<void> updateSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  }) async {
     try {
       loadingNewSchedule = true;
       await _repository.updateSchedule(eventId, speaker, imagePath: imagePath);

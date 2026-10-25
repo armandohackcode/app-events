@@ -1,14 +1,3 @@
 {
-    "cSpell.words": [
-        "ABCDEFGHIJKLMNOPQRSTUVXYZ",
-        "Appbar",
-        "ARGB",
-        "Cupertino",
-        "Datasource",
-        "datasources",
-        "dateformat",
-        "firestore",
-        "laucher",
-        "workshow"
-    ]
+    "cSpell.enabled": true
 }

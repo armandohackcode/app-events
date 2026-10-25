@@ -3,7 +3,11 @@ import 'package:app_events/domain/models/speaker.dart';
 abstract class ScheduleRepository {
   /// Adds a new item to the schedule of the given event.
   /// If [imagePath] is provided, uploads to Firebase Storage first.
-  Future<void> addNewSchedule(String eventId, Speaker speaker, {String? imagePath});
+  Future<void> addNewSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  });
 
   /// Listens for real-time changes in the schedule of the given event
   Stream<List<Speaker>> getListScheduleStream(String eventId);
@@ -15,7 +19,11 @@ abstract class ScheduleRepository {
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid);
 
   /// Updates an existing schedule entry. Uploads a new photo if [imagePath] is provided.
-  Future<void> updateSchedule(String eventId, Speaker speaker, {String? imagePath});
+  Future<void> updateSchedule(
+    String eventId,
+    Speaker speaker, {
+    String? imagePath,
+  });
 
   /// Permanently deletes a schedule entry from the given event.
   Future<void> deleteSchedule(String eventId, String speakerUuid);

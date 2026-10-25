@@ -8,50 +8,6 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
-class MyHome extends StatelessWidget {
-  const MyHome({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Flutter Demo Home Page')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            var res = await Navigator.of(context).push<Barcode?>(
-              MaterialPageRoute(builder: (context) => const QRScanContent()),
-            );
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: AppStyles.colorBaseBlue,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(20),
-                  duration: const Duration(seconds: 3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  content: Row(
-                    children: [
-                      Image.asset(
-                        AppAssetsPath.firePedIcon,
-                        width: 45,
-                        height: 45,
-                      ),
-                      Text(res?.code ?? ""),
-                    ],
-                  ),
-                ),
-              );
-            }
-          },
-          child: const Text('qrView'),
-        ),
-      ),
-    );
-  }
-}
-
 class QRScanContent extends StatefulWidget {
   final String msg;
   const QRScanContent({super.key, this.msg = AppStrings.scanMessageCredential});
@@ -147,7 +103,7 @@ class _QRScanContentState extends State<QRScanContent>
                                     ((snapshot.data ?? false))
                                         ? Icons.flash_on_rounded
                                         : Icons.flash_off_rounded,
-                                    color: Colors.white,
+                                    color: AppStyles.onAccentColor,
                                     size: 32,
                                   );
                                 },
@@ -169,11 +125,13 @@ class _QRScanContentState extends State<QRScanContent>
                                     //     'Camera facing ${describeEnum(snapshot.data!)}');
                                     return const Icon(
                                       Icons.flip_camera_android_outlined,
-                                      color: Colors.white,
+                                      color: AppStyles.onAccentColor,
                                       size: 32,
                                     );
                                   } else {
-                                    return const Text('loading');
+                                    return const Text(
+                                      AppStrings.commonWordLoading,
+                                    );
                                   }
                                 },
                               ),
@@ -269,7 +227,7 @@ class _QRScanContentState extends State<QRScanContent>
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-        borderColor: Colors.red,
+        borderColor: AppStyles.qrScanBorderColor,
         borderRadius: 10,
         borderLength: 30,
         borderWidth: 10,

@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_strings.dart';
@@ -47,7 +48,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                   width: (MediaQuery.of(context).size.width - 60) / 3,
                   child: GestureDetector(
                     onTap: () async {
-                      await laucherUrlInfo(item.link);
+                      await launcherUrlInfo(item.link);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -64,7 +65,9 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                                   placeholder: const AssetImage(
                                     AppAssetsPath.loadingSmallImage,
                                   ),
-                                  image: CachedNetworkImageProvider(item.photoUrl),
+                                  image: CachedNetworkImageProvider(
+                                    item.photoUrl,
+                                  ),
                                 ),
                                 if (item.lead)
                                   Align(
@@ -82,7 +85,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                                         AppStrings.organizersTagLead,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppStyles.onAccentColor,
                                           fontSize: 9,
                                           fontWeight: FontWeight.w700,
                                         ),
@@ -128,6 +131,8 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
 }
 
 // TO DO: Refactor logic get teamColor
+// Team names come from Firestore in Spanish, so they are matched as data.
+// cspell:ignore logística logistica acreditación acreditacion escenografía escenografia diseño diseno
 class TeamTag extends StatelessWidget {
   final String teamName;
 
@@ -139,27 +144,27 @@ class TeamTag extends StatelessWidget {
       return AppStyles.colorBaseRed;
     } else if (teamLower.contains('logística') ||
         teamLower.contains('logistica')) {
-      return const Color(0xFF2196F3);
+      return AppStyles.teamLogisticsColor;
     } else if (teamLower.contains('acreditación') ||
         teamLower.contains('acreditacion')) {
       return AppStyles.colorBaseGreen;
     } else if (teamLower.contains('escenografía') ||
         teamLower.contains('escenografia')) {
-      return const Color(0xFF9C27B0);
+      return AppStyles.teamStagingColor;
     } else if (teamLower.contains('diseño') || teamLower.contains('diseno')) {
-      return const Color(0xFFE91E63);
+      return AppStyles.teamDesignColor;
     } else if (teamLower.contains('web')) {
       return AppStyles.colorBaseBlue;
     } else if (teamLower.contains('mobile')) {
-      return const Color(0xFF00BCD4);
+      return AppStyles.teamMobileColor;
     } else if (teamLower.contains('marketing')) {
-      return const Color(0xFFFF9800);
+      return AppStyles.teamMarketingColor;
     } else if (teamLower.contains('audio') || teamLower.contains('video')) {
-      return const Color(0xFFFF5722);
+      return AppStyles.teamAudioVideoColor;
     } else if (teamLower.contains('sponsor')) {
       return AppStyles.colorBaseYellow;
     } else {
-      return const Color(0xFF607D8B);
+      return AppStyles.teamDefaultColor;
     }
   }
 
@@ -212,7 +217,7 @@ class CardCommunity extends StatelessWidget {
                       AppAssetsPath.loadingSmallImage,
                     ),
                     image: const CachedNetworkImageProvider(
-                      "https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/banner%2Fbanner.jpg?alt=media&token=23be97a8-c096-4f12-bfe7-6d7adb1604c7",
+                      AppLinks.organizersBanner,
                     ),
                   ),
                   Container(
@@ -223,7 +228,7 @@ class CardCommunity extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.7),
+                          AppStyles.scrimColor.withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -246,23 +251,22 @@ class CardCommunity extends StatelessWidget {
                           children: [
                             SocialMediaButton(
                               iconPath: AppAssetsPath.iconFacebook,
-                              url: "https://www.facebook.com/gdg.sucre",
+                              url: AppLinks.gdgFacebook,
                             ),
                             const SizedBox(width: 8),
                             SocialMediaButton(
                               iconPath: AppAssetsPath.iconInstagram,
-                              url: "https://www.instagram.com/gdg.sucre",
+                              url: AppLinks.gdgInstagram,
                             ),
                             const SizedBox(width: 8),
                             SocialMediaButton(
                               iconPath: AppAssetsPath.iconLinkedIn,
-                              url:
-                                  "https://www.linkedin.com/showcase/google-developer-groups/about/",
+                              url: AppLinks.gdgLinkedIn,
                             ),
                             const SizedBox(width: 8),
                             SocialMediaButton(
                               iconPath: AppAssetsPath.iconTwitter,
-                              url: "https://twitter.com/gdg_sucre",
+                              url: AppLinks.gdgTwitter,
                             ),
                           ],
                         ),
@@ -283,7 +287,7 @@ class CardCommunity extends StatelessWidget {
             ),
           ),
           onPressed: () async {
-            await laucherUrlInfo("https://gdg.community.dev/gdg-sucre/");
+            await launcherUrlInfo(AppLinks.gdgCommunity);
           },
           child: const Text(
             AppStrings.commonWordSeeMore,
@@ -312,7 +316,7 @@ class SocialMediaButton extends StatelessWidget {
     return InkWell(
       child: SvgPicture.asset(iconPath, width: size, height: size),
       onTap: () async {
-        await laucherUrlInfo(url);
+        await launcherUrlInfo(url);
       },
     );
   }

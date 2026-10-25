@@ -11,17 +11,17 @@ class EventStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
       EventStatus.upcoming => (
-          AppStrings.eventStatusUpcoming,
-          AppStyles.colorBaseYellow,
-        ),
+        AppStrings.eventStatusUpcoming,
+        AppStyles.colorBaseYellow,
+      ),
       EventStatus.active => (
-          AppStrings.eventStatusActive,
-          AppStyles.colorBaseGreen,
-        ),
+        AppStrings.eventStatusActive,
+        AppStyles.colorBaseGreen,
+      ),
       EventStatus.finished => (
-          AppStrings.eventStatusFinished,
-          AppStyles.fontSecondaryColor,
-        ),
+        AppStrings.eventStatusFinished,
+        AppStyles.fontSecondaryColor,
+      ),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
@@ -91,7 +92,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                             children: [
                               TextButton(
                                 onPressed: () async {
-                                  await laucherUrlInfo(item.link);
+                                  await launcherUrlInfo(item.link);
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.all(5),
@@ -118,16 +119,20 @@ class _SponsorsContentState extends State<SponsorsContent> {
                                       final confirm = await showDialog<bool>(
                                         context: context,
                                         builder: (_) => AlertDialog(
-                                          title: const Text('Eliminar sponsor'),
+                                          title: const Text(
+                                            AppStrings.sponsorDeleteTitle,
+                                          ),
                                           content: Text(
-                                            '¿Estás seguro de eliminar a ${item.name}?',
+                                            '${AppStrings.sponsorDeleteConfirm} ${item.name}?',
                                           ),
                                           actions: [
                                             TextButton(
                                               onPressed: () => Navigator.of(
                                                 context,
                                               ).pop(false),
-                                              child: const Text('Cancelar'),
+                                              child: const Text(
+                                                AppStrings.commonWordCancel,
+                                              ),
                                             ),
                                             ElevatedButton(
                                               style: ElevatedButton.styleFrom(
@@ -138,9 +143,10 @@ class _SponsorsContentState extends State<SponsorsContent> {
                                                 context,
                                               ).pop(true),
                                               child: const Text(
-                                                'Eliminar',
+                                                AppStrings.commonWordDelete,
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color:
+                                                      AppStyles.onAccentColor,
                                                 ),
                                               ),
                                             ),
@@ -166,9 +172,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
                                       await dataCenter.deleteSponsor(item.id!);
 
                                       if (context.mounted) {
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
+                                        Navigator.of(context).pop();
                                       }
                                     },
                                     icon: const Icon(

@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.38.1'
+  # Coverage ratchet: raise it as tests are added, never lower it.
+  MIN_COVERAGE: '14'
+
+jobs:
+  analyze:
+    name: Format, lint, spelling & hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # Code, comments and tests must be in English; Spanish UI text lives
+      # only in lib/config/theme/app_strings.dart (see .cspell.json).
+      - name: Spell check
+        run: npx --yes cspell@8.19.4 --no-progress
+
+      - name: Secrets are not committed
+        run: |
+          tracked=$(git ls-files lib/env.dart lib/firebase_options.dart \
+            android/app/google-services.json ios/Runner/GoogleService-Info.plist \
+            macos/Runner/GoogleService-Info.plist \
+            android/key.properties '*.jks' '*.keystore')
+          if [[ -n "$tracked" ]]; then
+            echo "::error::Sensitive files are tracked by git:"; echo "$tracked"; exit 1
+          fi
+
+      - name: Only Android, iOS and Web platforms
+        run: |
+          extra=$(git ls-files macos windows linux)
+          if [[ -n "$extra" ]]; then
+            echo "::error::Unsupported platform folders are tracked (the app targets Android, iOS and Web only):"
+            echo "$extra" | cut -d/ -f1 | sort -u; exit 1
+          fi
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: ./tool/ci/create_config.sh
+      - run: flutter pub get --enforce-lockfile
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+  test:
+    name: Tests & coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: ./tool/ci/create_config.sh
+      - run: flutter pub get --enforce-lockfile
+
+      - name: Architecture tests
+        run: flutter test test/architecture
+
+      - name: Unit, data & widget tests
+        run: |
+          ./tool/ci/coverage_helper.sh
+          flutter test --coverage --reporter=github
+
+      - name: Coverage gate
+        run: ./tool/ci/check_coverage.sh coverage/lcov.info "$MIN_COVERAGE"
+
+      - name: Report known bugs (skipped tests)
+        if: always()
+        run: |
+          {
+            echo "## Known bugs documented by skipped tests"
+            grep -rn "skip: 'BUG:" test | sed -E "s/^([^:]+:[0-9]+):.*skip: '(.*)',?$/- \`\1\` — \2/" \
+              || echo "None 🎉"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          retention-days: 14
+
+  build-android:
+    name: Build Android (debug)
+    needs: [analyze, test]
+    runs-on: ubuntu-latest
+    # A cold Gradle cache takes ~20 min; cached runs are much faster.
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      # Secrets are optional: forks and PRs without them build with stubs.
+      - run: ./tool/ci/create_config.sh
+        env:
+          FIREBASE_OPTIONS_DART_B64: ${{ secrets.FIREBASE_OPTIONS_DART_B64 }}
+          ENV_DART_B64: ${{ secrets.ENV_DART_B64 }}
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build apk --debug

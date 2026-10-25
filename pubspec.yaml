@@ -81,6 +81,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  mocktail: ^1.0.5
+  firebase_storage_mocks: ^0.8.1
+  # Pinned: 4.2+ forces a cloud_firestore/firebase_core upgrade on the app.
+  # Bump it together with the Firebase packages.
+  fake_cloud_firestore: 4.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
