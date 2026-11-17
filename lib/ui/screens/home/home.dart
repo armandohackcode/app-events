@@ -1,18 +1,22 @@
-import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
-import 'package:app_events/ui/screens/user/attendees_screen.dart';
 import 'package:app_events/ui/screens/events/events_screen.dart';
+import 'package:app_events/ui/screens/user/attendees_screen.dart';
 // import 'package:app_events/ui/screens/speed_run/speed_run_screen.dart';
-import 'package:app_events/ui/widgets/button_activity.dart';
-import 'package:app_events/ui/widgets/card_content.dart';
+import 'package:app_events/ui/widgets/home/activity_row.dart';
+import 'package:app_events/ui/widgets/home/channels_card.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
+import 'package:app_events/ui/widgets/home/live_talk_card.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
+import 'package:app_events/ui/widgets/home/question_box.dart';
 import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
-import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
+import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,113 +24,143 @@ import 'package:flutter_svg/svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+/// Placeholder content of the live talk card. It is static until the card is
+/// fed with the talk that is really in progress.
+final Speaker _placeholderTalk = Speaker(
+  uuid: '',
+  title: AppStrings.homeLiveTalkTitle,
+  description: '',
+  name: AppStrings.homeLiveSpeakerName,
+  profession: AppStrings.homeLiveSpeakerProfession,
+  aboutMe: '',
+  photoUrl: '',
+  technologyType: AppStrings.homeLiveTechnology,
+  type: EventTypeSpeaker.conference.value,
+  color: '',
+  schedule: AppStrings.homeLiveSchedule,
+  position: 0,
+  socialNetwork: [
+    SocialNetwork(type: 'INSTAGRAM', link: AppLinks.gdgInstagram),
+    SocialNetwork(type: 'LINKEDIN', link: AppLinks.gdgLinkedIn),
+    SocialNetwork(type: 'TIKTOK', link: AppLinks.gdgTikTok),
+    SocialNetwork(type: 'GITHUB', link: AppLinks.gdgGithub),
+  ],
+);
+
 class Home extends StatelessWidget {
   const Home({super.key});
+
+  static const double _rowGap = 14;
 
   @override
   Widget build(BuildContext context) {
     final dataCenter = Provider.of<UserProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Image.asset(AppAssetsPath.headerImage, height: 40),
-        ),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            const CardSchedule(),
-            const SizedBox(height: 20),
-            const Text(
-              AppStrings.homeEventJoinActivities,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            // No delete
-            // ButtonActivity(
-            //   onPressed: () => Navigator.of(context).push(
-            //     CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
-            //   ),
-            //   text: AppStrings.homeSpeedRunBuild,
-            //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
-            // ),
-            const SizedBox(height: 20),
-            ButtonActivity(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(CupertinoPageRoute(builder: (_) => const RankingData()));
-              },
-              text: AppStrings.homeTournamentGDG,
-              icon: Image.asset(AppAssetsPath.trophyIcon, height: 80),
-            ),
-            const SizedBox(height: 20),
-            ButtonActivity(
-              icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
-              text: AppStrings.homeTreasureBunt,
-              onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            ButtonActivity(
-              icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
-              text: AppStrings.homeMeetCommunity,
-              onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const OrganizersScreen()),
-                );
-              },
-            ),
-
-            const SizedBox(height: 20),
-            ButtonActivity(
-              icon: SvgPicture.asset(AppAssetsPath.discordIcon),
-              text: AppStrings.homeJoinDiscord,
-              onPressed: () async {
-                await launcherUrlInfo(AppLinks.gdgDiscord);
-              },
-            ),
-            const SizedBox(height: 20),
-            if (dataCenter.isAdmin)
-              ButtonActivity(
-                icon: Image.asset(AppAssetsPath.dinoWriteIcon),
-                text: AppStrings.commonWordAttendees,
-                onPressed: () async {
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => const AttendeesScreen()),
-                  );
-                },
+      backgroundColor: AppStyles.homeBackgroundColor,
+      body: HomeBackdrop(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+            children: [
+              const HomeHeaderDecoration(child: _HomeHeader()),
+              LiveTalkCard(
+                talk: _placeholderTalk,
+                photo: const AssetImage(AppAssetsPath.liveTalkPhoto),
+                // Design only for now: the talk detail is not linked yet.
+                onTap: () {},
+                footer: const QuestionBox(),
               ),
-            const SponsorsContent(),
-            const SizedBox(height: 20),
-            FutureBuilder(
-              future: PackageInfo.fromPlatform(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                    }
-                    return Text(
-                      "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
-                      textAlign: TextAlign.center,
-                    );
-                  },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-              onPressed: () async {
-                await launcherUrlInfo(AppLinks.developerLinkedIn);
-              },
-              child: const Text(AppStrings.developedBy),
-            ),
-            const SizedBox(height: 60),
-          ],
+              const SizedBox(height: 16),
+              ActivityRow(
+                icon: Image.asset(AppAssetsPath.computerIcon),
+                iconBackground: AppStyles.colorCardBlue,
+                title: AppStrings.scheduleSchedule,
+                subtitle: AppStrings.homeScheduleSubtitle,
+                onTap: () => Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (_) => const EventsScreen()),
+                ),
+              ),
+              // No delete
+              // ButtonActivity(
+              //   onPressed: () => Navigator.of(context).push(
+              //     CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
+              //   ),
+              //   text: AppStrings.homeSpeedRunBuild,
+              //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
+              // ),
+              const SizedBox(height: _rowGap),
+              ActivityRow(
+                icon: Image.asset(AppAssetsPath.trophyIcon),
+                iconBackground: AppStyles.colorCardRed,
+                title: AppStrings.homeTournamentGDG,
+                onTap: () => Navigator.of(
+                  context,
+                ).push(CupertinoPageRoute(builder: (_) => const RankingData())),
+              ),
+              const SizedBox(height: _rowGap),
+              ActivityRow(
+                icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
+                iconBackground: AppStyles.colorCardBlue,
+                title: AppStrings.homeTreasureBunt,
+                onTap: () => Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
+                ),
+              ),
+              const SizedBox(height: _rowGap),
+              ActivityRow(
+                icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
+                iconBackground: AppStyles.colorCardYellow,
+                title: AppStrings.homeMeetCommunity,
+                subtitle: AppStrings.homeMeetCommunitySubtitle,
+                onTap: () => Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (_) => const OrganizersScreen()),
+                ),
+              ),
+              if (dataCenter.isAdmin) ...[
+                const SizedBox(height: _rowGap),
+                ActivityRow(
+                  icon: Image.asset(AppAssetsPath.dinoWriteIcon),
+                  iconBackground: AppStyles.colorCardYellow,
+                  title: AppStrings.commonWordAttendees,
+                  onTap: () => Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (_) => const AttendeesScreen()),
+                  ),
+                ),
+              ],
+              const SizedBox(height: _rowGap),
+              const ChannelsCard(),
+              const SponsorsContent(),
+              const SizedBox(height: 20),
+              FutureBuilder(
+                future: PackageInfo.fromPlatform(),
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<PackageInfo> snapshot,
+                    ) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox();
+                      }
+                      return Text(
+                        "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppStyles.fontFaintColor,
+                        ),
+                      );
+                    },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
+                onPressed: () async {
+                  await launcherUrlInfo(AppLinks.developerLinkedIn);
+                },
+                child: const Text(AppStrings.developedBy),
+              ),
+              const SizedBox(height: 60),
+            ],
+          ),
         ),
       ),
       floatingActionButton: (dataCenter.userCompetitor != null)
@@ -136,59 +170,50 @@ class Home extends StatelessWidget {
   }
 }
 
-class CardSchedule extends StatelessWidget {
-  const CardSchedule({super.key});
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader();
+
+  /// Share of the logo image width that holds the mark, without the text.
+  static const double _logoMarkWidthFactor = 0.19;
 
   @override
   Widget build(BuildContext context) {
-    return CardContent(
-      height: 140,
-      child: TextButton(
-        style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).push(CupertinoPageRoute(builder: (_) => const EventsScreen()));
-        },
-        child: Stack(
-          alignment: const Alignment(0, 0),
-          children: [
-            Positioned(
-              left: 15,
-              child: Image.asset(
-                AppAssetsPath.computerIcon,
-                height: MediaQuery.of(context).size.height * 0.08,
-              ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 18),
+      child: Row(
+        children: [
+          // The original logo image holds the mark followed by the group name,
+          // so only its first part (the mark) is shown here.
+          ClipRect(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              widthFactor: _logoMarkWidthFactor,
+              child: Image.asset(AppAssetsPath.headerImage, height: 38),
             ),
-            Container(
-              alignment: const Alignment(0.95, 0.8),
-              child: Image.asset(
-                AppAssetsPath.footerImage,
-                height: MediaQuery.of(context).size.height * 0.05,
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(width: 20),
-                Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Text(
-                    AppStrings.scheduleSchedule,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppStyles.fontColor,
-                    ),
-                  ),
+          ),
+          const SizedBox(width: 10),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppStrings.organizersGDGSucre,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: AppStyles.fontColor,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              Text(
+                AppStrings.homeHeaderSubtitle,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                  color: AppStyles.fontSecondaryColor,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

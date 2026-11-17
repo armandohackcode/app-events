@@ -40,4 +40,35 @@ class AppStyles {
   static const Color teamMarketingColor = Color(0xFFFF9800);
   static const Color teamAudioVideoColor = Color(0xFFFF5722);
   static const Color teamDefaultColor = Color(0xFF607D8B);
+
+  // Home screen
+  static const Color homeBackgroundColor = Color(0xFFF7F3EA);
+  static const Color fontFaintColor = Color(0xFF9A9A95);
+  static const Color colorCardYellow = Color(0xFFFFF4D6);
+  static const Color sponsorsPillColor = Color(0xFFAFC6E8);
+  static const Color backdropBlueColor = Color(0xFF4285F4);
+
+  // Floating particles of the home background.
+  static const Color particleBlueColor = Color(0xFF3B82F6);
+  static const Color particleDeepBlueColor = Color(0xFF2F5FD8);
+  static const Color particleLightBlueColor = Color(0xFF7FA8F2);
+
+  // Retro window card: header strip and window controls.
+  static const Color windowChromeColor = Color(0xFFF4F6FA);
+  static const Color windowCloseColor = Color(0xFFFF5F56);
+  static const Color windowMinimizeColor = Color(0xFFFFBD2E);
+  static const Color windowMaximizeColor = Color(0xFF27C93F);
+
+  // Social network brand colors.
+  static const Color socialInstagramColor = Color(0xFFE4405F);
+  static const Color socialLinkedInColor = Color(0xFF0A66C2);
+  static const Color socialTikTokColor = Color(0xFF111111);
+  static const Color socialGithubColor = Color(0xFF181717);
+  static const Color socialFacebookColor = Color(0xFF1877F2);
+  static const Color socialTwitterColor = socialTikTokColor;
+  static const Color socialWebColor = colorBaseBlue;
+  static const Color socialWhatsAppColor = Color(0xFF25D366);
+  static const Color socialDiscordColor = Color(0xFF5865F2);
+
+  static const String monospaceFontFamily = 'Courier New';
 }

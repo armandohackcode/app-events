@@ -36,6 +36,23 @@ class AppAssetsPath {
   static const String iconGithub = 'assets/img/github-142-svgrepo-com.svg';
   static const String iconWebRound = 'assets/img/web-round-svgrepo-com-2.svg';
 
+  // Single-color social glyphs, tinted in code to sit on a colored button.
+  static const String glyphInstagram = 'assets/img/glyph-instagram.svg';
+  static const String glyphLinkedIn = 'assets/img/glyph-linkedin.svg';
+  static const String glyphGithub = 'assets/img/glyph-github.svg';
+  static const String glyphTikTok = 'assets/img/glyph-tiktok.svg';
+  static const String glyphFacebook = 'assets/img/glyph-facebook.svg';
+  static const String glyphTwitter = 'assets/img/glyph-twitter.svg';
+  static const String glyphWeb = 'assets/img/glyph-web.svg';
+  static const String glyphWhatsApp = 'assets/img/glyph-whatsapp.svg';
+  static const String glyphDiscord = 'assets/img/glyph-discord.svg';
+  static const String socialBrackets = 'assets/img/social-brackets.svg';
+
+  // Home screen decoration and placeholder content.
+  static const String backdropSparkle = 'assets/img/backdrop-sparkle.svg';
+  static const String backdropBars = 'assets/img/backdrop-bars.svg';
+  static const String liveTalkPhoto = 'assets/img/live-talk-photo.png';
+
   // ranking
   static const String androidPed = 'assets/img/android-ped.png';
   static const String colorRed = "assets/img/color-red.png";

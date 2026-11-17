@@ -8,6 +8,10 @@ class AppLinks {
   static const String gdgLinkedIn =
       'https://www.linkedin.com/showcase/google-developer-groups/about/';
   static const String gdgTwitter = 'https://twitter.com/gdg_sucre';
+  // Taken from the approved home design; confirm they are the official ones.
+  static const String gdgWhatsApp = 'https://chat.whatsapp.com/gdgsucre';
+  static const String gdgTikTok = 'https://tiktok.com/@gdgsucre';
+  static const String gdgGithub = 'https://github.com/gdgsucre';
   static const String organizersBanner =
       'https://firebasestorage.googleapis.com/v0/b/gdgsucre-events.appspot.com/o/banner%2Fbanner.jpg?alt=media&token=23be97a8-c096-4f12-bfe7-6d7adb1604c7';
 

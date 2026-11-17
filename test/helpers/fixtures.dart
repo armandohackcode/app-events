@@ -39,20 +39,30 @@ SpeedRunChallenge makeChallenge({
   position: position,
 );
 
-Speaker makeSpeaker({String uuid = 'spk-1', String name = 'Ada'}) => Speaker(
+Speaker makeSpeaker({
+  String uuid = 'spk-1',
+  String name = 'Ada',
+  String title = 'Flutter Clean Architecture',
+  String schedule = '10:00',
+  String type = 'conference',
+  String technologyType = 'Mobile',
+  List<SocialNetwork>? socialNetwork,
+}) => Speaker(
   uuid: uuid,
-  title: 'Flutter Clean Architecture',
+  title: title,
   description: 'Talk',
   name: name,
   profession: 'GDE',
   aboutMe: '',
   photoUrl: '',
-  technologyType: 'Mobile',
-  type: 'conference',
+  technologyType: technologyType,
+  type: type,
   color: 'blue',
-  schedule: '10:00',
+  schedule: schedule,
   position: 1,
-  socialNetwork: [SocialNetwork(type: 'github', link: 'https://github.com')],
+  socialNetwork:
+      socialNetwork ??
+      [SocialNetwork(type: 'github', link: 'https://github.com')],
 );
 
 Sponsor makeSponsor({String id = 'sp-1', String name = 'Google'}) =>

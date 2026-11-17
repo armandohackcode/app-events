@@ -38,6 +38,7 @@ class AppStrings {
   static const String scheduleInstagram = 'Instagram';
   static const String scheduleLinkedIn = 'Linkedin';
   static const String scheduleTwitter = 'Twitter';
+  static const String scheduleTikTok = 'TikTok';
   static const String scheduleBlog = 'Blog';
   static const String scheduleSchedule = 'Cronograma';
   static const String scheduleAboutMe = 'Acerca de mí';
@@ -61,12 +62,38 @@ class AppStrings {
   // home
   static const String homeEventDay = "15";
   static const String homeEventMonth = "Noviembre";
-  static const String homeEventJoinActivities = "Únete a las actividades";
+  static const String homeLiveWindowTitle = "DEVFEST.APP";
+  static const String homeLiveBadge = "LIVE";
+  static const String homeScheduleSubtitle =
+      "Ver la agenda completa del evento";
   static const String homeTournamentGDG = "Torneo GDG Sucre";
   static const String homeSpeedRunBuild = "SpeedRun Build";
   static const String homeMeetCommunity = "Conoce a la comunidad";
+  static const String homeMeetCommunitySubtitle =
+      "Organizadores y speakers de GDG Sucre";
   static const String homeTreasureBunt = "Búsqueda del tesoro";
-  static const String homeJoinDiscord = "Únete al canal en Discord";
+  static const String homeHeaderSubtitle = "Google Developer Groups";
+  static const String homeChannelsTitle = "Únete a nuestros canales";
+  static const String homeChannelsSubtitle =
+      "Conecta con la comunidad GDG Sucre";
+  static const String homeChannelWhatsApp = "WhatsApp";
+  static const String homeChannelInstagram = "Instagram";
+  static const String homeChannelDiscord = "Discord";
+  static const String homeChannelTikTok = "TikTok";
+  static const String homeChannelWeb = "Web";
+  static const String homeSponsorsTitle = "Nuestros Sponsors";
+  static const String homeSponsorsThanks = "Gracias por hacer esto posible";
+  static const String homeSponsorPlaceholderOne = "CISIC";
+  static const String homeSponsorPlaceholderTwo = "S.I.B.";
+  static const String homeSponsorPlaceholderRegion = "Chuquisaca";
+  // Placeholder content of the live talk card until it is fed by real data.
+  static const String homeLiveTalkTitle =
+      "ADK for Dummies: Tu primer Agente en Google Cloud";
+  static const String homeLiveSpeakerName = "Ivan Martinez";
+  static const String homeLiveSpeakerProfession = "Ingeniero en Sistemas";
+  static const String homeLiveSchedule = "09:45 - 10:45";
+  static const String homeLiveTechnology = "IA";
+  static const String homeLiveQuestionHint = "Escribe tu pregunta para Ivan...";
 
   // Trasure Bunt
   static const String homeTreasureBuntDescription =

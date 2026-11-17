@@ -1,4 +1,5 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -47,6 +48,83 @@ String getSVG(SocialNetwork item) {
       return AppAssetsPath.iconLinkedIn;
     default:
       return AppAssetsPath.iconWebRound;
+  }
+}
+
+/// Brand color of the button that represents [item].
+Color getSocialColor(SocialNetwork item) {
+  switch (item.type.toUpperCase()) {
+    case "GITHUB":
+      return AppStyles.socialGithubColor;
+    case "FACEBOOK":
+      return AppStyles.socialFacebookColor;
+    case "INSTAGRAM":
+      return AppStyles.socialInstagramColor;
+    case "TWITTER":
+      return AppStyles.socialTwitterColor;
+    case "LINKEDIN":
+      return AppStyles.socialLinkedInColor;
+    case "TIKTOK":
+      return AppStyles.socialTikTokColor;
+    default:
+      return AppStyles.socialWebColor;
+  }
+}
+
+/// Single-color glyph of [item], meant to be tinted over [getSocialColor].
+String getSocialGlyph(SocialNetwork item) {
+  switch (item.type.toUpperCase()) {
+    case "GITHUB":
+      return AppAssetsPath.glyphGithub;
+    case "FACEBOOK":
+      return AppAssetsPath.glyphFacebook;
+    case "INSTAGRAM":
+      return AppAssetsPath.glyphInstagram;
+    case "TWITTER":
+      return AppAssetsPath.glyphTwitter;
+    case "LINKEDIN":
+      return AppAssetsPath.glyphLinkedIn;
+    case "TIKTOK":
+      return AppAssetsPath.glyphTikTok;
+    default:
+      return AppAssetsPath.glyphWeb;
+  }
+}
+
+String getSocialLabel(SocialNetwork item) {
+  switch (item.type.toUpperCase()) {
+    case "GITHUB":
+      return AppStrings.scheduleGithub;
+    case "FACEBOOK":
+      return AppStrings.scheduleFacebook;
+    case "INSTAGRAM":
+      return AppStrings.scheduleInstagram;
+    case "TWITTER":
+      return AppStrings.scheduleTwitter;
+    case "LINKEDIN":
+      return AppStrings.scheduleLinkedIn;
+    case "TIKTOK":
+      return AppStrings.scheduleTikTok;
+    default:
+      return AppStrings.scheduleBlog;
+  }
+}
+
+/// Tag color of a talk's technology area.
+Color technologyColor(String area) {
+  switch (area) {
+    case "Mobile":
+      return AppStyles.colorBaseGreen;
+    case "IA":
+      return AppStyles.colorBaseYellow;
+    case "Cloud":
+      return AppStyles.colorBaseRed;
+    case "Web":
+      return AppStyles.colorBaseBlue;
+    case "UI/UX":
+      return AppStyles.colorBasePurple;
+    default:
+      return AppStyles.colorBaseRed;
   }
 }
 
