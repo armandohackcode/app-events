@@ -13,9 +13,7 @@ import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/home/live_talk_card.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
 import 'package:app_events/ui/widgets/home/question_box.dart';
-import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
-import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
 import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,24 +86,6 @@ class Home extends StatelessWidget {
               //   text: AppStrings.homeSpeedRunBuild,
               //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
               // ),
-              const SizedBox(height: _rowGap),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.trophyIcon),
-                iconBackground: AppStyles.colorCardRed,
-                title: AppStrings.homeTournamentGDG,
-                onTap: () => Navigator.of(
-                  context,
-                ).push(CupertinoPageRoute(builder: (_) => const RankingData())),
-              ),
-              const SizedBox(height: _rowGap),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
-                iconBackground: AppStyles.colorCardBlue,
-                title: AppStrings.homeTreasureBunt,
-                onTap: () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
-                ),
-              ),
               const SizedBox(height: _rowGap),
               ActivityRow(
                 icon: SvgPicture.asset(AppAssetsPath.gdgIcon),

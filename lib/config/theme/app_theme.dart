@@ -10,7 +10,7 @@ class AppTheme {
   }
 
   ThemeData getTheme() => ThemeData(
-    scaffoldBackgroundColor: AppStyles.backgroundColor,
+    scaffoldBackgroundColor: AppStyles.homeBackgroundColor,
     textTheme: Typography.blackRedmond.apply(
       bodyColor: AppStyles.fontColor,
       fontFamily: 'GoogleSans',
@@ -40,9 +40,10 @@ class AppTheme {
     ),
     fontFamily: 'GoogleSans',
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppStyles.colorAppbar,
+      backgroundColor: AppStyles.homeBackgroundColor,
       centerTitle: true,
       elevation: 0,
+      scrolledUnderElevation: 0,
       foregroundColor: AppStyles.fontColor,
       shadowColor: AppStyles.borderColor,
       surfaceTintColor: Colors.transparent,

@@ -15,12 +15,15 @@ class HomeBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.hardEdge,
-      children: [
-        const Positioned.fill(child: IgnorePointer(child: _Glows())),
-        Positioned.fill(child: ParticleField(child: child)),
-      ],
+    return ColoredBox(
+      color: AppStyles.homeBackgroundColor,
+      child: Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          const Positioned.fill(child: IgnorePointer(child: _Glows())),
+          Positioned.fill(child: ParticleField(child: child)),
+        ],
+      ),
     );
   }
 }

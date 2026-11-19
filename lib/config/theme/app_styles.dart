@@ -71,4 +71,59 @@ class AppStyles {
   static const Color socialDiscordColor = Color(0xFF5865F2);
 
   static const String monospaceFontFamily = 'Courier New';
+
+  // Games (Activities tab and GDG SPIN)
+  static const Color gamesBackgroundColor = homeBackgroundColor;
+  static const List<Color> gdgBrandPalette = [
+    backdropBlueColor,
+    Color(0xFFEA4335),
+    Color(0xFFFBBC04),
+    Color(0xFF34A853),
+  ];
+  static const Color activitiesRankingTagColor = Color(0xFFA8C7FA);
+  static const Color activitiesSpinTagColor = colorBaseYellow;
+  static const Color activitiesTreasureTagColor = Color(0xFFA8DAB5);
+  static const Color podiumFirstColor = colorBaseYellow;
+  static const Color podiumSecondColor = Color(0xFF34A853);
+  static const Color podiumThirdColor = Color(0xFFEA4335);
+  static const Color treasureFoundColor = podiumSecondColor;
+
+  // GDG SPIN (blue pop-brutalist cabinet on cream HomeBackdrop)
+  static const Color spinCabinetColor = backdropBlueColor;
+  static const Color spinCabinetShadowColor = borderColor;
+  static const Color spinCabinetInnerShadowColor = borderColor;
+  static const Color spinCabinetDotColor = spinDotPatternColor;
+  static const Color spinCabinetBulbBorderColor = borderColor;
+  static const Color spinLeverStickColor = borderColor;
+  static const Color spinDotPatternColor = Color(0x291E1E1E);
+  static const Color spinBezelColor = colorBaseYellow;
+  static const Color spinReelDimColor = Color(0x99F7F3EA);
+  static const Color spinPaylineColor = podiumThirdColor;
+  static const Color spinPaylineHitColor = colorBaseYellow;
+  static const Color spinKnobColor = podiumThirdColor;
+  static const Color spinTeaseColor = Color(0xFFFFF1C7);
+  static const Color spinNearMissColor = Color(0xFFF29900);
+  static const Color spinCoinColor = colorBaseYellow;
+  static const Color spinCoinShadowColor = Color(0xFF9A6F00);
+  static const Color spinWarnColor = Color(0xFFF8BDB8);
+  static const Color spinScrimColor = Color(0xF0F7F3EA);
+  static const Color spinDemoButtonColor = activitiesRankingTagColor;
+  static const Color spinMyPrizesTagColor = spinWarnColor;
+  static const Color spinPayTableTagColor = colorBaseYellow;
+  static const Color spinEarnTagColor = activitiesTreasureTagColor;
+  static const Color spinMissionDoneColor = activitiesTreasureTagColor;
+  static const Color rarityCommonColor = activitiesTreasureTagColor;
+  static const Color rarityRareColor = activitiesRankingTagColor;
+  static const Color rarityEpicColor = spinWarnColor;
+  static const Color rarityLegendaryColor = colorBaseYellow;
+  static const Color raritySpecialColor = Color(0xFFE5E5E0);
+  static const Color spinAccentStarColor = Color(0xFFFF9100);
+  static const Color spinAccentDiamondColor = Color(0xFF29B6F6);
+  static const List<Color> spinFrameBulbPalette = [
+    colorBaseYellow,
+    cardColor,
+    podiumThirdColor,
+    podiumSecondColor,
+  ];
+  static const List<Color> spinBezelBulbPalette = [borderColor, cardColor];
 }

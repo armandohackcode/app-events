@@ -23,6 +23,7 @@ class AppAssetsPath {
   static const String iconHome = 'assets/img/icon_home.svg';
   static const String iconLibrary = 'assets/img/icon_library.svg';
   static const String iconProfile = 'assets/img/icon_profile.svg';
+  static const String iconActivities = 'assets/img/icon_activities.svg';
   static const String iconEdit = 'assets/img/icon_edit.svg';
   static const String iconProfileSmall = 'assets/img/receipt-svgrepo-com.svg';
   static const String iconShare = 'assets/img/share-2-svgrepo-com.svg';
@@ -80,4 +81,7 @@ class AppAssetsPath {
   static const String treasureBuntImg10 =
       'assets/img/treasure_bunt/img-youtube.png';
   static const String sparkyYouWin = 'assets/img/sparky-you-win.png';
+
+  // gdg spin
+  static const String spinIconTicket = 'assets/img/gdg_spin/icon_ticket.svg';
 }
