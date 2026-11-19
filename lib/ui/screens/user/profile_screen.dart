@@ -1,29 +1,34 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
-import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/delete_account.dart';
-import 'package:app_events/ui/widgets/shared/button_scan.dart';
-import 'package:app_events/ui/widgets/card_content.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/profile/edit_profile.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
 import 'package:app_events/ui/widgets/profile/profile_friend.dart';
 import 'package:app_events/ui/widgets/profile/profile_public.dart';
-// import 'package:app_events/widgets/utils/qr_scan_content.dart';
+import 'package:app_events/ui/widgets/shared/button_scan.dart';
+import 'package:app_events/ui/widgets/shared/chunky_button.dart';
+import 'package:app_events/ui/widgets/shared/dashed_border_box.dart';
+import 'package:app_events/ui/widgets/shared/dot_pattern.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
+import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
+import 'package:app_events/ui/widgets/shared/social_circle_button.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-// import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+enum _ProfileMenuAction { logout, deleteAccount }
+
+/// Authenticated user profile screen with stats, social networks, QR code, and connections grid.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -32,10 +37,16 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  StreamSubscription? _sub;
+  StreamSubscription<UserCompetitor?>? _sub;
+  bool _showAllConnections = false;
+
+  static const _collapsedConnectionsLimit = 5;
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final data = Provider.of<UserProvider>(context, listen: false);
       if (data.userCompetitor != null) {
         _sub = data.streamInfoUser().listen((user) {
@@ -45,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     });
-    super.initState();
   }
 
   @override
@@ -54,422 +64,799 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
+  Future<void> _openEditProfile() async {
+    final res = await Navigator.of(
+      context,
+    ).push<bool?>(CupertinoPageRoute(builder: (_) => const EditProfile()));
+    if (res == true && mounted) {
+      customSnackbar(context, AppStrings.profileMsCongratulations);
+    }
+  }
+
+  void _openPublicProfile(UserCompetitor competitor) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => ModalProfilePublic(user: competitor),
+    );
+  }
+
+  void _openQrModal(String uuid) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => ModalQrIdentify(identify: uuid),
+    );
+  }
+
+  void _openFriendModal(String uuid) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => ModalProfileFriend(uuid: uuid),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
     final data = Provider.of<UserProvider>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(AppAssetsPath.headerImage, height: 40),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await auth.logOut();
-              data.userCompetitor = null;
-              auth.isAuth = false;
-            },
-            icon: const Icon(
-              Icons.output,
-              color: AppStyles.fontColor,
-              size: 32,
+    final competitor = data.userCompetitor;
+    final canPop = Navigator.of(context).canPop();
+
+    final displayName =
+        competitor?.name ??
+        auth.userInfo.displayName ??
+        AppStrings.commonWordAnonymous;
+    final avatarUrl = competitor?.photoUrl ?? auth.userInfo.photoUrl ?? '';
+    final canScan = competitor != null && competitor.uuid.isNotEmpty;
+
+    return HomeBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          leading: canPop
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 20,
+                    color: AppStyles.fontColor,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(AppAssetsPath.gdgIcon, height: 18),
+              const SizedBox(width: 6),
+              const Flexible(
+                child: Text(
+                  AppStrings.profileCommunityHeader,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppStyles.fontColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            PopupMenuButton<_ProfileMenuAction>(
+              icon: const Icon(Icons.more_vert, color: AppStyles.fontColor),
+              color: AppStyles.cardColor,
+              onSelected: (action) async {
+                switch (action) {
+                  case _ProfileMenuAction.logout:
+                    await auth.logOut();
+                    data.userCompetitor = null;
+                    auth.isAuth = false;
+                  case _ProfileMenuAction.deleteAccount:
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const DeleteAccount()),
+                    );
+                }
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: _ProfileMenuAction.logout,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, size: 18, color: AppStyles.fontColor),
+                      SizedBox(width: 8),
+                      Text(AppStrings.profileLogOut),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: _ProfileMenuAction.deleteAccount,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete_forever_outlined,
+                        size: 18,
+                        color: AppStyles.colorBaseRed,
+                      ),
+                      SizedBox(width: 8),
+                      Text(AppStrings.profileDeleteAccount),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        floatingActionButton: canScan
+            ? Padding(
+                padding: EdgeInsets.only(bottom: canPop ? 0 : 88),
+                child: const ButtonScan(),
+              )
+            : null,
+        body: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(16, 4, 16, canPop ? 32 : 112),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _ProfileHeaderCard(
+                    displayName: displayName,
+                    avatarUrl: avatarUrl,
+                    competitor: competitor,
+                    onEdit: competitor == null ? null : _openEditProfile,
+                    onShare: competitor == null
+                        ? null
+                        : () => _openPublicProfile(competitor),
+                  ),
+                  if (competitor != null) ...[
+                    const SizedBox(height: 16),
+                    _SocialAndQrSection(
+                      competitor: competitor,
+                      onOpenQr: competitor.uuid.isNotEmpty
+                          ? () => _openQrModal(competitor.uuid)
+                          : null,
+                    ),
+                    const SizedBox(height: 18),
+                    _ConnectionsSection(
+                      friends: competitor.friends,
+                      showAll: _showAllConnections,
+                      collapsedLimit: _collapsedConnectionsLimit,
+                      onToggleShowAll: () => setState(
+                        () => _showAllConnections = !_showAllConnections,
+                      ),
+                      onOpenFriend: (friend) => _openFriendModal(friend.uuid),
+                      onOpenQr: competitor.uuid.isNotEmpty
+                          ? () => _openQrModal(competitor.uuid)
+                          : null,
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(15),
-        children: [
-          HeaderProfile(auth: auth),
-          const SizedBox(height: 20),
-          if (data.userCompetitor != null) const BodyProfile(),
-        ],
-      ),
-
-      floatingActionButton: (data.userCompetitor != null)
-          ? const ButtonScan()
-          : null,
     );
   }
 }
 
-class HeaderProfile extends StatelessWidget {
-  const HeaderProfile({super.key, required this.auth});
+class _ProfileHeaderCard extends StatelessWidget {
+  final String displayName;
+  final String avatarUrl;
+  final UserCompetitor? competitor;
+  final VoidCallback? onEdit;
+  final VoidCallback? onShare;
 
-  final SignInSocialNetworkProvider auth;
+  const _ProfileHeaderCard({
+    required this.displayName,
+    required this.avatarUrl,
+    required this.competitor,
+    required this.onEdit,
+    required this.onShare,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<UserProvider>(context);
-    return CardContent(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final imageSize = constraints.maxWidth * 0.20;
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final profession = competitor?.profession.trim() ?? '';
+    final aboutMe = competitor?.aboutMe.trim() ?? '';
+
+    return HardShadowBox(
+      color: AppStyles.cardColor,
+      radius: 20,
+      shadowOffset: 4,
+      borderWidth: 2,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
             children: [
-              Padding(
-                padding: EdgeInsets.all(constraints.maxWidth * 0.02),
-                child: ClipOval(
-                  child: (auth.userInfo.photoUrl != null)
-                      ? CachedNetworkImage(
-                          imageUrl: auth.userInfo.photoUrl!,
-                          fit: BoxFit.cover,
-                          width: imageSize,
-                          height: imageSize,
-                          errorWidget: (ctx, url, err) => Image.asset(
-                            AppAssetsPath.firePedIcon,
-                            width: imageSize,
-                            height: imageSize,
+              InitialsAvatar(
+                name: displayName,
+                photoUrl: avatarUrl,
+                backgroundColor: AppStyles.colorCardYellow,
+                foregroundColor: AppStyles.fontColor,
+                size: 62,
+                borderWidth: 2,
+                fallbackAsset: AppAssetsPath.firePedIcon,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            displayName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w900,
+                              color: AppStyles.fontColor,
+                              height: 1.15,
+                            ),
                           ),
-                        )
-                      : Image.asset(
-                          AppAssetsPath.firePedIcon,
-                          width: imageSize,
-                          height: imageSize,
                         ),
+                        const SizedBox(width: 5),
+                        const Icon(
+                          Icons.verified,
+                          size: 17,
+                          color: AppStyles.backdropBlueColor,
+                        ),
+                      ],
+                    ),
+                    if (profession.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        profession,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: AppStyles.fontSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
+                child: ChunkyButton(
+                  label: AppStrings.profileEditProfile,
+                  color: AppStyles.cardColor,
+                  onPressed: onEdit,
+                  expand: true,
+                  radius: 999,
+                  minHeight: 40,
+                  minTapHeight: 44,
+                  fontSize: 12.5,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ChunkyButton(
+                  label: AppStrings.commonWordShare,
+                  color: AppStyles.colorBaseYellow,
+                  onPressed: onShare,
+                  expand: true,
+                  radius: 999,
+                  minHeight: 40,
+                  minTapHeight: 44,
+                  fontSize: 12.5,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (competitor != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              aboutMe.isNotEmpty ? aboutMe : AppStrings.profileMsEditProfile,
+              style: const TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+                height: 1.38,
+                color: AppStyles.fontSecondaryColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _StatTile(
+                    value: competitor!.score,
+                    label: AppStrings.commonWordPoints,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _StatTile(
+                    value: competitor!.friends.length,
+                    label: AppStrings.profileFriendsStat,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _StatTile(
+                    value: competitor!.treasures.length,
+                    label: AppStrings.profileTreasuresStat,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final int value;
+  final String label;
+
+  const _StatTile({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppStyles.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppStyles.borderColor, width: 1.8),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value.toString(),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                height: 1,
+                color: AppStyles.fontColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 3),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: AppStyles.fontSecondaryColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SocialAndQrSection extends StatelessWidget {
+  final UserCompetitor competitor;
+  final VoidCallback? onOpenQr;
+
+  const _SocialAndQrSection({required this.competitor, required this.onOpenQr});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                AppStrings.profileSocialLabel,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppStyles.fontColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (competitor.socialNetwork.isEmpty)
+                const Text(
+                  AppStrings.profileNoSocialLinks,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppStyles.fontSecondaryColor,
+                  ),
+                )
+              else
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in competitor.socialNetwork)
+                      SocialCircleButton(
+                        color: getSocialColor(item),
+                        glyph: getSocialGlyph(item),
+                        tooltip: getSocialLabel(item),
+                        size: 36,
+                        glyphSize: 17,
+                        borderWidth: 1.5,
+                        onTap: () => launcherUrlInfo(item.link),
+                      ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        if (onOpenQr != null)
+          InkWell(
+            onTap: onOpenQr,
+            borderRadius: BorderRadius.circular(10),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.qr_code_2, size: 18, color: AppStyles.fontColor),
+                    SizedBox(width: 5),
+                    Text(
+                      AppStrings.profileQrAction,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppStyles.fontColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ConnectionsSection extends StatelessWidget {
+  final List<Friend> friends;
+  final bool showAll;
+  final int collapsedLimit;
+  final VoidCallback onToggleShowAll;
+  final ValueChanged<Friend> onOpenFriend;
+  final VoidCallback? onOpenQr;
+
+  const _ConnectionsSection({
+    required this.friends,
+    required this.showAll,
+    required this.collapsedLimit,
+    required this.onToggleShowAll,
+    required this.onOpenFriend,
+    required this.onOpenQr,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final canToggle = friends.length > collapsedLimit;
+    final visibleFriends = !canToggle || showAll
+        ? friends
+        : friends.take(collapsedLimit).toList();
+
+    final tiles = <Widget>[
+      for (var i = 0; i < visibleFriends.length; i++)
+        _ConnectionCard(
+          friend: visibleFriends[i],
+          accentColor:
+              AppStyles.gdgBrandPalette[i % AppStyles.gdgBrandPalette.length],
+          onTap: () => onOpenFriend(visibleFriends[i]),
+        ),
+      _NewConnectionTile(onTap: onOpenQr),
+    ];
+
+    final rows = <List<Widget>>[];
+    for (var i = 0; i < tiles.length; i += 3) {
+      rows.add(tiles.sublist(i, math.min(i + 3, tiles.length)));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              Transform.rotate(
+                angle: -0.02,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(12, 5, 8, 5),
+                  decoration: BoxDecoration(
+                    color: AppStyles.colorBaseYellow,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: AppStyles.borderColor,
+                      width: 1.8,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppStyles.borderColor,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Text(
-                          data.userCompetitor?.name ??
-                              auth.userInfo.displayName ??
-                              AppStrings.commonWordAnonymous,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppStyles.fontColor,
-                          ),
+                      const Text(
+                        AppStrings.commonWordConnections,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w900,
+                          color: AppStyles.fontColor,
                         ),
                       ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Text(
-                          data.userCompetitor?.profession ?? '-',
-                          style: const TextStyle(
-                            color: AppStyles.fontColor,
-                            fontWeight: FontWeight.normal,
-                          ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  (data.userCompetitor?.score ?? 0).toString(),
-                                  style: const TextStyle(fontSize: 28),
-                                ),
-                                const Text(
-                                  AppStrings.commonWordPoints,
-                                  style: TextStyle(height: 0.6),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  (data.userCompetitor?.friends.length ?? 0)
-                                      .toString(),
-                                  style: const TextStyle(fontSize: 28),
-                                ),
-                                const Text(
-                                  AppStrings.commonWordConnections,
-                                  style: TextStyle(height: 0.6),
-                                ),
-                              ],
-                            ),
-                          ],
+                        decoration: BoxDecoration(
+                          color: AppStyles.cardColor,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          friends.length.toString(),
+                          style: const TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w900,
+                            color: AppStyles.fontColor,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class BodyProfile extends StatelessWidget {
-  const BodyProfile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final data = Provider.of<UserProvider>(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: const Text(
-                AppStrings.scheduleAboutMe,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            if (data.userCompetitor!.uuid.isNotEmpty)
-              InkWell(
-                borderRadius: BorderRadius.circular(100),
-                onTap: () async {
-                  showDialog(
-                    context: context,
-                    builder: (_) =>
-                        ModalQrIdentify(identify: data.userCompetitor!.uuid),
-                  );
-                },
-                child: const Icon(
-                  Icons.qr_code_outlined,
-                  size: 32,
-                  color: AppStyles.fontColor,
-                ),
-              ),
-            InkWell(
-              borderRadius: BorderRadius.circular(100),
-              onTap: () async {
-                showDialog(
-                  context: context,
-                  builder: (_) =>
-                      ModalProfilePublic(user: data.userCompetitor!),
-                );
-              },
-              child: SvgPicture.asset(
-                AppAssetsPath.iconProfileSmall,
-                width: 45,
-                height: 45,
-                colorFilter: const ColorFilter.mode(
-                  AppStyles.fontColor,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-            InkWell(
-              borderRadius: BorderRadius.circular(100),
-              onTap: () async {
-                var res = await Navigator.of(context).push<bool?>(
-                  CupertinoPageRoute(builder: (_) => const EditProfile()),
-                );
-                if (res == true && context.mounted) {
-                  customSnackbar(context, AppStrings.profileMsCongratulations);
-                }
-              },
-              child: SvgPicture.asset(
-                AppAssetsPath.iconEdit,
-                width: 45,
-                height: 45,
-                colorFilter: const ColorFilter.mode(
-                  AppStyles.fontColor,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-            if (Platform.isIOS)
-              Tooltip(
-                message: AppStrings.profileDeleteAccount,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(100),
-                  onTap: () async {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const DeleteAccount(),
+              if (canToggle)
+                InkWell(
+                  onTap: onToggleShowAll,
+                  borderRadius: BorderRadius.circular(10),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 44),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 4,
                       ),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.delete_forever_outlined,
-                    size: 32,
-                    color: AppStyles.fontColor,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        if (data.userCompetitor!.aboutMe != "")
-          Column(
-            children: [
-              Text(data.userCompetitor!.aboutMe),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  for (var item in data.userCompetitor!.socialNetwork)
-                    SizedBox(
-                      child: InkWell(
-                        child: SvgPicture.asset(
-                          getSVG(item),
-                          width: 60,
-                          height: 40,
-                          colorFilter: const ColorFilter.mode(
-                            AppStyles.fontColor,
-                            BlendMode.srcIn,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            showAll
+                                ? AppStrings.profileSeeLessConnections
+                                : AppStrings.profileSeeAllConnections,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              color: AppStyles.fontColor,
+                            ),
                           ),
-                        ),
-                        onTap: () async {
-                          await launcherUrlInfo(item.link);
-                        },
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: AppStyles.fontColor,
+                          ),
+                        ],
                       ),
                     ),
-                ],
-              ),
-            ],
-          )
-        else
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(AppAssetsPath.dinoWriteIcon, height: 150),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    AppStrings.profileMsEditProfile,
-                    textAlign: TextAlign.center,
                   ),
                 ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        for (var r = 0; r < rows.length; r++) ...[
+          if (r > 0) const SizedBox(height: 10),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var c = 0; c < 3; c++) ...[
+                  if (c > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: c < rows[r].length
+                        ? rows[r][c]
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ],
             ),
           ),
-        const SizedBox(height: 20),
-        // if (data.userCompetitor!.tokenAuthorization.isEmpty)
-        //   Center(
-        //     child: ElevatedButton.icon(
-        //       style: ElevatedButton.styleFrom(
-        //         shape: RoundedRectangleBorder(
-        //           side: const BorderSide(
-        //             width: 1.5,
-        //           ),
-        //           borderRadius: BorderRadius.circular(15),
-        //         ),
-        //       ),
-        //       onPressed: () async {
-        //         var res = await Navigator.of(context).push<Barcode?>(
-        //           MaterialPageRoute(
-        //             builder: (context) => const QRScanContent(),
-        //           ),
-        //         );
-        //         if (res != null) {
-        //           if (context.mounted) {
-        //             customSnackbar(context, "Enabling user...");
-        //             await data.updateToken(res.code!);
-        //           }
-        //         }
-        //       },
-        //       icon: SvgPicture.asset('assets/img/gamepad-svgrepo-com.svg',
-        //           width: 60,
-        //           height: 60,
-        //           colorFilter:
-        //               const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-        //       label: const Text(
-        //         "Start Playing",
-        //         style: TextStyle(fontSize: 22),
-        //       ),
-        //     ),
-        //   ),
-        if (data.userCompetitor!.friends.isNotEmpty)
-          const Text(
-            AppStrings.commonWordConnections,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        const SizedBox(height: 10),
-        for (var item in data.userCompetitor!.friends)
-          CardNetworking(friend: item),
-        const SizedBox(height: 60),
+        ],
       ],
     );
   }
 }
 
-class CardNetworking extends StatelessWidget {
+class _ConnectionCard extends StatelessWidget {
   final Friend friend;
-  const CardNetworking({super.key, required this.friend});
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _ConnectionCard({
+    required this.friend,
+    required this.accentColor,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (_) => ModalProfileFriend(uuid: friend.uuid),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          border: Border.all(width: 2, color: AppStyles.fontColor),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 10,
-                left: 10,
-                right: 10,
-                bottom: 10,
-              ),
-              child: ClipOval(
-                // child: Image.network(
-                //   'https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg',
-                //   fit: BoxFit.cover,
-                //   width: MediaQuery.of(context).size.width * 0.15,
-                //   height: MediaQuery.of(context).size.width * 0.15,
-                // ),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.15,
-                  height: MediaQuery.of(context).size.width * 0.15,
-                  child: (friend.photoUrl.isEmpty)
-                      ? Image.asset(AppAssetsPath.dinoRunIcon)
-                      : FadeInImage(
-                          placeholder: const AssetImage(
-                            AppAssetsPath.loadingSmallImage,
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: HardShadowBox(
+        color: AppStyles.cardColor,
+        radius: 14,
+        shadowOffset: 3,
+        borderWidth: 2,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 52,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Container(
+                      height: 30,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        border: const Border(
+                          bottom: BorderSide(
+                            color: AppStyles.borderColor,
+                            width: 1.5,
                           ),
-                          image: CachedNetworkImageProvider(friend.photoUrl),
                         ),
+                      ),
+                      child: DotPattern(
+                        color: AppStyles.onAccentColor.withValues(alpha: 0.32),
+                        step: 7,
+                        dotRadius: 1.1,
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      child: InitialsAvatar(
+                        name: friend.name,
+                        photoUrl: friend.photoUrl,
+                        backgroundColor: AppStyles.colorCardYellow,
+                        foregroundColor: AppStyles.fontColor,
+                        size: 40,
+                        borderWidth: 2,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(6, 4, 6, 10),
+                child: Text(
+                  friend.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
+                    color: AppStyles.fontColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NewConnectionTile extends StatelessWidget {
+  final VoidCallback? onTap;
+
+  const _NewConnectionTile({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: DashedBorderBox(
+        color: AppStyles.colorCardYellow,
+        radius: 14,
+        strokeWidth: 1.8,
+        dashLength: 5,
+        gapLength: 4,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AppStyles.colorBaseYellow,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppStyles.borderColor, width: 1.8),
+              ),
+              child: const Icon(
+                Icons.qr_code_2,
+                size: 18,
+                color: AppStyles.fontColor,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: Text(
-                friend.name,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppStyles.fontColor,
-                ),
+            const SizedBox(height: 6),
+            const Text(
+              AppStrings.profileNewConnection,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w800,
+                height: 1.15,
+                color: AppStyles.fontColor,
+              ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              AppStrings.profileShareQr,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w600,
+                height: 1.15,
+                color: AppStyles.fontSecondaryColor,
               ),
             ),
           ],

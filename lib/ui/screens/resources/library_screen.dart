@@ -6,6 +6,7 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/library_screen/add_resource.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,100 +48,101 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     final resource = Provider.of<ResourcesProvider>(context);
     final dataCenter = Provider.of<UserProvider>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Image.asset(AppAssetsPath.headerImage, height: 40),
+    return HomeBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Image.asset(AppAssetsPath.headerImage, height: 40),
+          ),
         ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await resource.loadResources();
-        },
-        displacement: 40,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              pinned: false,
-              floating: false,
-              expandedHeight: 75,
-              flexibleSpace: FlexibleSpaceBar(
-                background: FiltersLibrary(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await resource.loadResources();
+          },
+          displacement: 40,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: FiltersLibrary(
                   paramSearch: _paramSearch,
                   resourcesProvider: resource,
                 ),
               ),
-            ),
-            // FiltersLibrary(
-            //   paramSearch: _paramSearch,
-            //   resourcesProvider: resource,
-            // ),
-            if (resource.loadingResource)
-              SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  alignment: Alignment.center,
-                  child: Center(
-                    child: LoadingAnimationWidget.twistingDots(
-                      leftDotColor: AppStyles.colorBaseBlue,
-                      rightDotColor: AppStyles.colorBaseYellow,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              )
-            else if (resource.resources.isEmpty)
-              SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  alignment: Alignment.center,
-                  child: Center(
-                    child: Text(
-                      AppStrings.resourceLibraryNoData,
-                      style: TextStyle(
-                        color: AppStyles.fontColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+              // FiltersLibrary(
+              //   paramSearch: _paramSearch,
+              //   resourcesProvider: resource,
+              // ),
+              if (resource.loadingResource)
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: LoadingAnimationWidget.twistingDots(
+                        leftDotColor: AppStyles.colorBaseBlue,
+                        rightDotColor: AppStyles.colorBaseYellow,
+                        size: 40,
                       ),
                     ),
                   ),
-                ),
-              )
-            else
-              SliverList.builder(
-                itemCount: resource.resources.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var item = resource.resources[index];
-                  return ZoomIn(
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: CardLibrary(
-                        key: UniqueKey(),
-                        width: MediaQuery.of(context).size.width,
-                        link: item.link,
-                        title: item.title,
-                        color: _getColor(item.type),
+                )
+              else if (resource.resources.isEmpty)
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    alignment: Alignment.center,
+                    child: Center(
+                      child: Text(
+                        AppStrings.resourceLibraryNoData,
+                        style: TextStyle(
+                          color: AppStyles.fontColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
+                  ),
+                )
+              else
+                SliverList.builder(
+                  itemCount: resource.resources.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var item = resource.resources[index];
+                    return ZoomIn(
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: CardLibrary(
+                          key: UniqueKey(),
+                          width: MediaQuery.of(context).size.width,
+                          link: item.link,
+                          title: item.title,
+                          color: _getColor(item.type),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+        floatingActionButton: (dataCenter.isAdmin)
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(builder: (_) => const AddResource()),
                   );
                 },
-              ),
-          ],
-        ),
+                child: const Icon(Icons.note_add_outlined, size: 32),
+              )
+            : null,
       ),
-      floatingActionButton: (dataCenter.isAdmin)
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (_) => const AddResource()),
-                );
-              },
-              child: const Icon(Icons.note_add_outlined, size: 32),
-            )
-          : null,
     );
   }
 
@@ -349,9 +351,11 @@ class CardLibrary extends StatelessWidget {
                       width: 60,
                       height: 60,
                     ),
-                    Container(
-                      color: AppStyles.placeholderColor,
-                      child: Text(title),
+                    Expanded(
+                      child: ColoredBox(
+                        color: AppStyles.placeholderColor,
+                        child: Text(title),
+                      ),
                     ),
                   ],
                 ),

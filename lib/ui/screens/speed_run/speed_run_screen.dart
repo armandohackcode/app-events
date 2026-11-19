@@ -4,6 +4,7 @@ import 'package:app_events/ui/providers/speed_run_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/speed_run/add_challenge_screen.dart';
 import 'package:app_events/ui/screens/speed_run/challenge_detail_screen.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/speed_run/card_challenge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,23 +31,33 @@ class _SpeedRunScreenState extends State<SpeedRunScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<SpeedRunProvider>(context);
     final isAdmin = Provider.of<UserProvider>(context).isAdmin;
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.speedRunTitle)),
-      body: RefreshIndicator(
-        onRefresh: () => Provider.of<SpeedRunProvider>(
-          context,
-          listen: false,
-        ).loadChallenges(),
-        child: _buildBody(provider),
+    return HomeBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: const Text(AppStrings.speedRunTitle),
+        ),
+        body: RefreshIndicator(
+          onRefresh: () => Provider.of<SpeedRunProvider>(
+            context,
+            listen: false,
+          ).loadChallenges(),
+          child: _buildBody(provider),
+        ),
+        floatingActionButton: isAdmin
+            ? FloatingActionButton(
+                onPressed: () => Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => const AddChallengeScreen(),
+                  ),
+                ),
+                child: const Icon(Icons.add),
+              )
+            : null,
       ),
-      floatingActionButton: isAdmin
-          ? FloatingActionButton(
-              onPressed: () => Navigator.of(context).push(
-                CupertinoPageRoute(builder: (_) => const AddChallengeScreen()),
-              ),
-              child: const Icon(Icons.add),
-            )
-          : null,
     );
   }
 

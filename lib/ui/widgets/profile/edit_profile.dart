@@ -2,6 +2,7 @@ import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -70,210 +71,219 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<UserProvider>(context, listen: false);
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.profileEditProfile)),
-      body: Form(
-        key: keyForm,
-        child: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            Text("${AppStrings.profileEditProfile} *", style: textStyle()),
-            TextFormField(
-              controller: _name,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return AppStrings.profileNameValidate;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            Text(AppStrings.profileProfession, style: textStyle()),
-            TextFormField(
-              controller: _profession,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return AppStrings.profileProfessionValidate;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            Text("${AppStrings.profileAboutMe} *", style: textStyle()),
-            const Text(AppStrings.profileAboutMeHint),
-            TextFormField(
-              controller: _aboutMe,
-              maxLength: 400,
-              maxLines: 4,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return AppStrings.profileAboutMeValidate;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            const Text(AppStrings.profileSocialNetworksHint),
-            const SizedBox(height: 10),
-            Text(AppStrings.profileFacebook, style: textStyle()),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _facebook,
-              validator: (value) {
-                if (value != AppLinks.facebookProfilePrefix &&
-                    value!.isNotEmpty) {
-                  RegExp facebookRegex = RegExp(
-                    r"^(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/.+",
-                    caseSensitive: false,
-                  );
-                  if (!facebookRegex.hasMatch(value)) {
-                    return AppStrings.profileFacebookValidate;
+    return HomeBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: const Text(AppStrings.profileEditProfile),
+        ),
+        body: Form(
+          key: keyForm,
+          child: ListView(
+            padding: const EdgeInsets.all(15),
+            children: [
+              Text("${AppStrings.profileEditProfile} *", style: textStyle()),
+              TextFormField(
+                controller: _name,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return AppStrings.profileNameValidate;
                   }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            Text(AppStrings.profileInstagram, style: textStyle()),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _instagram,
-              validator: (value) {
-                if (value != AppLinks.instagramProfilePrefix &&
-                    value!.isNotEmpty) {
-                  RegExp instagramRegex = RegExp(
-                    r"^(?:https?:\/\/)?(?:www\.)?instagram\.com\/[a-zA-Z0-9_\.]+\/?$",
-                    caseSensitive: false,
-                  );
-                  if (!instagramRegex.hasMatch(value)) {
-                    return AppStrings.profileInstagramValidate;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              Text(AppStrings.profileProfession, style: textStyle()),
+              TextFormField(
+                controller: _profession,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return AppStrings.profileProfessionValidate;
                   }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            Text(AppStrings.profileGithub, style: textStyle()),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _github,
-              validator: (value) {
-                if (value != AppLinks.githubProfilePrefix &&
-                    value!.isNotEmpty) {
-                  RegExp githubRegex = RegExp(
-                    r"^(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_-]+\/?[a-zA-Z0-9_\-\/]+?$",
-                    caseSensitive: false,
-                  );
-                  if (!githubRegex.hasMatch(value)) {
-                    return AppStrings.profileGithubValidate;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              Text("${AppStrings.profileAboutMe} *", style: textStyle()),
+              const Text(AppStrings.profileAboutMeHint),
+              TextFormField(
+                controller: _aboutMe,
+                maxLength: 400,
+                maxLines: 4,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return AppStrings.profileAboutMeValidate;
                   }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 10),
-            Text(AppStrings.profileLinkedIn, style: textStyle()),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _linkedin,
-              validator: (value) {
-                if (value != AppLinks.linkedInProfilePrefix &&
-                    value!.isNotEmpty) {
-                  RegExp linkedinRegex = RegExp(
-                    r"^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$",
-                    caseSensitive: false,
-                  );
-                  if (!linkedinRegex.hasMatch(value)) {
-                    return AppStrings.profileLinkedInValidate;
-                  }
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (keyForm.currentState!.validate()) {
-                  setState(() {
-                    loading = true;
-                  });
-                  int score = data.userCompetitor!.score;
-
-                  /// user completes his profile
-                  if (_aboutMe.text.length >= 200 &&
-                      data.userCompetitor!.scoreProfile == false) {
-                    score = score + 20;
-                    data.userCompetitor = data.userCompetitor!.copyWith(
-                      scoreProfile: true,
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              const Text(AppStrings.profileSocialNetworksHint),
+              const SizedBox(height: 10),
+              Text(AppStrings.profileFacebook, style: textStyle()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _facebook,
+                validator: (value) {
+                  if (value != AppLinks.facebookProfilePrefix &&
+                      value!.isNotEmpty) {
+                    RegExp facebookRegex = RegExp(
+                      r"^(?:https?:\/\/)?(?:www\.|m\.)?facebook\.com\/.+",
+                      caseSensitive: false,
                     );
+                    if (!facebookRegex.hasMatch(value)) {
+                      return AppStrings.profileFacebookValidate;
+                    }
                   }
-
-                  /// user deleted his profile
-                  if (_aboutMe.text.length < 200 &&
-                      data.userCompetitor!.scoreProfile) {
-                    score = score - 20;
-                    data.userCompetitor = data.userCompetitor!.copyWith(
-                      scoreProfile: false,
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              Text(AppStrings.profileInstagram, style: textStyle()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _instagram,
+                validator: (value) {
+                  if (value != AppLinks.instagramProfilePrefix &&
+                      value!.isNotEmpty) {
+                    RegExp instagramRegex = RegExp(
+                      r"^(?:https?:\/\/)?(?:www\.)?instagram\.com\/[a-zA-Z0-9_\.]+\/?$",
+                      caseSensitive: false,
                     );
-                    (score < 0) ? 0 : score;
+                    if (!instagramRegex.hasMatch(value)) {
+                      return AppStrings.profileInstagramValidate;
+                    }
                   }
-
-                  // TO DO : Use a enum type for social networks
-
-                  var socialNetworks = <SocialNetwork>[];
-
-                  if (_linkedin.text != AppLinks.linkedInProfilePrefix &&
-                      _linkedin.text.isNotEmpty) {
-                    socialNetworks.add(
-                      SocialNetwork(type: "LINKEDIN", link: _linkedin.text),
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              Text(AppStrings.profileGithub, style: textStyle()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _github,
+                validator: (value) {
+                  if (value != AppLinks.githubProfilePrefix &&
+                      value!.isNotEmpty) {
+                    RegExp githubRegex = RegExp(
+                      r"^(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_-]+\/?[a-zA-Z0-9_\-\/]+?$",
+                      caseSensitive: false,
                     );
+                    if (!githubRegex.hasMatch(value)) {
+                      return AppStrings.profileGithubValidate;
+                    }
                   }
-                  if (_github.text != AppLinks.githubProfilePrefix &&
-                      _github.text.isNotEmpty) {
-                    socialNetworks.add(
-                      SocialNetwork(type: "GITHUB", link: _github.text),
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              Text(AppStrings.profileLinkedIn, style: textStyle()),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _linkedin,
+                validator: (value) {
+                  if (value != AppLinks.linkedInProfilePrefix &&
+                      value!.isNotEmpty) {
+                    RegExp linkedinRegex = RegExp(
+                      r"^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$",
+                      caseSensitive: false,
                     );
+                    if (!linkedinRegex.hasMatch(value)) {
+                      return AppStrings.profileLinkedInValidate;
+                    }
                   }
-                  if (_instagram.text != AppLinks.instagramProfilePrefix &&
-                      _instagram.text.isNotEmpty) {
-                    socialNetworks.add(
-                      SocialNetwork(type: "INSTAGRAM", link: _instagram.text),
-                    );
-                  }
-                  if (_facebook.text != AppLinks.facebookProfilePrefix &&
-                      _facebook.text.isNotEmpty) {
-                    socialNetworks.add(
-                      SocialNetwork(type: "FACEBOOK", link: _facebook.text),
-                    );
-                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (keyForm.currentState!.validate()) {
+                    setState(() {
+                      loading = true;
+                    });
+                    int score = data.userCompetitor!.score;
 
-                  /// Reduce the score assigned by previous social networks
-                  score = score - data.userCompetitor!.socialNetwork.length * 3;
-                  // print(score);
+                    /// user completes his profile
+                    if (_aboutMe.text.length >= 200 &&
+                        data.userCompetitor!.scoreProfile == false) {
+                      score = score + 20;
+                      data.userCompetitor = data.userCompetitor!.copyWith(
+                        scoreProfile: true,
+                      );
+                    }
 
-                  /// New score assigned by social networks
-                  score = score + socialNetworks.length * 3;
-                  // print(score);
-                  var user = data.userCompetitor!.copyWith(
-                    score: score,
-                    name: _name.text,
-                    profession: _profession.text,
-                    aboutMe: _aboutMe.text,
-                    socialNetwork: socialNetworks,
-                  );
-                  await data.editCompetitor(user);
-                  if (context.mounted) {
-                    Navigator.pop(
-                      context,
-                      (_aboutMe.text.length >= 200) ? true : false,
+                    /// user deleted his profile
+                    if (_aboutMe.text.length < 200 &&
+                        data.userCompetitor!.scoreProfile) {
+                      score = score - 20;
+                      data.userCompetitor = data.userCompetitor!.copyWith(
+                        scoreProfile: false,
+                      );
+                      (score < 0) ? 0 : score;
+                    }
+
+                    // TO DO : Use a enum type for social networks
+
+                    var socialNetworks = <SocialNetwork>[];
+
+                    if (_linkedin.text != AppLinks.linkedInProfilePrefix &&
+                        _linkedin.text.isNotEmpty) {
+                      socialNetworks.add(
+                        SocialNetwork(type: "LINKEDIN", link: _linkedin.text),
+                      );
+                    }
+                    if (_github.text != AppLinks.githubProfilePrefix &&
+                        _github.text.isNotEmpty) {
+                      socialNetworks.add(
+                        SocialNetwork(type: "GITHUB", link: _github.text),
+                      );
+                    }
+                    if (_instagram.text != AppLinks.instagramProfilePrefix &&
+                        _instagram.text.isNotEmpty) {
+                      socialNetworks.add(
+                        SocialNetwork(type: "INSTAGRAM", link: _instagram.text),
+                      );
+                    }
+                    if (_facebook.text != AppLinks.facebookProfilePrefix &&
+                        _facebook.text.isNotEmpty) {
+                      socialNetworks.add(
+                        SocialNetwork(type: "FACEBOOK", link: _facebook.text),
+                      );
+                    }
+
+                    /// Reduce the score assigned by previous social networks
+                    score =
+                        score - data.userCompetitor!.socialNetwork.length * 3;
+                    // print(score);
+
+                    /// New score assigned by social networks
+                    score = score + socialNetworks.length * 3;
+                    // print(score);
+                    var user = data.userCompetitor!.copyWith(
+                      score: score,
+                      name: _name.text,
+                      profession: _profession.text,
+                      aboutMe: _aboutMe.text,
+                      socialNetwork: socialNetworks,
                     );
+                    await data.editCompetitor(user);
+                    if (context.mounted) {
+                      Navigator.pop(
+                        context,
+                        (_aboutMe.text.length >= 200) ? true : false,
+                      );
+                    }
                   }
-                }
-              },
-              child: const Text(AppStrings.commonWordSave),
-            ),
-            const SizedBox(height: 50),
-          ],
+                },
+                child: const Text(AppStrings.commonWordSave),
+              ),
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );
