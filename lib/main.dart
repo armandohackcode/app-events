@@ -116,8 +116,7 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
         ),
       );
     } else {
-      // LOCAL-ONLY: skips login to preview the home on web. Never commit.
-      if (true || auth.isAuth) {
+      if (auth.isAuth) {
         return const BottomCustomNav();
       } else {
         return const SignInScreen();
