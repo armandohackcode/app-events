@@ -1,6 +1,7 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -18,23 +19,6 @@ class CardSchedule extends StatelessWidget {
     super.key,
   });
 
-  Color colorTag(String area) {
-    switch (area) {
-      case "Mobile":
-        return AppStyles.colorBaseGreen;
-      case "IA":
-        return AppStyles.colorBaseYellow;
-      case "Cloud":
-        return AppStyles.colorBaseRed;
-      case "Web":
-        return AppStyles.colorBaseBlue;
-      case "UI/UX":
-        return AppStyles.colorBasePurple;
-      default:
-        return AppStyles.colorBaseRed;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,7 +26,7 @@ class CardSchedule extends StatelessWidget {
       child: TextButton(
         onPressed: action ? onTap : null,
         style: TextButton.styleFrom(
-          padding: const EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -80,7 +64,7 @@ class CardSchedule extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: colorTag(info.technologyType),
+                        color: technologyColor(info.technologyType),
                         border: Border.all(color: AppStyles.fontColor),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),

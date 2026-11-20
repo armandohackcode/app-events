@@ -1,4 +1,5 @@
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -34,19 +35,74 @@ void customSnackbar(
 }
 
 String getSVG(SocialNetwork item) {
-  switch (item.type) {
-    case "GITHUB":
-      return AppAssetsPath.iconGithub;
-    case "FACEBOOK":
-      return AppAssetsPath.iconFacebook;
-    case "INSTAGRAM":
-      return AppAssetsPath.iconInstagram;
-    case "TWITTER":
-      return AppAssetsPath.iconTwitter;
-    case "LINKEDIN":
-      return AppAssetsPath.iconLinkedIn;
+  return switch (item.networkType) {
+    SocialNetworkType.github => AppAssetsPath.iconGithub,
+    SocialNetworkType.facebook => AppAssetsPath.iconFacebook,
+    SocialNetworkType.instagram => AppAssetsPath.iconInstagram,
+    SocialNetworkType.twitter => AppAssetsPath.iconTwitter,
+    SocialNetworkType.linkedin => AppAssetsPath.iconLinkedIn,
+    SocialNetworkType.tiktok ||
+    SocialNetworkType.blog ||
+    SocialNetworkType.unknown => AppAssetsPath.iconWebRound,
+  };
+}
+
+/// Brand color of the button that represents [item].
+Color getSocialColor(SocialNetwork item) {
+  return switch (item.networkType) {
+    SocialNetworkType.github => AppStyles.socialGithubColor,
+    SocialNetworkType.facebook => AppStyles.socialFacebookColor,
+    SocialNetworkType.instagram => AppStyles.socialInstagramColor,
+    SocialNetworkType.twitter => AppStyles.socialTwitterColor,
+    SocialNetworkType.linkedin => AppStyles.socialLinkedInColor,
+    SocialNetworkType.tiktok => AppStyles.socialTikTokColor,
+    SocialNetworkType.blog ||
+    SocialNetworkType.unknown => AppStyles.socialWebColor,
+  };
+}
+
+/// Single-color glyph of [item], meant to be tinted over [getSocialColor].
+String getSocialGlyph(SocialNetwork item) {
+  return switch (item.networkType) {
+    SocialNetworkType.github => AppAssetsPath.glyphGithub,
+    SocialNetworkType.facebook => AppAssetsPath.glyphFacebook,
+    SocialNetworkType.instagram => AppAssetsPath.glyphInstagram,
+    SocialNetworkType.twitter => AppAssetsPath.glyphTwitter,
+    SocialNetworkType.linkedin => AppAssetsPath.glyphLinkedIn,
+    SocialNetworkType.tiktok => AppAssetsPath.glyphTikTok,
+    SocialNetworkType.blog ||
+    SocialNetworkType.unknown => AppAssetsPath.glyphWeb,
+  };
+}
+
+String getSocialLabel(SocialNetwork item) {
+  return switch (item.networkType) {
+    SocialNetworkType.github => AppStrings.scheduleGithub,
+    SocialNetworkType.facebook => AppStrings.scheduleFacebook,
+    SocialNetworkType.instagram => AppStrings.scheduleInstagram,
+    SocialNetworkType.twitter => AppStrings.scheduleTwitter,
+    SocialNetworkType.linkedin => AppStrings.scheduleLinkedIn,
+    SocialNetworkType.tiktok => AppStrings.scheduleTikTok,
+    SocialNetworkType.blog ||
+    SocialNetworkType.unknown => AppStrings.scheduleBlog,
+  };
+}
+
+/// Tag color of a talk's technology area.
+Color technologyColor(String area) {
+  switch (area) {
+    case "Mobile":
+      return AppStyles.colorBaseGreen;
+    case "IA":
+      return AppStyles.colorBaseYellow;
+    case "Cloud":
+      return AppStyles.colorBaseRed;
+    case "Web":
+      return AppStyles.colorBaseBlue;
+    case "UI/UX":
+      return AppStyles.colorBasePurple;
     default:
-      return AppAssetsPath.iconWebRound;
+      return AppStyles.colorBaseRed;
   }
 }
 

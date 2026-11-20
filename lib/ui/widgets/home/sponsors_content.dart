@@ -4,6 +4,7 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
+import 'package:app_events/ui/widgets/shared/title_pill.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,57 +34,69 @@ class _SponsorsContentState extends State<SponsorsContent> {
   Widget build(BuildContext context) {
     final dataCenter = Provider.of<OtherProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
-    return dataCenter.sponsors.isNotEmpty
-        ? FadeIn(
+    return FadeIn(
+      child: Column(
+        children: [
+          const SizedBox(height: 22),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              const TitlePill(text: AppStrings.homeSponsorsTitle),
+              if (userProvider.isAdmin)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: const AddSponsorForm(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.add_business,
+                      size: 32,
+                      color: AppStyles.fontColor,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: AppStyles.colorCardBlue,
+              border: Border.all(color: AppStyles.borderColor, width: 2),
+              boxShadow: const [
+                BoxShadow(color: AppStyles.borderColor, offset: Offset(4, 4)),
+              ],
+            ),
             child: Column(
               children: [
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Sponsors",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    if (userProvider.isAdmin)
-                      IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (_) => Padding(
-                              padding: EdgeInsets.only(
-                                bottom: MediaQuery.of(
-                                  context,
-                                ).viewInsets.bottom,
-                              ),
-                              child: const AddSponsorForm(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add_business,
-                          size: 32,
-                          color: AppStyles.fontColor,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                Container(
-                  padding: EdgeInsets.only(top: 20, bottom: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: AppStyles.colorCardBlue,
+                const Text(
+                  AppStrings.homeSponsorsThanks,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppStyles.fontSecondaryColor,
                   ),
-                  child: Wrap(
+                ),
+                const SizedBox(height: 12),
+                if (dataCenter.sponsors.isEmpty)
+                  const _PlaceholderSponsors()
+                else
+                  Wrap(
+                    alignment: WrapAlignment.center,
                     children: [
                       for (var item in dataCenter.sponsors)
                         Tooltip(
@@ -96,6 +109,15 @@ class _SponsorsContentState extends State<SponsorsContent> {
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: AppStyles.cardColor,
+                                    border: Border.all(
+                                      color: AppStyles.borderColor,
+                                      width: 1.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   width:
                                       MediaQuery.of(context).size.width * 0.35,
                                   child: FadeInImage(
@@ -186,10 +208,111 @@ class _SponsorsContentState extends State<SponsorsContent> {
                         ),
                     ],
                   ),
-                ),
               ],
             ),
-          )
-        : const SizedBox();
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sponsor tiles of the design, shown while there are no loaded sponsors.
+class _PlaceholderSponsors extends StatelessWidget {
+  const _PlaceholderSponsors();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _PlaceholderTile(
+          name: AppStrings.homeSponsorPlaceholderOne,
+          accent: AppStyles.backdropBlueColor,
+          logo: _LogoPlaceholder(),
+        ),
+        SizedBox(width: 14),
+        _PlaceholderTile(
+          name: AppStrings.homeSponsorPlaceholderTwo,
+          accent: AppStyles.colorBaseGreen,
+          logo: _LogoPlaceholder(),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlaceholderTile extends StatelessWidget {
+  final String name;
+  final Color accent;
+
+  /// Logo of the sponsor, shown above its name.
+  final Widget logo;
+  const _PlaceholderTile({
+    required this.name,
+    required this.accent,
+    required this.logo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppStyles.cardColor,
+          border: Border.all(color: AppStyles.borderColor, width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 26,
+              height: 3,
+              decoration: BoxDecoration(
+                color: accent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(height: 36, child: logo),
+            const SizedBox(height: 6),
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: AppStyles.fontColor,
+              ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              AppStrings.homeSponsorPlaceholderRegion,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w500,
+                color: AppStyles.fontSecondaryColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Stand-in for a sponsor logo until its photo is available.
+class _LogoPlaceholder extends StatelessWidget {
+  const _LogoPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      Icons.business_rounded,
+      size: 30,
+      color: AppStyles.fontFaintColor,
+    );
   }
 }

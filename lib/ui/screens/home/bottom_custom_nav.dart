@@ -6,8 +6,8 @@ import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/home/home.dart';
 import 'package:app_events/ui/screens/resources/library_screen.dart';
 import 'package:app_events/ui/screens/user/profile_screen.dart';
+import 'package:app_events/ui/widgets/shared/floating_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class BottomCustomNav extends StatefulWidget {
@@ -49,54 +49,24 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppStyles.homeBackgroundColor,
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        // showSelectedLabels: false,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              AppAssetsPath.iconHome,
-              colorFilter: const ColorFilter.mode(
-                AppStyles.fontColor,
-                BlendMode.srcIn,
-              ),
-            ),
+      bottomNavigationBar: FloatingNavBar(
+        items: const [
+          FloatingNavItem(
+            icon: AppAssetsPath.iconHome,
             label: AppStrings.navBarHome,
-            // backgroundColor: Colors.red,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              AppAssetsPath.iconLibrary,
-              colorFilter: const ColorFilter.mode(
-                AppStyles.fontColor,
-                BlendMode.srcIn,
-              ),
-            ),
+          FloatingNavItem(
+            icon: AppAssetsPath.iconLibrary,
             label: AppStrings.navBarLibrary,
-
-            // backgroundColor: Colors.green,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              AppAssetsPath.iconProfile,
-              colorFilter: const ColorFilter.mode(
-                AppStyles.fontColor,
-                BlendMode.srcIn,
-              ),
-            ),
+          FloatingNavItem(
+            icon: AppAssetsPath.iconProfile,
             label: AppStrings.navBarProfile,
-            // backgroundColor: Colors.purple,
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.settings),
-          //   label: 'Tours',
-          //   // backgroundColor: Colors.pink,
-          // ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: AppStyles.fontColor,
-        backgroundColor: AppStyles.colorNavbar,
         onTap: _onItemTapped,
       ),
     );
