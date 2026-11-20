@@ -1,11 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
+import 'package:app_events/ui/widgets/shared/title_pill.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,37 +41,7 @@ class _SponsorsContentState extends State<SponsorsContent> {
           Stack(
             alignment: Alignment.center,
             children: [
-              Transform.rotate(
-                angle: 1.5 * math.pi / 180,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppStyles.sponsorsPillColor,
-                    border: Border.all(
-                      color: AppStyles.borderColor,
-                      width: 2.5,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: AppStyles.borderColor,
-                        offset: Offset(3, 3),
-                      ),
-                    ],
-                  ),
-                  child: const Text(
-                    AppStrings.homeSponsorsTitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: AppStyles.fontColor,
-                    ),
-                  ),
-                ),
-              ),
+              const TitlePill(text: AppStrings.homeSponsorsTitle),
               if (userProvider.isAdmin)
                 Align(
                   alignment: Alignment.centerRight,
@@ -260,11 +229,13 @@ class _PlaceholderSponsors extends StatelessWidget {
         _PlaceholderTile(
           name: AppStrings.homeSponsorPlaceholderOne,
           accent: AppStyles.backdropBlueColor,
+          logo: _LogoPlaceholder(),
         ),
         SizedBox(width: 14),
         _PlaceholderTile(
           name: AppStrings.homeSponsorPlaceholderTwo,
           accent: AppStyles.colorBaseGreen,
+          logo: _LogoPlaceholder(),
         ),
       ],
     );
@@ -274,7 +245,14 @@ class _PlaceholderSponsors extends StatelessWidget {
 class _PlaceholderTile extends StatelessWidget {
   final String name;
   final Color accent;
-  const _PlaceholderTile({required this.name, required this.accent});
+
+  /// Logo of the sponsor, shown above its name.
+  final Widget logo;
+  const _PlaceholderTile({
+    required this.name,
+    required this.accent,
+    required this.logo,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -299,6 +277,8 @@ class _PlaceholderTile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
+            SizedBox(height: 36, child: logo),
+            const SizedBox(height: 6),
             Text(
               name,
               style: const TextStyle(
@@ -319,6 +299,20 @@ class _PlaceholderTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Stand-in for a sponsor logo until its photo is available.
+class _LogoPlaceholder extends StatelessWidget {
+  const _LogoPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      Icons.business_rounded,
+      size: 30,
+      color: AppStyles.fontFaintColor,
     );
   }
 }

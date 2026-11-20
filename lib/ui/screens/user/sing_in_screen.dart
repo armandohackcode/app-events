@@ -4,6 +4,7 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // LOCAL-ONLY
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +79,8 @@ class SignInScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          if (Platform.isIOS)
+                          // LOCAL-ONLY: dart:io Platform throws on web.
+                          if (!kIsWeb && Platform.isIOS)
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: ElevatedButton(

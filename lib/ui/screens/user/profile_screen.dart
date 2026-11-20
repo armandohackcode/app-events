@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb; // LOCAL-ONLY
+
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:app_events/config/theme/app_assets_path.dart';
@@ -288,7 +290,8 @@ class BodyProfile extends StatelessWidget {
                 ),
               ),
             ),
-            if (Platform.isIOS)
+            // LOCAL-ONLY: dart:io Platform throws on web.
+            if (!kIsWeb && Platform.isIOS)
               Tooltip(
                 message: AppStrings.profileDeleteAccount,
                 child: InkWell(

@@ -20,7 +20,6 @@ import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -40,10 +39,18 @@ final Speaker _placeholderTalk = Speaker(
   schedule: AppStrings.homeLiveSchedule,
   position: 0,
   socialNetwork: [
-    SocialNetwork(type: 'INSTAGRAM', link: AppLinks.gdgInstagram),
-    SocialNetwork(type: 'LINKEDIN', link: AppLinks.gdgLinkedIn),
-    SocialNetwork(type: 'TIKTOK', link: AppLinks.gdgTikTok),
-    SocialNetwork(type: 'GITHUB', link: AppLinks.gdgGithub),
+    SocialNetwork(
+      type: SocialNetworkType.instagram.value,
+      link: AppLinks.gdgInstagram,
+    ),
+    SocialNetwork(
+      type: SocialNetworkType.linkedin.value,
+      link: AppLinks.gdgLinkedIn,
+    ),
+    SocialNetwork(
+      type: SocialNetworkType.tiktok.value,
+      link: AppLinks.gdgTikTok,
+    ),
   ],
 );
 
@@ -108,7 +115,7 @@ class Home extends StatelessWidget {
               ),
               const SizedBox(height: _rowGap),
               ActivityRow(
-                icon: SvgPicture.asset(AppAssetsPath.gdgIcon),
+                icon: Image.asset(AppAssetsPath.logoGdg),
                 iconBackground: AppStyles.colorCardYellow,
                 title: AppStrings.homeMeetCommunity,
                 subtitle: AppStrings.homeMeetCommunitySubtitle,
@@ -152,7 +159,7 @@ class Home extends StatelessWidget {
                     },
               ),
               TextButton(
-                style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
+                style: TextButton.styleFrom(padding: EdgeInsets.zero),
                 onPressed: () async {
                   await launcherUrlInfo(AppLinks.developerLinkedIn);
                 },
@@ -173,24 +180,13 @@ class Home extends StatelessWidget {
 class _HomeHeader extends StatelessWidget {
   const _HomeHeader();
 
-  /// Share of the logo image width that holds the mark, without the text.
-  static const double _logoMarkWidthFactor = 0.19;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 18),
       child: Row(
         children: [
-          // The original logo image holds the mark followed by the group name,
-          // so only its first part (the mark) is shown here.
-          ClipRect(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              widthFactor: _logoMarkWidthFactor,
-              child: Image.asset(AppAssetsPath.headerImage, height: 38),
-            ),
-          ),
+          Image.asset(AppAssetsPath.logoGdg, height: 34),
           const SizedBox(width: 10),
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
