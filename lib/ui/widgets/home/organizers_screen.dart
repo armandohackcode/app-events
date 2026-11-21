@@ -1,4 +1,3 @@
-// cspell:ignore lider coordin diseno disen diseñ escenograf escenografia logistica acreditacion comunidad organizador difusion colead movil
 import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_assets_path.dart';
@@ -12,14 +11,21 @@ import 'package:app_events/ui/widgets/shared/dashed_border_box.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
 import 'package:app_events/ui/widgets/shared/social_circle_button.dart';
+import 'package:app_events/ui/widgets/shared/title_pill.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum _OrganizerGroup { leadership, design, development, community }
+class _TeamBucket {
+  final String key;
+  final String label;
+  final List<Organizer> members = [];
 
-/// Event organizers directory with community channels, search, and team filters.
+  _TeamBucket({required this.key, required this.label});
+}
+
+/// Event organizers directory with community channels, search, and dynamic team filters.
 class OrganizersScreen extends StatefulWidget {
   const OrganizersScreen({super.key});
 
@@ -30,10 +36,32 @@ class OrganizersScreen extends StatefulWidget {
 class _OrganizersScreenState extends State<OrganizersScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
-  _OrganizerGroup? _selectedGroup;
-  final Set<_OrganizerGroup> _expandedGroups = {};
+  String? _selectedTeamKey;
+  final Set<String> _expandedTeams = {};
 
   static const _collapsedVisibleLimit = 7;
+
+  static final List<String> _knownTeamOrder = [
+    AppStrings.organizersTeamApp,
+    AppStrings.organizersTeamDesign,
+    AppStrings.organizersTeamStaging,
+    AppStrings.organizersTeamMarketing,
+    AppStrings.organizersTeamLogistics,
+    AppStrings.organizersTeamAudioVideo,
+    AppStrings.organizersTeamSponsors,
+    AppStrings.organizersTeamRoadToDevFest,
+    AppStrings.organizersTeamWeb,
+    AppStrings.organizersTeamAccreditation,
+  ];
+
+  static final Map<String, int> _knownRank = {
+    for (var i = 0; i < _knownTeamOrder.length; i++)
+      _normalizeKey(_knownTeamOrder[i]): i,
+  };
+
+  static final Map<String, String> _knownLabels = {
+    for (final name in _knownTeamOrder) _normalizeKey(name): name,
+  };
 
   @override
   void initState() {
@@ -50,101 +78,134 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
     super.dispose();
   }
 
-  static _OrganizerGroup _classifyGroup(Organizer item) {
-    final lowerTeams = item.team.map((t) => t.toLowerCase()).toList();
-    if (item.lead ||
-        _containsAny(lowerTeams, const [
-          'lider',
-          'lead',
-          'organizador',
-          'coordin',
-        ])) {
-      return _OrganizerGroup.leadership;
+  static String _foldAccents(String text) {
+    const replacements = {
+      '\u00e1': 'a',
+      '\u00e0': 'a',
+      '\u00e4': 'a',
+      '\u00e2': 'a',
+      '\u00e9': 'e',
+      '\u00e8': 'e',
+      '\u00eb': 'e',
+      '\u00ea': 'e',
+      '\u00ed': 'i',
+      '\u00ec': 'i',
+      '\u00ef': 'i',
+      '\u00ee': 'i',
+      '\u00f3': 'o',
+      '\u00f2': 'o',
+      '\u00f6': 'o',
+      '\u00f4': 'o',
+      '\u00fa': 'u',
+      '\u00f9': 'u',
+      '\u00fc': 'u',
+      '\u00fb': 'u',
+      '\u00f1': 'n',
+    };
+    final buffer = StringBuffer();
+    for (final rune in text.toLowerCase().runes) {
+      final ch = String.fromCharCode(rune);
+      buffer.write(replacements[ch] ?? ch);
     }
-    if (_containsAny(lowerTeams, const [
-      'diseñ',
-      'disen',
-      'diseno',
-      'ui',
-      'ux',
-      'escenograf',
-    ])) {
-      return _OrganizerGroup.design;
-    }
-    if (_containsAny(lowerTeams, const [
-      'web',
-      'mobile',
-      'movil',
-      'cloud',
-      'ia',
-      'ai',
-      'dev',
-      'tech',
-      'android',
-      'flutter',
-      'data',
-    ])) {
-      return _OrganizerGroup.development;
-    }
-    return _OrganizerGroup.community;
+    return buffer.toString();
   }
 
-  static bool _containsAny(List<String> values, List<String> needles) {
-    for (final value in values) {
-      for (final needle in needles) {
-        if (value.contains(needle)) return true;
+  static String _normalizeKey(String raw) {
+    return _foldAccents(raw.trim()).replaceAll(RegExp(r'\s+'), ' ');
+  }
+
+  static final RegExp _coLeadPattern = RegExp(r'^co[- ]?lead$');
+
+  static bool _isCoLeadTag(String raw) =>
+      _coLeadPattern.hasMatch(_normalizeKey(raw));
+
+  static bool _isRoleOnlyTag(String raw) {
+    final normalized = _normalizeKey(raw);
+    return normalized == 'lead' || _isCoLeadTag(normalized);
+  }
+
+  static List<({String key, String label})> _extractTeams(Organizer item) {
+    final seen = <String>{};
+    final result = <({String key, String label})>[];
+    for (final raw in item.team) {
+      final trimmed = raw.trim();
+      if (trimmed.isEmpty || _isRoleOnlyTag(trimmed)) continue;
+      final key = _normalizeKey(trimmed);
+      if (seen.add(key)) {
+        result.add((key: key, label: _knownLabels[key] ?? trimmed));
       }
     }
-    return false;
+    if (result.isEmpty) {
+      final fallbackLabel = item.lead
+          ? AppStrings.organizersFilterLeadership
+          : AppStrings.organizersFilterCommunity;
+      result.add((key: _normalizeKey(fallbackLabel), label: fallbackLabel));
+    }
+    return result;
   }
 
-  String _sectionTitle(_OrganizerGroup group) => switch (group) {
-    _OrganizerGroup.leadership => AppStrings.organizersFilterLeadership,
-    _OrganizerGroup.design => AppStrings.organizersSectionDesign,
-    _OrganizerGroup.development => AppStrings.organizersFilterDevelopment,
-    _OrganizerGroup.community => AppStrings.organizersSectionCommunity,
-  };
+  static List<_TeamBucket> _buildBuckets(List<Organizer> organizers) {
+    final byKey = <String, _TeamBucket>{};
+    for (final item in organizers) {
+      for (final team in _extractTeams(item)) {
+        final bucket = byKey.putIfAbsent(
+          team.key,
+          () => _TeamBucket(key: team.key, label: team.label),
+        );
+        bucket.members.add(item);
+      }
+    }
+    final leadershipKey = _normalizeKey(AppStrings.organizersFilterLeadership);
+    final communityKey = _normalizeKey(AppStrings.organizersFilterCommunity);
 
-  String _filterLabel(_OrganizerGroup group) => switch (group) {
-    _OrganizerGroup.leadership => AppStrings.organizersFilterLeadership,
-    _OrganizerGroup.design => AppStrings.organizersFilterDesign,
-    _OrganizerGroup.development => AppStrings.organizersFilterDevelopment,
-    _OrganizerGroup.community => AppStrings.organizersFilterCommunity,
-  };
+    final buckets = byKey.values.toList();
+    buckets.sort((a, b) {
+      final aFallback = a.key == leadershipKey || a.key == communityKey;
+      final bFallback = b.key == leadershipKey || b.key == communityKey;
+      if (aFallback != bFallback) return aFallback ? 1 : -1;
+
+      final rankA = _knownRank[a.key];
+      final rankB = _knownRank[b.key];
+      if (rankA != null && rankB != null) return rankA.compareTo(rankB);
+      if (rankA != null) return -1;
+      if (rankB != null) return 1;
+      return a.label.toLowerCase().compareTo(b.label.toLowerCase());
+    });
+    return buckets;
+  }
 
   @override
   Widget build(BuildContext context) {
     final organizers = Provider.of<OtherProvider>(context).organizers;
+    final allBuckets = _buildBuckets(organizers);
 
-    final groupCounts = <_OrganizerGroup, int>{
-      for (final group in _OrganizerGroup.values) group: 0,
-    };
-    for (final item in organizers) {
-      final group = _classifyGroup(item);
-      groupCounts[group] = (groupCounts[group] ?? 0) + 1;
-    }
+    final activeSelection =
+        _selectedTeamKey != null &&
+            allBuckets.any((b) => b.key == _selectedTeamKey)
+        ? _selectedTeamKey
+        : null;
 
     final trimmedQuery = _query.trim().toLowerCase();
-    final grouped = <_OrganizerGroup, List<Organizer>>{
-      for (final group in _OrganizerGroup.values) group: [],
-    };
-    for (final item in organizers) {
-      final group = _classifyGroup(item);
-      if (_selectedGroup != null && _selectedGroup != group) continue;
-      if (trimmedQuery.isNotEmpty) {
-        final nameMatch = item.name.toLowerCase().contains(trimmedQuery);
-        final teamMatch = item.team.any(
-          (t) => t.toLowerCase().contains(trimmedQuery),
-        );
-        if (!nameMatch && !teamMatch) continue;
+    final visibleBuckets = <_TeamBucket>[];
+    for (final bucket in allBuckets) {
+      if (activeSelection != null && bucket.key != activeSelection) continue;
+      final filtered = trimmedQuery.isEmpty
+          ? bucket.members
+          : bucket.members.where((item) {
+              final nameMatch = item.name.toLowerCase().contains(trimmedQuery);
+              final teamMatch = item.team.any(
+                (t) => t.toLowerCase().contains(trimmedQuery),
+              );
+              return nameMatch || teamMatch;
+            }).toList();
+      if (filtered.isNotEmpty) {
+        final filteredBucket = _TeamBucket(key: bucket.key, label: bucket.label)
+          ..members.addAll(filtered);
+        visibleBuckets.add(filteredBucket);
       }
-      grouped[group]!.add(item);
     }
 
-    final visibleGroups = _OrganizerGroup.values
-        .where((g) => grouped[g]!.isNotEmpty)
-        .toList();
-    final forceExpand = trimmedQuery.isNotEmpty || _selectedGroup != null;
+    final forceExpand = trimmedQuery.isNotEmpty || activeSelection != null;
 
     return HomeBackdrop(
       child: Scaffold(
@@ -198,15 +259,16 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                       _FilterChipButton(
                         label: AppStrings.organizersFilterAll,
                         count: organizers.length,
-                        selected: _selectedGroup == null,
-                        onTap: () => setState(() => _selectedGroup = null),
+                        selected: activeSelection == null,
+                        onTap: () => setState(() => _selectedTeamKey = null),
                       ),
-                      for (final group in _OrganizerGroup.values)
+                      for (final bucket in allBuckets)
                         _FilterChipButton(
-                          label: _filterLabel(group),
-                          count: groupCounts[group] ?? 0,
-                          selected: _selectedGroup == group,
-                          onTap: () => setState(() => _selectedGroup = group),
+                          label: bucket.label,
+                          count: bucket.members.length,
+                          selected: activeSelection == bucket.key,
+                          onTap: () =>
+                              setState(() => _selectedTeamKey = bucket.key),
                         ),
                     ],
                   ),
@@ -215,27 +277,27 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                     const _EmptyOrganizersBox(
                       message: AppStrings.organizersEmptyState,
                     )
-                  else if (visibleGroups.isEmpty)
+                  else if (visibleBuckets.isEmpty)
                     const _EmptyOrganizersBox(
                       message: AppStrings.organizersEmptySearch,
                     )
                   else
-                    for (var i = 0; i < visibleGroups.length; i++) ...[
+                    for (var i = 0; i < visibleBuckets.length; i++) ...[
                       if (i > 0) const SizedBox(height: 16),
                       _OrganizerGroupSection(
-                        title: _sectionTitle(visibleGroups[i]),
-                        members: grouped[visibleGroups[i]]!,
+                        title: visibleBuckets[i].label,
+                        members: visibleBuckets[i].members,
                         expanded:
                             forceExpand ||
-                            _expandedGroups.contains(visibleGroups[i]),
+                            _expandedTeams.contains(visibleBuckets[i].key),
                         collapsedLimit: _collapsedVisibleLimit,
                         onToggleExpand: () {
                           setState(() {
-                            final group = visibleGroups[i];
-                            if (_expandedGroups.contains(group)) {
-                              _expandedGroups.remove(group);
+                            final key = visibleBuckets[i].key;
+                            if (_expandedTeams.contains(key)) {
+                              _expandedTeams.remove(key);
                             } else {
-                              _expandedGroups.add(group);
+                              _expandedTeams.add(key);
                             }
                           });
                         },
@@ -278,6 +340,12 @@ class _CommunityHeroCard extends StatelessWidget {
       color: AppStyles.socialTikTokColor,
       glyph: AppAssetsPath.glyphTikTok,
       url: AppLinks.gdgTikTok,
+    ),
+    (
+      label: AppStrings.homeChannelWeb,
+      color: AppStyles.socialWebColor,
+      glyph: AppAssetsPath.glyphWeb,
+      url: AppLinks.gdgWeb,
     ),
   ];
 
@@ -350,39 +418,41 @@ class _CommunityHeroCard extends StatelessWidget {
             ),
             Container(
               color: AppStyles.cardColor,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-              child: Row(
-                children: [
-                  for (final channel in _channels)
-                    Expanded(
-                      child: Column(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var i = 0; i < _channels.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 14),
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SocialCircleButton(
-                            color: channel.color,
-                            glyph: channel.glyph,
-                            tooltip: channel.label,
-                            size: 40,
-                            glyphSize: 19,
-                            borderWidth: 1.8,
-                            onTap: () => launcherUrlInfo(channel.url),
+                            color: _channels[i].color,
+                            glyph: _channels[i].glyph,
+                            tooltip: _channels[i].label,
+                            size: 42,
+                            glyphSize: 20,
+                            borderWidth: 2,
+                            onTap: () => launcherUrlInfo(_channels[i].url),
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            channel.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
+                            _channels[i].label,
                             style: const TextStyle(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
-                              color: AppStyles.fontColor,
+                              color: AppStyles.fontSecondaryColor,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                ],
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -621,49 +691,27 @@ class _OrganizerGroupSection extends StatelessWidget {
         Positioned(
           top: 0,
           left: 12,
-          child: Transform.rotate(
-            angle: -0.025,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: TitlePill(
+            text: title,
+            color: AppStyles.colorBaseYellow,
+            angle: -1.4,
+            fontSize: 12,
+            borderWidth: 2,
+            shadowOffset: 2,
+            padding: const EdgeInsets.fromLTRB(12, 4, 8, 4),
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
-                color: AppStyles.colorBaseYellow,
+                color: AppStyles.cardColor,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppStyles.borderColor, width: 2),
-                boxShadow: const [
-                  BoxShadow(color: AppStyles.borderColor, offset: Offset(2, 2)),
-                ],
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: AppStyles.fontColor,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppStyles.cardColor,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      members.length.toString(),
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w900,
-                        color: AppStyles.fontColor,
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                members.length.toString(),
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w900,
+                  color: AppStyles.fontColor,
+                ),
               ),
             ),
           ),
@@ -693,10 +741,7 @@ class _OrganizerTile extends StatelessWidget {
   String? _roleLabel() {
     if (member.lead) return AppStrings.organizersTagLead;
     for (final team in member.team) {
-      final lower = team.toLowerCase();
-      if (lower.contains('co-lead') ||
-          lower.contains('colead') ||
-          lower.contains('co lead')) {
+      if (_OrganizersScreenState._isCoLeadTag(team)) {
         return AppStrings.organizersTagCoLead;
       }
     }
@@ -717,53 +762,40 @@ class _OrganizerTile extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              InitialsAvatar(
-                name: member.name,
-                photoUrl: member.photoUrl,
-                backgroundColor: avatarColor,
-                size: 48,
-                borderWidth: 2,
-                fontSize: 15,
+          InitialsAvatar(
+            name: member.name,
+            photoUrl: member.photoUrl,
+            backgroundColor: avatarColor,
+            size: 48,
+            borderWidth: 2,
+            fontSize: 15,
+          ),
+          if (roleLabel != null) ...[
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: isLead
+                    ? AppStyles.podiumThirdColor
+                    : AppStyles.backdropBlueColor,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppStyles.borderColor, width: 1.2),
               ),
-              if (roleLabel != null)
-                Positioned(
-                  bottom: -6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1.5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isLead
-                          ? AppStyles.podiumThirdColor
-                          : AppStyles.backdropBlueColor,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: AppStyles.borderColor,
-                        width: 1.2,
-                      ),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        roleLabel,
-                        style: const TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w900,
-                          color: AppStyles.onAccentColor,
-                          height: 1,
-                        ),
-                      ),
-                    ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  roleLabel,
+                  style: const TextStyle(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    color: AppStyles.onAccentColor,
+                    height: 1,
                   ),
                 ),
-            ],
-          ),
-          const SizedBox(height: 8),
+              ),
+            ),
+          ],
+          const SizedBox(height: 5),
           Text(
             member.name,
             maxLines: 2,

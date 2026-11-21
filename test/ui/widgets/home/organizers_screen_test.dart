@@ -53,63 +53,103 @@ void main() {
   }
 
   testWidgets(
-    'groups organizers, shows LEAD/CO-LEAD badges and initials fallback',
+    'groups dynamically by real teams, excludes role tags from chips, and shows LEAD/CO-LEAD',
     (tester) async {
       final sample = [
-        _makeOrganizer(id: 1, name: 'Ada Lovelace', lead: true),
-        _makeOrganizer(id: 2, name: 'Grace Hopper', team: ['Co-lead']),
-        _makeOrganizer(id: 3, name: 'Alan Turing', team: ['UI UX Design']),
-        _makeOrganizer(id: 4, name: 'Linus Torvalds', team: ['Mobile']),
-        _makeOrganizer(id: 5, name: 'Margaret Hamilton', team: ['Marketing']),
+        _makeOrganizer(id: 1, name: 'Ada Lovelace', team: ['App'], lead: true),
+        _makeOrganizer(id: 2, name: 'Grace Hopper', team: ['Co-lead', 'Web']),
+        _makeOrganizer(
+          id: 3,
+          name: 'Alan Turing',
+          team: [AppStrings.organizersTeamDesign.replaceAll('\u00f1', 'n')],
+        ),
+        _makeOrganizer(id: 4, name: 'Linus Torvalds', team: ['IA']),
+        _makeOrganizer(
+          id: 5,
+          name: 'Margaret Hamilton',
+          team: ['Marketing', 'Sponsors'],
+        ),
       ];
       when(() => otherRepo.getOrganizer()).thenAnswer((_) async => sample);
 
       await tester.pumpWidget(wrapScreen());
       await tester.pumpAndSettle();
 
-      expect(find.text(AppStrings.organizersGDGSucre), findsOneWidget);
+      // Community channels match Home (WhatsApp, Instagram, Facebook, TikTok, Web)
+      expect(find.text(AppStrings.homeChannelWhatsApp), findsOneWidget);
+      expect(find.text(AppStrings.homeChannelFacebook), findsOneWidget);
+      expect(find.text(AppStrings.homeChannelTikTok), findsOneWidget);
+
+      // Role badges shown; role tags do not create a "Co-lead" team chip
       expect(find.text(AppStrings.organizersTagLead), findsOneWidget);
       expect(find.text(AppStrings.organizersTagCoLead), findsOneWidget);
-      expect(find.text(AppStrings.organizersSectionDesign), findsOneWidget);
-      expect(find.text(AppStrings.organizersSectionCommunity), findsOneWidget);
+      expect(find.text('Co-lead'), findsNothing);
+
+      // Teams with members appear (known teams normalized + new dynamic "IA" team)
+      expect(find.text(AppStrings.organizersTeamApp), findsNWidgets(2));
+      expect(find.text(AppStrings.organizersTeamDesign), findsNWidgets(2));
+      // Web appears in channel label + filter chip + section header
+      expect(find.text(AppStrings.organizersTeamWeb), findsNWidgets(3));
+      expect(find.text('IA'), findsNWidgets(2));
+
+      // Empty teams (e.g. Logistics, Accreditation) are not rendered
+      expect(find.text(AppStrings.organizersTeamLogistics), findsNothing);
+      expect(find.text(AppStrings.organizersTeamAccreditation), findsNothing);
+
+      // Multi-team member appears in both Marketing and Sponsors
+      expect(find.text('Margaret Hamilton'), findsNWidgets(2));
+
+      // Initials fallback
       expect(find.text('AL'), findsOneWidget);
       expect(find.text('GH'), findsOneWidget);
-      expect(find.text('Ada Lovelace'), findsOneWidget);
-      expect(find.text('Linus Torvalds'), findsOneWidget);
     },
   );
 
   testWidgets(
-    'filters by search query and category chips, and clears empty state',
+    'combines team filter and search query cleanly, and resets with Todos',
     (tester) async {
       final sample = [
-        _makeOrganizer(id: 1, name: 'Ada Lovelace', lead: true),
+        _makeOrganizer(id: 1, name: 'Ada Lovelace', team: ['App'], lead: true),
         _makeOrganizer(id: 2, name: 'Linus Torvalds', team: ['Web']),
-        _makeOrganizer(id: 3, name: 'Margaret Hamilton', team: ['Marketing']),
+        _makeOrganizer(id: 3, name: 'Grace Hopper', team: ['Web']),
+        _makeOrganizer(id: 4, name: 'Margaret Hamilton', team: ['Marketing']),
       ];
       when(() => otherRepo.getOrganizer()).thenAnswer((_) async => sample);
 
       await tester.pumpWidget(wrapScreen());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(AppStrings.organizersFilterDevelopment).first);
+      // Filter by Web (target the filter chip InkWell, not the channel label)
+      final webChip = find.ancestor(
+        of: find.text(AppStrings.organizersTeamWeb),
+        matching: find.byType(InkWell),
+      );
+      await tester.tap(webChip);
       await tester.pumpAndSettle();
 
       expect(find.text('Linus Torvalds'), findsOneWidget);
+      expect(find.text('Grace Hopper'), findsOneWidget);
       expect(find.text('Ada Lovelace'), findsNothing);
       expect(find.text('Margaret Hamilton'), findsNothing);
 
-      await tester.tap(find.text(AppStrings.organizersFilterAll));
+      // Combine with search inside Web
+      await tester.enterText(find.byType(TextField), 'Grace');
       await tester.pumpAndSettle();
-      expect(find.text('Ada Lovelace'), findsOneWidget);
+      expect(find.text('Grace Hopper'), findsOneWidget);
+      expect(find.text('Linus Torvalds'), findsNothing);
 
+      // Empty state when search has no match
       await tester.enterText(find.byType(TextField), 'no-match-term');
       await tester.pumpAndSettle();
       expect(find.text(AppStrings.organizersEmptySearch), findsOneWidget);
 
+      // Clear search and return to All
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
+      await tester.tap(find.text(AppStrings.organizersFilterAll));
+      await tester.pumpAndSettle();
       expect(find.text('Ada Lovelace'), findsOneWidget);
+      expect(find.text('Margaret Hamilton'), findsOneWidget);
     },
   );
 
@@ -121,7 +161,7 @@ void main() {
         (i) => _makeOrganizer(
           id: i + 10,
           name: 'Developer Member $i',
-          team: ['Mobile'],
+          team: ['App'],
         ),
       );
       when(() => otherRepo.getOrganizer()).thenAnswer((_) async => devs);
@@ -148,4 +188,23 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('handles empty organizer list and organizers without a team', (
+    tester,
+  ) async {
+    when(() => otherRepo.getOrganizer()).thenAnswer((_) async => []);
+
+    await tester.pumpWidget(wrapScreen());
+    await tester.pumpAndSettle();
+
+    expect(find.text(AppStrings.organizersEmptyState), findsOneWidget);
+
+    otherProvider.organizers = [
+      _makeOrganizer(id: 99, name: 'Lead Without Team', lead: true),
+    ];
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lead Without Team'), findsOneWidget);
+    expect(find.text(AppStrings.organizersFilterLeadership), findsNWidgets(2));
+  });
 }
