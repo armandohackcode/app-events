@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/auth_user.dart';
+import 'package:app_events/domain/models/event_badge.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/domain/repositories/auth_repository.dart';
@@ -22,22 +23,31 @@ class _MockUserRepository extends Mock implements UserRepository {}
 
 UserCompetitor _makeUser({
   List<Friend> friends = const [],
-  List<String> treasures = const ['t1', 't2'],
+  List<EventBadge> badges = const [],
+  String? currentEventId,
   String aboutMe = 'Mobile community builder.',
+  String profession = 'Systems Engineer',
+  List<SocialNetwork>? socialNetwork,
 }) => UserCompetitor(
   uuid: 'user-123',
   name: 'Ada Lovelace',
   photoUrl: '',
-  profession: 'Systems Engineer',
+  profession: profession,
   aboutMe: aboutMe,
   tokenAuthorization: '',
   score: 340,
-  socialNetwork: [
-    SocialNetwork(type: 'GITHUB', link: 'https://github.com/gdgsucre'),
-    SocialNetwork(type: 'LINKEDIN', link: 'https://linkedin.com/in/example'),
-  ],
+  currentEventId: currentEventId,
+  badges: badges,
+  socialNetwork:
+      socialNetwork ??
+      [
+        SocialNetwork(type: 'GITHUB', link: 'https://github.com/gdgsucre'),
+        SocialNetwork(
+          type: 'LINKEDIN',
+          link: 'https://linkedin.com/in/example',
+        ),
+      ],
   friends: friends,
-  treasures: treasures,
 );
 
 List<Friend> _makeFriends(int count) => List.generate(
@@ -48,6 +58,15 @@ List<Friend> _makeFriends(int count) => List.generate(
     photoUrl: '',
     token: '',
   ),
+);
+
+EventBadge _makeBadge(String eventId) => EventBadge(
+  eventId: eventId,
+  eventName: 'DevFest $eventId',
+  eventDate: DateTime(2025, 11, 1),
+  finalScore: 100,
+  rank: 3,
+  assetPath: '',
 );
 
 void main() {
@@ -72,10 +91,12 @@ void main() {
 
     userProvider = UserProvider(userRepo);
     authProvider = SignInSocialNetworkProvider(authRepo, userProvider)
-      ..userInfo = const AuthUser(
+      ..userInfo = AuthUser(
         uid: 'user-123',
         displayName: 'Ada Lovelace',
         photoUrl: '',
+        email: 'ada@gdgsucre.dev',
+        createdAt: DateTime(2024, 3, 15),
       )
       ..isAuth = true;
   });
@@ -103,26 +124,69 @@ void main() {
     );
   }
 
-  testWidgets('renders profile card, stats, social icons, and QR modal', (
+  testWidgets(
+    'renders profile card without badge, email, member-since, unique events count, and QR modal',
+    (tester) async {
+      userProvider.userCompetitor = _makeUser(
+        friends: _makeFriends(2),
+        badges: [_makeBadge('evt-1'), _makeBadge('evt-2')],
+        currentEventId: 'evt-2',
+      );
+
+      await tester.pumpWidget(wrapScreen());
+      await tester.pumpAndSettle();
+
+      expect(find.text(AppStrings.profileCommunityHeader), findsOneWidget);
+      expect(find.text('Ada Lovelace'), findsOneWidget);
+      expect(find.byIcon(Icons.verified), findsNothing);
+      expect(find.text('ada@gdgsucre.dev'), findsOneWidget);
+      expect(find.text('Systems Engineer'), findsOneWidget);
+      expect(find.text('Mobile community builder.'), findsOneWidget);
+      expect(
+        find.text(AppStrings.profileMemberSinceYear(2024)),
+        findsOneWidget,
+      );
+      expect(find.text('340'), findsOneWidget);
+      expect(find.text(AppStrings.commonWordPoints), findsOneWidget);
+      expect(find.text(AppStrings.profileFriendsStat), findsOneWidget);
+      expect(find.text(AppStrings.profileEventsStat), findsOneWidget);
+      // 2 unique events (badges evt-1 & evt-2, deduplicated with currentEventId evt-2)
+      expect(
+        find.text('2'),
+        findsNWidgets(3),
+      ); // stat friends + stat events + badge
+
+      await tester.tap(find.text(AppStrings.profileQrAction));
+      await tester.pumpAndSettle();
+      expect(find.byType(ModalQrIdentify), findsOneWidget);
+    },
+  );
+
+  testWidgets('handles incomplete profile and zero connections cleanly', (
     tester,
   ) async {
-    userProvider.userCompetitor = _makeUser(friends: _makeFriends(2));
+    authProvider.userInfo = const AuthUser(
+      uid: 'user-123',
+      displayName: 'Ada Lovelace',
+    );
+    userProvider.userCompetitor = _makeUser(
+      aboutMe: '',
+      profession: '',
+      socialNetwork: const [],
+      friends: const [],
+      currentEventId: 'evt-active',
+    );
 
     await tester.pumpWidget(wrapScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text(AppStrings.profileCommunityHeader), findsOneWidget);
-    expect(find.text('Ada Lovelace'), findsOneWidget);
-    expect(find.text('Systems Engineer'), findsOneWidget);
-    expect(find.text('Mobile community builder.'), findsOneWidget);
-    expect(find.text('340'), findsOneWidget);
-    expect(find.text(AppStrings.commonWordPoints), findsOneWidget);
-    expect(find.text(AppStrings.profileFriendsStat), findsOneWidget);
-    expect(find.text(AppStrings.profileTreasuresStat), findsOneWidget);
-
-    await tester.tap(find.text(AppStrings.profileQrAction));
-    await tester.pumpAndSettle();
-    expect(find.byType(ModalQrIdentify), findsOneWidget);
+    expect(find.text(AppStrings.profileEmailUnavailable), findsOneWidget);
+    expect(find.text(AppStrings.profileProfessionUnavailable), findsOneWidget);
+    expect(find.text(AppStrings.profileMsEditProfile), findsOneWidget);
+    expect(find.text(AppStrings.profileMemberSinceUnknown), findsOneWidget);
+    expect(find.text(AppStrings.profileNoSocialLinks), findsOneWidget);
+    expect(find.text(AppStrings.profileNoConnections), findsOneWidget);
+    expect(find.text('1'), findsOneWidget); // active event counts as 1
   });
 
   testWidgets(

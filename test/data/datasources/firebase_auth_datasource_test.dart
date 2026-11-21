@@ -16,6 +16,8 @@ class _MockUserCredential extends Mock implements UserCredential {}
 
 class _MockUser extends Mock implements User {}
 
+class _MockUserMetadata extends Mock implements UserMetadata {}
+
 // Apple sign-in calls a static platform API (SignInWithApple) and is covered
 // by the provider tests through the repository contract instead.
 void main() {
@@ -23,11 +25,18 @@ void main() {
   late _MockGoogleSignIn google;
   late FirebaseAuthDatasource datasource;
 
-  _MockUser firebaseUser() {
+  _MockUser firebaseUser({
+    String? email = 'grace@gdgsucre.dev',
+    DateTime? createdAt,
+  }) {
     final user = _MockUser();
+    final metadata = _MockUserMetadata();
+    when(() => metadata.creationTime).thenReturn(createdAt);
     when(() => user.uid).thenReturn('u-1');
     when(() => user.displayName).thenReturn('Grace');
     when(() => user.photoURL).thenReturn('https://img/u.png');
+    when(() => user.email).thenReturn(email);
+    when(() => user.metadata).thenReturn(metadata);
     return user;
   }
 
@@ -68,7 +77,8 @@ void main() {
       when(
         () => auth.signInWithCredential(any()),
       ).thenAnswer((_) async => credential);
-      final user = firebaseUser();
+      final createdAt = DateTime(2024, 5, 10);
+      final user = firebaseUser(createdAt: createdAt);
       when(() => credential.user).thenReturn(user);
 
       final result = await datasource.signInWithGoogle();
@@ -83,6 +93,8 @@ void main() {
       expect(result.uid, 'u-1');
       expect(result.displayName, 'Grace');
       expect(result.photoUrl, 'https://img/u.png');
+      expect(result.email, 'grace@gdgsucre.dev');
+      expect(result.createdAt, createdAt);
       final storage = await SharedPreferences.getInstance();
       expect(storage.getString('uid_user'), 'u-1');
     },

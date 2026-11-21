@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -20,6 +21,7 @@ import 'package:app_events/ui/widgets/shared/dot_pattern.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
 import 'package:app_events/ui/widgets/shared/social_circle_button.dart';
+import 'package:app_events/ui/widgets/shared/title_pill.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +96,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  static int _attendedEventsCount(UserCompetitor? competitor) {
+    if (competitor == null) return 0;
+    final ids = <String>{
+      for (final badge in competitor.badges)
+        if (badge.eventId.isNotEmpty) badge.eventId,
+    };
+    final currentId = competitor.currentEventId?.trim() ?? '';
+    if (currentId.isNotEmpty) {
+      ids.add(currentId);
+    }
+    return math.max(ids.length, competitor.badges.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
@@ -101,12 +116,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final competitor = data.userCompetitor;
     final canPop = Navigator.of(context).canPop();
 
-    final displayName =
-        competitor?.name ??
-        auth.userInfo.displayName ??
-        AppStrings.commonWordAnonymous;
+    final rawCompetitorName = competitor?.name.trim() ?? '';
+    final rawAuthName = auth.userInfo.displayName?.trim() ?? '';
+    final displayName = rawCompetitorName.isNotEmpty
+        ? rawCompetitorName
+        : (rawAuthName.isNotEmpty
+              ? rawAuthName
+              : AppStrings.commonWordAnonymous);
     final avatarUrl = competitor?.photoUrl ?? auth.userInfo.photoUrl ?? '';
+    final email = auth.userInfo.email?.trim() ?? '';
+    final memberSince = auth.userInfo.createdAt;
     final canScan = competitor != null && competitor.uuid.isNotEmpty;
+    final qrCallback = canScan ? () => _openQrModal(competitor.uuid) : null;
 
     return HomeBackdrop(
       child: Scaffold(
@@ -207,35 +228,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   _ProfileHeaderCard(
                     displayName: displayName,
+                    email: email,
+                    memberSince: memberSince,
                     avatarUrl: avatarUrl,
                     competitor: competitor,
+                    eventsCount: _attendedEventsCount(competitor),
                     onEdit: competitor == null ? null : _openEditProfile,
                     onShare: competitor == null
                         ? null
                         : () => _openPublicProfile(competitor),
                   ),
-                  if (competitor != null) ...[
-                    const SizedBox(height: 16),
-                    _SocialAndQrSection(
-                      competitor: competitor,
-                      onOpenQr: competitor.uuid.isNotEmpty
-                          ? () => _openQrModal(competitor.uuid)
-                          : null,
+                  const SizedBox(height: 16),
+                  _SocialAndQrSection(
+                    socialNetworks: competitor?.socialNetwork ?? const [],
+                    onOpenQr: qrCallback,
+                  ),
+                  const SizedBox(height: 18),
+                  _ConnectionsSection(
+                    friends: competitor?.friends ?? const [],
+                    showAll: _showAllConnections,
+                    collapsedLimit: _collapsedConnectionsLimit,
+                    onToggleShowAll: () => setState(
+                      () => _showAllConnections = !_showAllConnections,
                     ),
-                    const SizedBox(height: 18),
-                    _ConnectionsSection(
-                      friends: competitor.friends,
-                      showAll: _showAllConnections,
-                      collapsedLimit: _collapsedConnectionsLimit,
-                      onToggleShowAll: () => setState(
-                        () => _showAllConnections = !_showAllConnections,
-                      ),
-                      onOpenFriend: (friend) => _openFriendModal(friend.uuid),
-                      onOpenQr: competitor.uuid.isNotEmpty
-                          ? () => _openQrModal(competitor.uuid)
-                          : null,
-                    ),
-                  ],
+                    onOpenFriend: (friend) => _openFriendModal(friend.uuid),
+                    onOpenQr: qrCallback,
+                  ),
                 ],
               ),
             ),
@@ -248,15 +266,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _ProfileHeaderCard extends StatelessWidget {
   final String displayName;
+  final String email;
+  final DateTime? memberSince;
   final String avatarUrl;
   final UserCompetitor? competitor;
+  final int eventsCount;
   final VoidCallback? onEdit;
   final VoidCallback? onShare;
 
   const _ProfileHeaderCard({
     required this.displayName,
+    required this.email,
+    required this.memberSince,
     required this.avatarUrl,
     required this.competitor,
+    required this.eventsCount,
     required this.onEdit,
     required this.onShare,
   });
@@ -265,6 +289,9 @@ class _ProfileHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final profession = competitor?.profession.trim() ?? '';
     final aboutMe = competitor?.aboutMe.trim() ?? '';
+    final memberSinceText = memberSince != null
+        ? AppStrings.profileMemberSinceYear(memberSince!.year)
+        : AppStrings.profileMemberSinceUnknown;
 
     return HardShadowBox(
       color: AppStyles.cardColor,
@@ -291,42 +318,47 @@ class _ProfileHeaderCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            displayName,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              color: AppStyles.fontColor,
-                              height: 1.15,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        const Icon(
-                          Icons.verified,
-                          size: 17,
-                          color: AppStyles.backdropBlueColor,
-                        ),
-                      ],
-                    ),
-                    if (profession.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        profession,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: AppStyles.fontSecondaryColor,
-                        ),
+                    Text(
+                      displayName,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: AppStyles.fontColor,
+                        height: 1.15,
                       ),
-                    ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      email.isNotEmpty
+                          ? email
+                          : AppStrings.profileEmailUnavailable,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: email.isNotEmpty
+                            ? AppStyles.fontSecondaryColor
+                            : AppStyles.fontFaintColor,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      profession.isNotEmpty
+                          ? profession
+                          : AppStrings.profileProfessionUnavailable,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: profession.isNotEmpty
+                            ? AppStyles.fontSecondaryColor
+                            : AppStyles.fontFaintColor,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -370,43 +402,76 @@ class _ProfileHeaderCard extends StatelessWidget {
               ),
             ],
           ),
-          if (competitor != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              aboutMe.isNotEmpty ? aboutMe : AppStrings.profileMsEditProfile,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w500,
-                height: 1.38,
-                color: AppStyles.fontSecondaryColor,
+          const SizedBox(height: 12),
+          Text(
+            aboutMe.isNotEmpty ? aboutMe : AppStrings.profileMsEditProfile,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              height: 1.38,
+              color: AppStyles.fontSecondaryColor,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppStyles.colorCardYellow,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppStyles.borderColor, width: 1.5),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 13.5,
+                    color: AppStyles.fontColor,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      memberSinceText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppStyles.fontColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _StatTile(
-                    value: competitor!.score,
-                    label: AppStrings.commonWordPoints,
-                  ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _StatTile(
+                  value: competitor?.score ?? 0,
+                  label: AppStrings.commonWordPoints,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _StatTile(
-                    value: competitor!.friends.length,
-                    label: AppStrings.profileFriendsStat,
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatTile(
+                  value: competitor?.friends.length ?? 0,
+                  label: AppStrings.profileFriendsStat,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _StatTile(
-                    value: competitor!.treasures.length,
-                    label: AppStrings.profileTreasuresStat,
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatTile(
+                  value: eventsCount,
+                  label: AppStrings.profileEventsStat,
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -463,13 +528,20 @@ class _StatTile extends StatelessWidget {
 }
 
 class _SocialAndQrSection extends StatelessWidget {
-  final UserCompetitor competitor;
+  final List<SocialNetwork> socialNetworks;
   final VoidCallback? onOpenQr;
 
-  const _SocialAndQrSection({required this.competitor, required this.onOpenQr});
+  const _SocialAndQrSection({
+    required this.socialNetworks,
+    required this.onOpenQr,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final visibleNetworks = socialNetworks
+        .where((item) => item.link.trim().isNotEmpty)
+        .toList();
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -486,7 +558,7 @@ class _SocialAndQrSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (competitor.socialNetwork.isEmpty)
+              if (visibleNetworks.isEmpty)
                 const Text(
                   AppStrings.profileNoSocialLinks,
                   style: TextStyle(
@@ -500,7 +572,7 @@ class _SocialAndQrSection extends StatelessWidget {
                   spacing: 10,
                   runSpacing: 8,
                   children: [
-                    for (final item in competitor.socialNetwork)
+                    for (final item in visibleNetworks)
                       SocialCircleButton(
                         color: getSocialColor(item),
                         glyph: getSocialGlyph(item),
@@ -515,8 +587,9 @@ class _SocialAndQrSection extends StatelessWidget {
             ],
           ),
         ),
-        if (onOpenQr != null)
-          InkWell(
+        Opacity(
+          opacity: onOpenQr != null ? 1.0 : 0.45,
+          child: InkWell(
             onTap: onOpenQr,
             borderRadius: BorderRadius.circular(10),
             child: ConstrainedBox(
@@ -541,6 +614,7 @@ class _SocialAndQrSection extends StatelessWidget {
               ),
             ),
           ),
+        ),
       ],
     );
   }
@@ -597,55 +671,30 @@ class _ConnectionsSection extends StatelessWidget {
             spacing: 8,
             runSpacing: 6,
             children: [
-              Transform.rotate(
-                angle: -0.02,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(12, 5, 8, 5),
-                  decoration: BoxDecoration(
-                    color: AppStyles.colorBaseYellow,
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: AppStyles.borderColor,
-                      width: 1.8,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: AppStyles.borderColor,
-                        offset: Offset(2, 2),
-                      ),
-                    ],
+              TitlePill(
+                text: AppStrings.commonWordConnections,
+                color: AppStyles.colorBaseYellow,
+                angle: -1.1,
+                fontSize: 12.5,
+                borderWidth: 1.8,
+                shadowOffset: 2,
+                padding: const EdgeInsets.fromLTRB(12, 5, 8, 5),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        AppStrings.commonWordConnections,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w900,
-                          color: AppStyles.fontColor,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppStyles.cardColor,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          friends.length.toString(),
-                          style: const TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w900,
-                            color: AppStyles.fontColor,
-                          ),
-                        ),
-                      ),
-                    ],
+                  decoration: BoxDecoration(
+                    color: AppStyles.cardColor,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    friends.length.toString(),
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w900,
+                      color: AppStyles.fontColor,
+                    ),
                   ),
                 ),
               ),
@@ -687,6 +736,17 @@ class _ConnectionsSection extends StatelessWidget {
             ],
           ),
         ),
+        if (friends.isEmpty) ...[
+          const SizedBox(height: 10),
+          const Text(
+            AppStrings.profileNoConnections,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppStyles.fontSecondaryColor,
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
         for (var r = 0; r < rows.length; r++) ...[
           if (r > 0) const SizedBox(height: 10),
