@@ -11,6 +11,8 @@ class AppAssetsPath {
   static const String scheduleIcon = 'assets/img/schedule-icon.png';
   static const String trophyIcon = 'assets/img/trofeo.png';
   static const String gdgIcon = 'assets/img/icon-gdg.svg';
+  // Official GDG logo mark, without the group name.
+  static const String logoGdg = 'assets/img/logo-gdg.png';
   static const String discordIcon = 'assets/img/icon-discord.svg';
   static const String dinoWriteIcon = 'assets/img/dino-write.png';
   static const String dinoRunIcon = 'assets/img/dino-runs.png';
@@ -35,6 +37,22 @@ class AppAssetsPath {
   static const String iconTwitter = "assets/img/twitter-3-logo-svgrepo-com.svg";
   static const String iconGithub = 'assets/img/github-142-svgrepo-com.svg';
   static const String iconWebRound = 'assets/img/web-round-svgrepo-com-2.svg';
+
+  // Single-color social glyphs, tinted in code to sit on a colored button.
+  static const String glyphInstagram = 'assets/img/icon-instagram.svg';
+  static const String glyphLinkedIn = 'assets/img/icon-linkedin.svg';
+  static const String glyphGithub = 'assets/img/icon-github.svg';
+  static const String glyphTikTok = 'assets/img/icon-tiktok.svg';
+  static const String glyphFacebook = 'assets/img/icon-facebook.svg';
+  static const String glyphTwitter = 'assets/img/icon-twitter.svg';
+  static const String glyphWeb = 'assets/img/icon-web.svg';
+  static const String glyphWhatsApp = 'assets/img/icon-whatsapp.svg';
+  static const String socialBrackets = 'assets/img/social-brackets.svg';
+
+  // Home screen decoration and placeholder content.
+  static const String backdropSparkle = 'assets/img/backdrop-sparkle.svg';
+  static const String backdropBars = 'assets/img/backdrop-bars.svg';
+  static const String liveTalkPhoto = 'assets/img/live-talk-photo.png';
 
   // ranking
   static const String androidPed = 'assets/img/android-ped.png';

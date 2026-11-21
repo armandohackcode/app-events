@@ -16,6 +16,33 @@ void main() {
     });
   });
 
+  group('SocialNetworkType', () {
+    test('fromValue is case insensitive', () {
+      expect(
+        SocialNetworkType.fromValue('instagram'),
+        SocialNetworkType.instagram,
+      );
+      expect(SocialNetworkType.fromValue('TIKTOK'), SocialNetworkType.tiktok);
+    });
+
+    test('fromValue defaults to unknown', () {
+      expect(SocialNetworkType.fromValue(null), SocialNetworkType.unknown);
+      expect(SocialNetworkType.fromValue('myspace'), SocialNetworkType.unknown);
+    });
+
+    test('value round-trips through fromValue', () {
+      for (final type in SocialNetworkType.values) {
+        expect(SocialNetworkType.fromValue(type.value), type);
+      }
+    });
+
+    test('SocialNetwork exposes its type as an enum', () {
+      final network = SocialNetwork(type: 'LINKEDIN', link: 'https://x.com');
+
+      expect(network.networkType, SocialNetworkType.linkedin);
+    });
+  });
+
   group('Speaker', () {
     test('round-trip toJson → fromJson preserves data', () {
       final original = makeSpeaker().copyWith(limit: 30, current: 5);
