@@ -55,6 +55,25 @@ void main() {
     expect(find.text('Mobile'), findsNothing);
   });
 
+  testWidgets('a long technology area is cut instead of overflowing', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await pumpCard(
+      tester,
+      technologyType: 'Artificial intelligence and machine learning',
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      find.text('Artificial intelligence and machine learning'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('tapping the talk calls onTap', (tester) async {
     var taps = 0;
     await pumpCard(tester, onTap: () => taps++);

@@ -131,10 +131,16 @@ class _TalkPhoto extends StatelessWidget {
             ),
           ),
           if (talk.technologyType.isNotEmpty)
+            // Both sides are bounded so a long area name is cut with an ellipsis
+            // instead of overflowing the photo.
             Positioned(
               left: 8,
+              right: 8,
               bottom: 8,
-              child: _TechnologyTag(area: talk.technologyType),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: _TechnologyTag(area: talk.technologyType),
+              ),
             ),
           const Positioned(top: -10, right: -18, child: _LiveBadge()),
         ],
@@ -192,6 +198,8 @@ class _TechnologyTag extends StatelessWidget {
       ),
       child: Text(
         area,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,

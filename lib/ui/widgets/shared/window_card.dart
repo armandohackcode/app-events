@@ -63,11 +63,11 @@ class _Header extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const _WindowControl(color: AppStyles.windowCloseColor),
+          const _WindowControl(color: AppStyles.colorBaseRed),
           const SizedBox(width: 6),
-          const _WindowControl(color: AppStyles.windowMinimizeColor),
+          const _WindowControl(color: AppStyles.colorBaseYellow),
           const SizedBox(width: 6),
-          const _WindowControl(color: AppStyles.windowMaximizeColor),
+          const _WindowControl(color: AppStyles.colorBaseGreen),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

@@ -6,8 +6,8 @@ import 'package:app_events/ui/widgets/shared/social_circle_button.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 
-/// Card with the community's channels (WhatsApp, Instagram, Discord, TikTok)
-/// as round buttons with a label under each one.
+/// Card with the community's channels (WhatsApp, Instagram, Facebook, TikTok,
+/// Web) as round buttons with a label under each one.
 class ChannelsCard extends StatelessWidget {
   const ChannelsCard({super.key});
 
@@ -25,10 +25,10 @@ class ChannelsCard extends StatelessWidget {
       link: AppLinks.gdgInstagram,
     ),
     _Channel(
-      label: AppStrings.homeChannelDiscord,
-      color: AppStyles.socialDiscordColor,
-      glyph: AppAssetsPath.glyphDiscord,
-      link: AppLinks.gdgDiscord,
+      label: AppStrings.homeChannelFacebook,
+      color: AppStyles.socialFacebookColor,
+      glyph: AppAssetsPath.glyphFacebook,
+      link: AppLinks.gdgFacebook,
     ),
     _Channel(
       label: AppStrings.homeChannelTikTok,
@@ -40,7 +40,7 @@ class ChannelsCard extends StatelessWidget {
       label: AppStrings.homeChannelWeb,
       color: AppStyles.socialWebColor,
       glyph: AppAssetsPath.glyphWeb,
-      link: AppLinks.gdgCommunity,
+      link: AppLinks.gdgWeb,
     ),
   ];
 
@@ -128,7 +128,6 @@ class _ChannelButton extends StatelessWidget {
           size: 54,
           glyphSize: 24,
           borderWidth: 2.5,
-          hardShadow: true,
         ),
         const SizedBox(height: 7),
         Text(

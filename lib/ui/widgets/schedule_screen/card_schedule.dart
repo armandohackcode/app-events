@@ -26,7 +26,7 @@ class CardSchedule extends StatelessWidget {
       child: TextButton(
         onPressed: action ? onTap : null,
         style: TextButton.styleFrom(
-          padding: const EdgeInsets.all(0),
+          padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),

@@ -16,7 +16,7 @@ void main() {
     expect(find.text(AppStrings.homeChannelsTitle), findsOneWidget);
     expect(find.text(AppStrings.homeChannelWhatsApp), findsOneWidget);
     expect(find.text(AppStrings.homeChannelInstagram), findsOneWidget);
-    expect(find.text(AppStrings.homeChannelDiscord), findsOneWidget);
+    expect(find.text(AppStrings.homeChannelFacebook), findsOneWidget);
     expect(find.text(AppStrings.homeChannelTikTok), findsOneWidget);
     expect(find.text(AppStrings.homeChannelWeb), findsOneWidget);
   });

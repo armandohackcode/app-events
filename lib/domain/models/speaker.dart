@@ -133,6 +133,33 @@ class SocialNetwork {
       SocialNetwork(type: json["type"] ?? "", link: json["link"] ?? "");
 
   Map<String, dynamic> toJson() => {"type": type, "link": link};
+
+  /// [type] as an enum; unrecognized values map to [SocialNetworkType.unknown].
+  SocialNetworkType get networkType => SocialNetworkType.fromValue(type);
+}
+
+/// Social networks a speaker can link. [value] is the text stored in Firestore.
+enum SocialNetworkType {
+  github('GITHUB'),
+  facebook('FACEBOOK'),
+  instagram('INSTAGRAM'),
+  twitter('TWITTER'),
+  linkedin('LINKEDIN'),
+  tiktok('TIKTOK'),
+  blog('BLOG'),
+  unknown('UNKNOWN');
+
+  final String value;
+  const SocialNetworkType(this.value);
+
+  /// Case-insensitive lookup of a stored [text].
+  static SocialNetworkType fromValue(String? text) {
+    final upper = text?.toUpperCase() ?? '';
+    return values.firstWhere(
+      (type) => type.value == upper,
+      orElse: () => unknown,
+    );
+  }
 }
 
 enum EventTypeSpeaker {

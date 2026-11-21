@@ -70,15 +70,15 @@ class AppStrings {
   static const String homeSpeedRunBuild = "SpeedRun Build";
   static const String homeMeetCommunity = "Conoce a la comunidad";
   static const String homeMeetCommunitySubtitle =
-      "Organizadores y speakers de GDG Sucre";
+      "Staff que impulsa la comunidad";
   static const String homeTreasureBunt = "Búsqueda del tesoro";
-  static const String homeHeaderSubtitle = "Google Developer Groups";
+  static const String homeHeaderSubtitle = "Google Developer Group";
   static const String homeChannelsTitle = "Únete a nuestros canales";
   static const String homeChannelsSubtitle =
       "Conecta con la comunidad GDG Sucre";
   static const String homeChannelWhatsApp = "WhatsApp";
   static const String homeChannelInstagram = "Instagram";
-  static const String homeChannelDiscord = "Discord";
+  static const String homeChannelFacebook = "Facebook";
   static const String homeChannelTikTok = "TikTok";
   static const String homeChannelWeb = "Web";
   static const String homeSponsorsTitle = "Nuestros Sponsors";

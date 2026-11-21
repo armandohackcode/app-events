@@ -268,10 +268,10 @@ class _CommunityHeroCard extends StatelessWidget {
       url: AppLinks.gdgInstagram,
     ),
     (
-      label: AppStrings.homeChannelDiscord,
-      color: AppStyles.socialDiscordColor,
-      glyph: AppAssetsPath.glyphDiscord,
-      url: AppLinks.gdgDiscord,
+      label: AppStrings.homeChannelFacebook,
+      color: AppStyles.socialFacebookColor,
+      glyph: AppAssetsPath.glyphFacebook,
+      url: AppLinks.gdgFacebook,
     ),
     (
       label: AppStrings.homeChannelTikTok,
