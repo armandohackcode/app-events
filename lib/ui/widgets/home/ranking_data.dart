@@ -1,13 +1,19 @@
-import 'package:app_events/config/theme/app_strings.dart';
 import 'dart:async';
 
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
+import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
+import 'package:app_events/ui/widgets/shared/tilted_tag.dart';
+import 'package:app_events/ui/widgets/shared/title_pill.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// Pop-brutalist leaderboard showing top 3 on a podium and remaining attendees below.
 class RankingData extends StatefulWidget {
   const RankingData({super.key});
 
@@ -17,15 +23,17 @@ class RankingData extends StatefulWidget {
 
 class _RankingDataState extends State<RankingData> {
   StreamSubscription? _sub;
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final data = Provider.of<OtherProvider>(context, listen: false);
       _sub = data.getRanking().listen((list) {
         data.ranking = list;
       });
     });
-    super.initState();
   }
 
   @override
@@ -36,169 +44,290 @@ class _RankingDataState extends State<RankingData> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<OtherProvider>(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.rankingTitle)),
-      body: data.ranking.length >= 3
-          ? Column(
-              children: [
-                Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  AppAssetsPath.androidPed,
-                                  height: 100,
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 80,
-                                  height: 100,
-                                  decoration: const BoxDecoration(
-                                    color: AppStyles.colorBaseGreen,
-                                  ),
-                                  child: const Text(
-                                    "2",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                      color: AppStyles.cardColor,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  data.ranking[1].score.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+    final ranking = Provider.of<OtherProvider>(context).ranking;
+    final topEntries = ranking.take(3).toList();
+    final restEntries = ranking.length > 3
+        ? ranking.sublist(3)
+        : const <UserCompetitor>[];
+
+    return HomeBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: const TitlePill(
+            text: AppStrings.rankingTitle,
+            color: AppStyles.activitiesRankingTagColor,
+            angle: -1,
+          ),
+        ),
+        body: ranking.isEmpty
+            ? const _RankingLoadingState()
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                children: [
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 520),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _PodiumSection(entries: topEntries),
+                          if (restEntries.isNotEmpty) ...[
+                            const SizedBox(height: 22),
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: TitlePill(
+                                text: AppStrings.rankingLeaderboardTag,
+                                color: AppStyles.activitiesRankingTagColor,
+                                angle: 1,
+                              ),
                             ),
-                            const SizedBox(width: 5),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  AppAssetsPath.firePedIcon,
-                                  height: 100,
+                            const SizedBox(height: 12),
+                            ...List.generate(
+                              restEntries.length,
+                              (index) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: CardRanking(
+                                  data: restEntries[index],
+                                  index: index + 4,
+                                  color:
+                                      AppStyles.gdgBrandPalette[(index + 3) %
+                                          AppStyles.gdgBrandPalette.length],
                                 ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 80,
-                                  height: 160,
-                                  decoration: const BoxDecoration(
-                                    color: AppStyles.colorBaseYellow,
-                                  ),
-                                  child: const Text(
-                                    "1",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                      color: AppStyles.cardColor,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  data.ranking[0].score.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 5),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(AppAssetsPath.dashPed, height: 100),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 80,
-                                  height: 70,
-                                  decoration: const BoxDecoration(
-                                    color: AppStyles.colorBaseBlue,
-                                  ),
-                                  child: const Text(
-                                    "3",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                      color: AppStyles.cardColor,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  data.ranking[2].score.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Image.asset(AppAssetsPath.partyAnimation, height: 150),
-                  ],
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: data.ranking.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) {
-                        return CardRanking(
-                          data: data.ranking[index],
-                          index: index + 1,
-                          color: AppStyles.colorBaseYellow,
-                        );
-                      }
-                      if (index == 1) {
-                        return CardRanking(
-                          data: data.ranking[index],
-                          index: index + 1,
-                          color: AppStyles.colorBaseGreen,
-                        );
-                      }
-                      if (index == 2) {
-                        return CardRanking(
-                          data: data.ranking[index],
-                          index: index + 1,
-                          color: AppStyles.colorBaseBlue,
-                        );
-                      }
-                      return CardRanking(
-                        data: data.ranking[index],
-                        index: index + 1,
-                        color: AppStyles.fontColor,
-                      );
-                    },
                   ),
-                ),
-              ],
-            )
-          : Center(
-              child: Image.asset(
-                AppAssetsPath.loadingAnimation,
-                width: MediaQuery.of(context).size.width * 0.7,
+                ],
               ),
-            ),
+      ),
     );
   }
 }
 
+class _RankingLoadingState extends StatelessWidget {
+  const _RankingLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: HardShadowBox(
+          color: AppStyles.cardColor,
+          radius: 22,
+          shadowOffset: 5,
+          borderWidth: 2.5,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 180),
+                child: Image.asset(
+                  AppAssetsPath.loadingAnimation,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const TiltedTag(
+                text: AppStrings.rankingLoading,
+                color: AppStyles.colorBaseYellow,
+                angleDegrees: -1,
+                compact: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PodiumSection extends StatelessWidget {
+  final List<UserCompetitor> entries;
+
+  const _PodiumSection({required this.entries});
+
+  @override
+  Widget build(BuildContext context) {
+    final first = entries.isNotEmpty ? entries[0] : null;
+    final second = entries.length > 1 ? entries[1] : null;
+    final third = entries.length > 2 ? entries[2] : null;
+
+    return TaggedCard(
+      tag: AppStrings.rankingPodiumTag,
+      tagColor: AppStyles.colorBaseYellow,
+      angleDegrees: -1.5,
+      child: HardShadowBox(
+        color: AppStyles.cardColor,
+        radius: 22,
+        shadowOffset: 5,
+        borderWidth: 2.5,
+        padding: const EdgeInsets.fromLTRB(12, 24, 12, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (second != null)
+                  Expanded(
+                    child: _PodiumColumn(
+                      rank: 2,
+                      entry: second,
+                      pillarHeight: 74,
+                      pillarColor: AppStyles.podiumSecondColor,
+                      rankTextColor: AppStyles.onAccentColor,
+                      showTrophy: false,
+                    ),
+                  ),
+                if (second != null) const SizedBox(width: 8),
+                if (first != null)
+                  Expanded(
+                    child: _PodiumColumn(
+                      rank: 1,
+                      entry: first,
+                      pillarHeight: 108,
+                      pillarColor: AppStyles.podiumFirstColor,
+                      rankTextColor: AppStyles.fontColor,
+                      showTrophy: true,
+                    ),
+                  ),
+                if (third != null) const SizedBox(width: 8),
+                if (third != null)
+                  Expanded(
+                    child: _PodiumColumn(
+                      rank: 3,
+                      entry: third,
+                      pillarHeight: 54,
+                      pillarColor: AppStyles.podiumThirdColor,
+                      rankTextColor: AppStyles.onAccentColor,
+                      showTrophy: false,
+                    ),
+                  ),
+              ],
+            ),
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: AppStyles.borderColor,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PodiumColumn extends StatelessWidget {
+  final int rank;
+  final UserCompetitor entry;
+  final double pillarHeight;
+  final Color pillarColor;
+  final Color rankTextColor;
+  final bool showTrophy;
+
+  const _PodiumColumn({
+    required this.rank,
+    required this.entry,
+    required this.pillarHeight,
+    required this.pillarColor,
+    required this.rankTextColor,
+    required this.showTrophy,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showTrophy)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Image.asset(
+              AppAssetsPath.trophyIcon,
+              width: 28,
+              height: 32,
+              fit: BoxFit.contain,
+            ),
+          ),
+        InitialsAvatar(
+          name: entry.name,
+          photoUrl: entry.photoUrl,
+          backgroundColor: pillarColor,
+          foregroundColor: rankTextColor,
+          size: rank == 1 ? 54 : 46,
+          borderWidth: 2,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          entry.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w800,
+            color: AppStyles.fontColor,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppStyles.homeBackgroundColor,
+            border: Border.all(color: AppStyles.borderColor, width: 1.5),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(
+            AppStrings.rankingPointsBadge(entry.score),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              color: AppStyles.fontColor,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: pillarHeight,
+          width: double.infinity,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: pillarColor,
+            border: const Border(
+              top: BorderSide(color: AppStyles.borderColor, width: 2.5),
+              left: BorderSide(color: AppStyles.borderColor, width: 2.5),
+              right: BorderSide(color: AppStyles.borderColor, width: 2.5),
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+          ),
+          child: Text(
+            AppStrings.rankingPositionLabel(rank),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: rankTextColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Pop-brutalist leaderboard row displaying position, avatar, attendee, and points.
 class CardRanking extends StatelessWidget {
   const CardRanking({
     super.key,
@@ -213,40 +342,88 @@ class CardRanking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: MediaQuery.of(context).size.width * 0.85,
-      margin: const EdgeInsets.all(5),
-      // padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppStyles.colorBaseYellow, width: 1.5),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: ListTile(
-        leading: Text(
-          index.toString(),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: color,
+    return HardShadowBox(
+      color: AppStyles.cardColor,
+      radius: 16,
+      shadowOffset: 3,
+      borderWidth: 2,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          Container(
+            constraints: const BoxConstraints(minWidth: 34),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppStyles.homeBackgroundColor,
+              border: Border.all(color: AppStyles.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              AppStrings.rankingPositionLabel(index),
+              style: const TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w900,
+                color: AppStyles.fontColor,
+              ),
+            ),
           ),
-        ),
-        trailing: Text(
-          data.score.toString(),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: color,
+          const SizedBox(width: 10),
+          InitialsAvatar(
+            name: data.name,
+            photoUrl: data.photoUrl,
+            backgroundColor: color,
+            size: 40,
+            borderWidth: 2,
           ),
-        ),
-        title: Text(
-          data.name,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  data.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppStyles.fontColor,
+                  ),
+                ),
+                if (data.profession.trim().isNotEmpty)
+                  Text(
+                    data.profession,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppStyles.fontSecondaryColor,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppStyles.activitiesRankingTagColor,
+              border: Border.all(color: AppStyles.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              AppStrings.rankingPointsBadge(data.score),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: AppStyles.fontColor,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
