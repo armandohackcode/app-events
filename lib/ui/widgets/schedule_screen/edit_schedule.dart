@@ -277,7 +277,7 @@ class _EditScheduleState extends State<EditSchedule> {
           else
             ElevatedButton(
               onPressed: _save,
-              child: const Text(AppStrings.eventSaveChanges),
+              child: const Text(AppStrings.saveChanges),
             ),
           const SizedBox(height: 40),
         ],

@@ -11,3 +11,9 @@ googleusercontent
 UIUX
 Appbar
 
+# Game and UI terms
+payline
+wildable
+grayscale
+
+
