@@ -1,6 +1,5 @@
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speed_run_challenge.dart';
-import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -47,127 +46,121 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
 
     final t = hasImage
         ? (_scrollOffset / _collapseThreshold).clamp(0.0, 1.0)
-        : (_scrollOffset / 40.0).clamp(0.0, 1.0);
+        : 1.0;
 
-    final appBarBg = Color.lerp(
-      Colors.transparent,
-      AppStyles.homeBackgroundColor,
+    final appBarBg = Color.lerp(Colors.transparent, AppStyles.colorAppbar, t)!;
+    final fgColor = Color.lerp(
+      AppStyles.onAccentColor,
+      AppStyles.fontColor,
       t,
     )!;
-    final fgColor = hasImage
-        ? Color.lerp(AppStyles.onAccentColor, AppStyles.fontColor, t)!
-        : AppStyles.fontColor;
 
-    return HomeBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              expandedHeight: hasImage ? _expandedHeight : null,
-              pinned: true,
-              backgroundColor: appBarBg,
-              foregroundColor: fgColor,
-              titleTextStyle: TextStyle(
-                color: fgColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return Scaffold(
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverAppBar(
+            expandedHeight: hasImage ? _expandedHeight : null,
+            pinned: true,
+            backgroundColor: appBarBg,
+            foregroundColor: fgColor,
+            titleTextStyle: TextStyle(
+              color: fgColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
 
-              title: Opacity(
-                opacity: hasImage ? ((t - 0.4) / 0.6).clamp(0.0, 1.0) : 1.0,
-                child: Text(challenge.title),
-              ),
-              flexibleSpace: hasImage
-                  ? FlexibleSpaceBar(
-                      stretchModes: const [StretchMode.zoomBackground],
-                      background: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Hero(
-                            tag: 'challenge_image_${challenge.id}',
-                            child: CachedNetworkImage(
-                              imageUrl: challenge.imageUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (ctx, url) => ColoredBox(
-                                color: AppStyles.borderColor,
-                                child: Center(
-                                  child: LoadingAnimationWidget.twistingDots(
-                                    leftDotColor: AppStyles.colorBaseBlue,
-                                    rightDotColor: AppStyles.colorBaseYellow,
-                                    size: 36,
-                                  ),
+            title: Opacity(
+              opacity: ((t - 0.4) / 0.6).clamp(0.0, 1.0),
+              child: Text(challenge.title),
+            ),
+            flexibleSpace: hasImage
+                ? FlexibleSpaceBar(
+                    stretchModes: const [StretchMode.zoomBackground],
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Hero(
+                          tag: 'challenge_image_${challenge.id}',
+                          child: CachedNetworkImage(
+                            imageUrl: challenge.imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (ctx, url) => ColoredBox(
+                              color: AppStyles.borderColor,
+                              child: Center(
+                                child: LoadingAnimationWidget.twistingDots(
+                                  leftDotColor: AppStyles.colorBaseBlue,
+                                  rightDotColor: AppStyles.colorBaseYellow,
+                                  size: 36,
                                 ),
                               ),
-                              errorWidget: (ctx, url, err) => const ColoredBox(
-                                color: AppStyles.backgroundColor,
-                              ),
+                            ),
+                            errorWidget: (ctx, url, err) => const ColoredBox(
+                              color: AppStyles.backgroundColor,
                             ),
                           ),
-                          const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment(0, 0.45),
-                                colors: [
-                                  AppStyles.imageOverlayColor,
-                                  Colors.transparent,
-                                ],
-                              ),
+                        ),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment(0, 0.45),
+                              colors: [
+                                AppStyles.imageOverlayColor,
+                                Colors.transparent,
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : null,
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 20, 15, 8),
-                child: Opacity(
-                  opacity: hasImage ? (1 - t / 0.6).clamp(0.0, 1.0) : 1.0,
-                  child: Text(
-                    challenge.title,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                        ),
+                      ],
                     ),
+                  )
+                : null,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 20, 15, 8),
+              child: Opacity(
+                opacity: (1 - t / 0.6).clamp(0.0, 1.0),
+                child: Text(
+                  challenge.title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Html(
-                data: challenge.challenge,
-                style: {
-                  'body': Style(
-                    fontSize: FontSize(15),
-                    color: AppStyles.fontColor,
-                    margin: Margins.symmetric(horizontal: 15),
-                  ),
-                  'h1': Style(
-                    fontSize: FontSize(20),
-                    fontWeight: FontWeight.bold,
-                    color: AppStyles.fontColor,
-                  ),
-                  'h2': Style(
-                    fontSize: FontSize(18),
-                    fontWeight: FontWeight.bold,
-                    color: AppStyles.fontColor,
-                  ),
-                  'code': Style(
-                    backgroundColor: AppStyles.borderColor,
-                    color: AppStyles.onAccentColor,
-                    fontFamily: 'monospace',
-                  ),
-                  'a': Style(color: AppStyles.colorBaseBlue),
-                },
-              ),
+          ),
+          SliverToBoxAdapter(
+            child: Html(
+              data: challenge.challenge,
+              style: {
+                'body': Style(
+                  fontSize: FontSize(15),
+                  color: AppStyles.fontColor,
+                  margin: Margins.symmetric(horizontal: 15),
+                ),
+                'h1': Style(
+                  fontSize: FontSize(20),
+                  fontWeight: FontWeight.bold,
+                  color: AppStyles.fontColor,
+                ),
+                'h2': Style(
+                  fontSize: FontSize(18),
+                  fontWeight: FontWeight.bold,
+                  color: AppStyles.fontColor,
+                ),
+                'code': Style(
+                  backgroundColor: AppStyles.borderColor,
+                  fontFamily: 'monospace',
+                ),
+                'a': Style(color: AppStyles.colorBaseBlue),
+              },
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 40)),
-          ],
-        ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 40)),
+        ],
       ),
     );
   }

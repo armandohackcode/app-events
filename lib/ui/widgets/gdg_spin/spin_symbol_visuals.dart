@@ -18,7 +18,7 @@ extension SpinSymbolVisuals on SpinSymbol {
     SpinSymbol.diamond => AppAssetsPath.dashPed,
     SpinSymbol.lemon => AppAssetsPath.treasureBuntImg2,
     SpinSymbol.mysteryBox => AppAssetsPath.trophyIcon,
-    SpinSymbol.wild => AppAssetsPath.gdgIcon,
+    SpinSymbol.wild => AppAssetsPath.logoGdg,
   };
 
   Color get accentColor => switch (this) {
@@ -41,8 +41,8 @@ extension SpinSymbolVisuals on SpinSymbol {
     SpinSymbol.star => AppStrings.spinSymbolStarName,
     SpinSymbol.diamond => AppStrings.spinSymbolDiamondName,
     SpinSymbol.lemon => AppStrings.spinSymbolLemonName,
-    SpinSymbol.mysteryBox => AppStrings.spinSymbolMysteryBoxName,
-    SpinSymbol.wild => AppStrings.spinSymbolWildName,
+    SpinSymbol.mysteryBox => AppStrings.spinBonusRowName,
+    SpinSymbol.wild => AppStrings.spinWildRowName,
   };
 }
 

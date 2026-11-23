@@ -10,6 +10,7 @@ import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/profile_screen.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
 import 'package:app_events/ui/widgets/profile/profile_public.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,9 @@ void main() {
       await tester.pumpWidget(wrapScreen());
       await tester.pumpAndSettle();
 
-      expect(find.text(AppStrings.profileCommunityHeader), findsOneWidget);
+      expect(find.byType(HomeHeader), findsOneWidget);
+      expect(find.text(AppStrings.organizersGDGSucre), findsOneWidget);
+      expect(find.text(AppStrings.homeHeaderSubtitle), findsOneWidget);
       expect(find.text('Ada Lovelace'), findsOneWidget);
       expect(find.byIcon(Icons.verified), findsNothing);
       expect(find.text('ada@gdgsucre.dev'), findsOneWidget);
@@ -149,7 +152,7 @@ void main() {
       expect(find.text('340'), findsOneWidget);
       expect(find.text(AppStrings.commonWordPoints), findsOneWidget);
       expect(find.text(AppStrings.profileFriendsStat), findsOneWidget);
-      expect(find.text(AppStrings.profileEventsStat), findsOneWidget);
+      expect(find.text(AppStrings.eventsTitle), findsOneWidget);
       // 2 unique events (badges evt-1 & evt-2, deduplicated with currentEventId evt-2)
       expect(
         find.text('2'),

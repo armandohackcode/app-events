@@ -12,6 +12,7 @@ import 'package:app_events/ui/screens/activities/activities_screen.dart';
 import 'package:app_events/ui/widgets/activities/activity_ranking_card.dart';
 import 'package:app_events/ui/widgets/activities/activity_spin_card.dart';
 import 'package:app_events/ui/widgets/activities/activity_treasure_card.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -74,19 +75,26 @@ void main() {
     ),
   );
 
-  testWidgets('displays Ranking, GDG SPIN, and Treasure Hunt cards in order', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildScreen());
-    await tester.pumpAndSettle();
+  testWidgets(
+    'displays GDG brand header and Ranking, GDG SPIN, Treasure Hunt cards in order',
+    (tester) async {
+      await tester.pumpWidget(buildScreen());
+      await tester.pumpAndSettle();
 
-    final rankingY = tester.getTopLeft(find.byType(ActivityRankingCard)).dy;
-    final spinY = tester.getTopLeft(find.byType(ActivitySpinCard)).dy;
-    final treasureY = tester.getTopLeft(find.byType(ActivityTreasureCard)).dy;
+      expect(find.byType(HomeHeader), findsOneWidget);
+      expect(find.text(AppStrings.organizersGDGSucre), findsOneWidget);
+      expect(find.text(AppStrings.homeHeaderSubtitle), findsOneWidget);
 
-    expect(rankingY, lessThan(spinY));
-    expect(spinY, lessThan(treasureY));
-  });
+      final headerY = tester.getTopLeft(find.byType(HomeHeader)).dy;
+      final rankingY = tester.getTopLeft(find.byType(ActivityRankingCard)).dy;
+      final spinY = tester.getTopLeft(find.byType(ActivitySpinCard)).dy;
+      final treasureY = tester.getTopLeft(find.byType(ActivityTreasureCard)).dy;
+
+      expect(headerY, lessThan(rankingY));
+      expect(rankingY, lessThan(spinY));
+      expect(spinY, lessThan(treasureY));
+    },
+  );
 
   testWidgets(
     'tapping Treasure Hunt without competitor shows snackbar instead of crashing',

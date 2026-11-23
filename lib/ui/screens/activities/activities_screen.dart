@@ -72,7 +72,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       body: HomeBackdrop(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+            padding: const EdgeInsets.fromLTRB(18, 8, 18, 32),
             children: [
               Center(
                 child: ConstrainedBox(
@@ -80,8 +80,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const HomeHeaderDecoration(child: HomeHeader()),
                       const Text(
-                        AppStrings.activitiesTitle,
+                        AppStrings.navBarActivities,
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
@@ -126,7 +127,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                       const SizedBox(height: 22),
                       TaggedCard(
-                        tag: AppStrings.activitiesTreasureTag,
+                        tag: AppStrings.homeTreasureBunt,
                         tagColor: AppStyles.activitiesTreasureTagColor,
                         angleDegrees: -1,
                         child: ActivityTreasureCard(

@@ -6,7 +6,6 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/event.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
-import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -83,125 +82,117 @@ class _EditEventState extends State<EditEvent> {
   Widget build(BuildContext context) {
     final eventProvider = Provider.of<EventProvider>(context, listen: false);
 
-    return HomeBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: const Text(AppStrings.eventEdit),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            Text(AppStrings.scheduleTitle, style: _textStyle),
-            TextFormField(controller: _title),
-            const SizedBox(height: 10),
-            Text(AppStrings.scheduleDescription, style: _textStyle),
-            TextFormField(
-              controller: _description,
-              minLines: 3,
-              maxLines: 5,
-              textInputAction: TextInputAction.done,
+    return Scaffold(
+      appBar: AppBar(title: const Text(AppStrings.eventEdit)),
+      body: ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          Text(AppStrings.scheduleTitle, style: _textStyle),
+          TextFormField(controller: _title),
+          const SizedBox(height: 10),
+          Text(AppStrings.scheduleDescription, style: _textStyle),
+          TextFormField(
+            controller: _description,
+            minLines: 3,
+            maxLines: 5,
+            textInputAction: TextInputAction.done,
+          ),
+          const SizedBox(height: 10),
+          Text(AppStrings.eventStartDate, style: _textStyle),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              _dateFmtEdit.format(_startDate),
+              style: const TextStyle(color: AppStyles.fontColor),
             ),
-            const SizedBox(height: 10),
-            Text(AppStrings.eventStartDate, style: _textStyle),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                _dateFmtEdit.format(_startDate),
-                style: const TextStyle(color: AppStyles.fontColor),
-              ),
-              trailing: const Icon(
-                Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor,
-              ),
-              onTap: () => _pickDate(context, true),
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
             ),
-            Text(AppStrings.eventEndDate, style: _textStyle),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                _dateFmtEdit.format(_endDate),
-                style: const TextStyle(color: AppStyles.fontColor),
-              ),
-              trailing: const Icon(
-                Icons.calendar_today,
-                color: AppStyles.fontSecondaryColor,
-              ),
-              onTap: () => _pickDate(context, false),
+            onTap: () => _pickDate(context, true),
+          ),
+          Text(AppStrings.eventEndDate, style: _textStyle),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              _dateFmtEdit.format(_endDate),
+              style: const TextStyle(color: AppStyles.fontColor),
             ),
-            const SizedBox(height: 10),
-            Text(AppStrings.eventLocationUrl, style: _textStyle),
-            TextFormField(
-              controller: _locationUrl,
-              keyboardType: TextInputType.url,
+            trailing: const Icon(
+              Icons.calendar_today,
+              color: AppStyles.fontSecondaryColor,
             ),
-            const SizedBox(height: 16),
-            Text(AppStrings.eventImageUrl, style: _textStyle),
-            const SizedBox(height: 8),
-            _ImagePreview(
-              newImagePath: _newImagePath,
-              existingImageUrl: widget.event.imageUrl,
+            onTap: () => _pickDate(context, false),
+          ),
+          const SizedBox(height: 10),
+          Text(AppStrings.eventLocationUrl, style: _textStyle),
+          TextFormField(
+            controller: _locationUrl,
+            keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 16),
+          Text(AppStrings.eventImageUrl, style: _textStyle),
+          const SizedBox(height: 8),
+          _ImagePreview(
+            newImagePath: _newImagePath,
+            existingImageUrl: widget.event.imageUrl,
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            icon: Icon(
+              _newImagePath == null ? Icons.add_photo_alternate : Icons.edit,
+              size: 18,
             ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              icon: Icon(
-                _newImagePath == null ? Icons.add_photo_alternate : Icons.edit,
-                size: 18,
-              ),
-              label: Text(
-                _newImagePath == null
-                    ? AppStrings.eventSelectImage
-                    : AppStrings.eventChangeImage,
-              ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppStyles.colorBaseBlue,
-                side: const BorderSide(color: AppStyles.colorBaseBlue),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: _pickImage,
+            label: Text(
+              _newImagePath == null
+                  ? AppStrings.eventSelectImage
+                  : AppStrings.eventChangeImage,
             ),
-            const SizedBox(height: 24),
-            if (_loading)
-              const Center(child: CircularProgressIndicator())
-            else
-              ElevatedButton(
-                onPressed: () async {
-                  if (_title.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(AppStrings.eventValidationRequired),
-                      ),
-                    );
-                    return;
-                  }
-                  setState(() => _loading = true);
-                  final updated = widget.event.copyWith(
-                    title: _title.text.trim(),
-                    description: _description.text.trim(),
-                    startDate: _startDate,
-                    endDate: _endDate,
-                    locationUrl: _locationUrl.text.trim(),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppStyles.colorBaseBlue,
+              side: const BorderSide(color: AppStyles.colorBaseBlue),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: _pickImage,
+          ),
+          const SizedBox(height: 24),
+          if (_loading)
+            const Center(child: CircularProgressIndicator())
+          else
+            ElevatedButton(
+              onPressed: () async {
+                if (_title.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(AppStrings.eventValidationRequired),
+                    ),
                   );
-                  await eventProvider.updateEvent(
-                    updated,
-                    imagePath: _newImagePath,
-                  );
-                  setState(() => _loading = false);
-                  if (context.mounted) {
-                    customSnackbar(context, AppStrings.eventUpdatedSuccess);
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text(AppStrings.eventSaveChanges),
-              ),
-            const SizedBox(height: 30),
-          ],
-        ),
+                  return;
+                }
+                setState(() => _loading = true);
+                final updated = widget.event.copyWith(
+                  title: _title.text.trim(),
+                  description: _description.text.trim(),
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  locationUrl: _locationUrl.text.trim(),
+                );
+                await eventProvider.updateEvent(
+                  updated,
+                  imagePath: _newImagePath,
+                );
+                setState(() => _loading = false);
+                if (context.mounted) {
+                  customSnackbar(context, AppStrings.eventUpdatedSuccess);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text(AppStrings.saveChanges),
+            ),
+          const SizedBox(height: 30),
+        ],
       ),
     );
   }
