@@ -19,6 +19,11 @@ class AppStrings {
   static const String commonWordNo = 'NO';
   static const String commonWordLoading = 'loading';
   static const String rankingTitle = 'Ranking';
+  static const String rankingPodiumTag = 'Podio';
+  static const String rankingLeaderboardTag = 'Tabla general';
+  static const String rankingLoading = 'Cargando ranking...';
+  static String rankingPositionLabel(int rank) => '#$rank';
+  static String rankingPointsBadge(int score) => '$score pts';
   static const String saveChanges = 'Guardar cambios';
   static const String playLabel = 'Jugar';
   static const String askLabel = 'Preguntar';
@@ -126,6 +131,11 @@ class AppStrings {
   static const String navBarActivities = 'Actividades';
 
   // Scan
+  static const String scanTitle = 'Escanear QR';
+  static const String scanActionTooltip = 'Escanear código QR';
+  static const String scanBackTooltip = 'Volver';
+  static const String scanToggleFlashTooltip = 'Alternar flash';
+  static const String scanFlipCameraTooltip = 'Cambiar cámara';
   static const String scanMessage = "Scanea el código QR de tu nuevo amigo";
   static const String scanMessageCredential =
       "Escanea el código QR de tu manilla";
@@ -193,6 +203,9 @@ class AppStrings {
   static const String profileSocialLabel = 'Redes';
   static const String profileNoSocialLinks = 'Sin redes agregadas todavía';
   static const String profileQrAction = 'Código QR';
+  static const String profileQrModalTitle = 'Mi Código QR';
+  static const String profileQrModalHint =
+      'Muestra este código para conectar al instante';
   static const String profileSeeAllConnections = 'Ver todas';
   static const String profileSeeLessConnections = 'Ver menos';
   static const String profileNewConnection = 'Nueva conexión';

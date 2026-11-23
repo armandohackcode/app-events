@@ -189,14 +189,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        floatingActionButton: canScan
-            ? Padding(
-                padding: EdgeInsets.only(bottom: canPop ? 0 : 88),
-                child: const ButtonScan(),
-              )
-            : null,
+        floatingActionButton: canScan ? const ButtonScan() : null,
         body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16, 4, 16, canPop ? 32 : 112),
+          padding: EdgeInsets.fromLTRB(16, 4, 16, canPop ? 32 : 84),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 520),

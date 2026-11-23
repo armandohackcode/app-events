@@ -13,6 +13,7 @@ import 'package:app_events/ui/screens/user/profile_screen.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/profile/modal_qr_identify.dart';
 import 'package:app_events/ui/widgets/profile/profile_public.dart';
+import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -158,6 +159,20 @@ void main() {
         find.text('2'),
         findsNWidgets(3),
       ); // stat friends + stat events + badge
+
+      final buttonScanFinder = find.byType(ButtonScan);
+      expect(buttonScanFinder, findsOneWidget);
+      expect(
+        find.ancestor(
+          of: buttonScanFinder,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Padding &&
+                widget.padding == const EdgeInsets.only(bottom: 88),
+          ),
+        ),
+        findsNothing,
+      );
 
       await tester.tap(find.text(AppStrings.profileQrAction));
       await tester.pumpAndSettle();
