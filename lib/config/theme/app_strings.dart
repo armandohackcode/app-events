@@ -211,7 +211,29 @@ class AppStrings {
   // Organizers
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
+  static const String organizersTagCoLead = "CO-LEAD";
   static const String organizersGDGSucre = "GDG Sucre";
+  static const String organizersSearchHint = "Buscar organizador";
+  static const String organizersFilterAll = "Todos";
+  static const String organizersFilterLeadership = "Liderazgo";
+  static const String organizersFilterCommunity = "Comunidad";
+  static const String organizersTeamApp = "App";
+  static const String organizersTeamDesign = "Diseño";
+  static const String organizersTeamStaging = "Escenografía";
+  static const String organizersTeamMarketing = "Marketing";
+  static const String organizersTeamLogistics = "Logística";
+  static const String organizersTeamAudioVideo = "Audio y Video";
+  static const String organizersTeamSponsors = "Sponsors";
+  static const String organizersTeamRoadToDevFest = "Road to DevFest";
+  static const String organizersTeamWeb = "Web";
+  static const String organizersTeamAccreditation = "Acreditación";
+  static const String organizersSeeAll = "Ver todos";
+  static const String organizersSeeLess = "Ver menos";
+  static const String organizersEmptyState =
+      "Aún no hay organizadores disponibles.";
+  static const String organizersEmptySearch =
+      "No se encontraron organizadores con ese filtro.";
+  static String organizersMoreCount(int count) => '+$count';
 
   // Add Sponsors
   static const String sponsorModalTitle = "Registrar Sponsor";
