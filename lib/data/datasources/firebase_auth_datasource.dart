@@ -99,5 +99,7 @@ class FirebaseAuthDatasource implements AuthDatasource {
     uid: user.uid,
     displayName: user.displayName,
     photoUrl: user.photoURL,
+    email: user.email,
+    createdAt: user.metadata.creationTime,
   );
 }

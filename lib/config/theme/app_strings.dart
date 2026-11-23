@@ -184,6 +184,21 @@ class AppStrings {
       "Feliciadades, ganastes los puntos extras por completar tu perfil!";
   static const String profileMsEditProfile =
       "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝";
+  static const String profileFriendsStat = 'Amigos';
+  static const String profileEmailUnavailable = 'Correo no disponible';
+  static const String profileProfessionUnavailable = 'Sin ocupación registrada';
+  static String profileMemberSinceYear(int year) =>
+      'En la comunidad desde $year';
+  static const String profileMemberSinceUnknown = 'Miembro de la comunidad';
+  static const String profileSocialLabel = 'Redes';
+  static const String profileNoSocialLinks = 'Sin redes agregadas todavía';
+  static const String profileQrAction = 'Código QR';
+  static const String profileSeeAllConnections = 'Ver todas';
+  static const String profileSeeLessConnections = 'Ver menos';
+  static const String profileNewConnection = 'Nueva conexión';
+  static const String profileShareQr = 'Comparte tu QR';
+  static const String profileNoConnections =
+      'Aún no tienes conexiones. Escanea un código QR para conectar.';
 
   // delete account
   static const String deleteAccount = "Eliminar cuenta";
