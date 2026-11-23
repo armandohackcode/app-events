@@ -53,7 +53,7 @@ class ActivityTreasureCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.activitiesTreasureTag,
+                      AppStrings.homeTreasureBunt,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w900,

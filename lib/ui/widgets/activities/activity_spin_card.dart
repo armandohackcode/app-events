@@ -63,7 +63,7 @@ class ActivitySpinCard extends StatelessWidget {
           GestureDetector(onTap: onTap, child: const SpinMiniMachine()),
           const SizedBox(height: 12),
           ChunkyButton(
-            label: AppStrings.activitiesSpinAction,
+            label: AppStrings.playLabel,
             color: AppStyles.spinBezelColor,
             expand: true,
             onPressed: onTap,

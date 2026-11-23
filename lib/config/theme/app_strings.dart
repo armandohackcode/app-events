@@ -19,6 +19,10 @@ class AppStrings {
   static const String commonWordNo = 'NO';
   static const String commonWordLoading = 'loading';
   static const String rankingTitle = 'Ranking';
+  static const String saveChanges = 'Guardar cambios';
+  static const String playLabel = 'Jugar';
+  static const String askLabel = 'Preguntar';
+  static const String rateLabel = 'Calificar';
 
   // schedule
   static const String scheduleAddSpeakerOrActivity =
@@ -119,6 +123,7 @@ class AppStrings {
   static const String navBarHome = "Inicio";
   static const String navBarLibrary = "Biblioteca";
   static const String navBarProfile = "Perfil";
+  static const String navBarActivities = 'Actividades';
 
   // Scan
   static const String scanMessage = "Scanea el código QR de tu nuevo amigo";
@@ -179,16 +184,6 @@ class AppStrings {
       "Feliciadades, ganastes los puntos extras por completar tu perfil!";
   static const String profileMsEditProfile =
       "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝";
-  static const String profileCommunityHeader = 'Google Developer Groups Sucre';
-  static const String profileFriendsStat = 'Amigos';
-  static const String profileTreasuresStat = 'Tesoros';
-  static const String profileSocialLabel = 'Redes';
-  static const String profileNoSocialLinks = 'Sin redes agregadas todavía';
-  static const String profileQrAction = 'Código QR';
-  static const String profileSeeAllConnections = 'Ver todas';
-  static const String profileSeeLessConnections = 'Ver menos';
-  static const String profileNewConnection = 'Nueva conexión';
-  static const String profileShareQr = 'Comparte tu QR';
 
   // delete account
   static const String deleteAccount = "Eliminar cuenta";
@@ -216,23 +211,7 @@ class AppStrings {
   // Organizers
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
-  static const String organizersTagCoLead = "CO-LEAD";
   static const String organizersGDGSucre = "GDG Sucre";
-  static const String organizersSearchHint = "Buscar organizador";
-  static const String organizersFilterAll = "Todos";
-  static const String organizersFilterLeadership = "Liderazgo";
-  static const String organizersFilterDesign = "Diseño";
-  static const String organizersFilterDevelopment = "Desarrollo";
-  static const String organizersFilterCommunity = "Comunidad";
-  static const String organizersSectionDesign = "Diseño & UX";
-  static const String organizersSectionCommunity = "Comunidad & Marketing";
-  static const String organizersSeeAll = "Ver todos";
-  static const String organizersSeeLess = "Ver menos";
-  static const String organizersEmptyState =
-      "Aún no hay organizadores disponibles.";
-  static const String organizersEmptySearch =
-      "No se encontraron organizadores con ese filtro.";
-  static String organizersMoreCount(int count) => '+$count';
 
   // Add Sponsors
   static const String sponsorModalTitle = "Registrar Sponsor";
@@ -288,24 +267,18 @@ class AppStrings {
   static const String eventSelectImage = 'Seleccionar imagen';
   static const String eventChangeImage = 'Cambiar imagen';
   static const String eventEdit = 'Editar evento';
-  static const String eventSaveChanges = 'Guardar cambios';
   static const String eventUpdatedSuccess = 'Evento actualizado correctamente';
   static const String eventAlreadyJoined = 'Ya te uniste a este evento';
 
   // activities tab
-  static const String navBarActivities = 'Actividades';
-  static const String activitiesTitle = 'Actividades';
   static const String activitiesSubtitle = 'Juega, suma tickets y gana premios';
   static const String activitiesRankingTag = 'Torneo';
-  static const String activitiesRankingTitle = 'Torneo GDG Sucre';
   static const String activitiesRankingDescription =
       'Ranking de jugadores del evento';
   static const String activitiesRankingAction = 'Ver ranking';
   static const String activitiesSpinTag = 'Máquina de la suerte';
   static const String activitiesSpinDescription =
       'Gira la palanca y gana premios del evento';
-  static const String activitiesSpinAction = 'Jugar';
-  static const String activitiesTreasureTag = 'Búsqueda del tesoro';
   static const String activitiesTreasureDescription =
       'Encuentra los QR escondidos en el evento y responde sus preguntas';
   static const String activitiesTreasureAction = 'Buscar tesoros';
@@ -325,7 +298,7 @@ class AppStrings {
   static const String spinOutOfTickets =
       'Se acabaron tus tickets. Gana más abajo.';
   static String spinLose(int left) =>
-      'Esta vez no. Te quedan ${spinTicketCount(left)}.';
+      'No ganaste esta vez. Te quedan ${spinTicketCount(left)}.';
   static String spinWinMessage(String prize) => '¡Ganaste! $prize';
   static String spinBonusMessage(int n) =>
       '¡Trofeo GDG! +${spinTicketCount(n)}';
@@ -378,9 +351,6 @@ class AppStrings {
   static const String spinMissionAsk = 'Haz una pregunta a un speaker';
   static const String spinMissionRate = 'Califica una charla';
   static const String spinMissionTrivia = 'Trivia del break';
-  static const String spinActionAsk = 'Preguntar';
-  static const String spinActionRate = 'Calificar';
-  static const String spinActionPlay = 'Jugar';
   static const String spinPrizeStickers = 'Stickers GDG';
   static const String spinPrizeMug = 'Taza GDG';
   static const String spinPrizeShirt = 'Polera GDG';
@@ -411,6 +381,4 @@ class AppStrings {
   static const String spinSymbolStarName = 'Sparky';
   static const String spinSymbolDiamondName = 'Dash';
   static const String spinSymbolLemonName = 'Chrome';
-  static const String spinSymbolMysteryBoxName = 'Trofeo GDG';
-  static const String spinSymbolWildName = 'comodín GDG';
 }

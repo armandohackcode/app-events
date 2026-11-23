@@ -3,7 +3,6 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/spin_symbol.dart';
 import 'package:app_events/ui/widgets/gdg_spin/spin_symbol_visuals.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -92,6 +91,7 @@ void main() {
       SpinSymbol.diamond: AppAssetsPath.dashPed,
       SpinSymbol.lemon: AppAssetsPath.treasureBuntImg2,
       SpinSymbol.mysteryBox: AppAssetsPath.trophyIcon,
+      SpinSymbol.wild: AppAssetsPath.logoGdg,
     };
 
     for (final entry in expectedImages.entries) {
@@ -103,11 +103,6 @@ void main() {
       expect(tester.takeException(), isNull);
     }
 
-    await tester.pumpWidget(
-      wrap(const SpinSymbolArt(symbol: SpinSymbol.wild, size: 48)),
-    );
-    expect(find.byType(SvgPicture), findsOneWidget);
-    expect(SpinSymbol.wild.assetPath, AppAssetsPath.gdgIcon);
-    expect(tester.takeException(), isNull);
+    expect(SpinSymbol.wild.assetPath, AppAssetsPath.logoGdg);
   });
 }

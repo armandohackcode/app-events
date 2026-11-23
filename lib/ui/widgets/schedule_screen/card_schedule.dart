@@ -54,10 +54,6 @@ class CardSchedule extends StatelessWidget {
                         ),
                         image: CachedNetworkImageProvider(info.photoUrl),
                         fit: BoxFit.cover,
-                        imageErrorBuilder: (_, _, _) => Image.asset(
-                          AppAssetsPath.firePedIcon,
-                          fit: BoxFit.contain,
-                        ),
                       ),
                     ),
                   ),

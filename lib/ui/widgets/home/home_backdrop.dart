@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_assets_path.dart';
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/widgets/home/particle_field.dart';
 import 'package:flutter/material.dart';
@@ -184,6 +185,56 @@ class HomeHeaderDecoration extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Top brand header displaying the official GDG mark and community name.
+class HomeHeader extends StatelessWidget {
+  final EdgeInsetsGeometry padding;
+
+  const HomeHeader({
+    super.key,
+    this.padding = const EdgeInsets.only(top: 10, bottom: 18),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: Row(
+        children: [
+          Image.asset(AppAssetsPath.logoGdg, height: 34),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.organizersGDGSucre,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: AppStyles.fontColor,
+                  ),
+                ),
+                Text(
+                  AppStrings.homeHeaderSubtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: AppStyles.fontSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
