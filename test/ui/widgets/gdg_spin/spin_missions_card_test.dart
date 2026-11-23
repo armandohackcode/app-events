@@ -18,14 +18,14 @@ void main() {
       title: 'Ask speaker',
       reward: 1,
       done: false,
-      actionLabel: AppStrings.spinActionAsk,
+      actionLabel: AppStrings.askLabel,
     ),
     SpinMission(
       id: 'trivia',
       title: 'Break trivia',
       reward: 1,
       done: false,
-      actionLabel: AppStrings.spinActionPlay,
+      actionLabel: AppStrings.playLabel,
       isTrivia: true,
     ),
   ];
@@ -46,21 +46,21 @@ void main() {
     );
 
     expect(find.text('Claim'), findsNothing);
-    expect(find.text(AppStrings.spinActionAsk), findsOneWidget);
-    expect(find.text(AppStrings.spinActionPlay), findsOneWidget);
+    expect(find.text(AppStrings.askLabel), findsOneWidget);
+    expect(find.text(AppStrings.playLabel), findsOneWidget);
     expect(find.text(AppStrings.spinTriviaQuestion), findsNothing);
 
     final askTargetSize = tester.getSize(
       find
           .ancestor(
-            of: find.text(AppStrings.spinActionAsk),
+            of: find.text(AppStrings.askLabel),
             matching: find.byType(GestureDetector),
           )
           .first,
     );
     expect(askTargetSize.height, greaterThanOrEqualTo(44));
 
-    await tester.tap(find.text(AppStrings.spinActionAsk));
+    await tester.tap(find.text(AppStrings.askLabel));
     await tester.pumpAndSettle();
 
     expect(tapped?.id, 'pending_mission');

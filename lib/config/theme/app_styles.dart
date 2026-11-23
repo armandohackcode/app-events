@@ -73,16 +73,16 @@ class AppStyles {
   static const Color gamesBackgroundColor = homeBackgroundColor;
   static const List<Color> gdgBrandPalette = [
     backdropBlueColor,
-    Color(0xFFEA4335),
-    Color(0xFFFBBC04),
-    Color(0xFF34A853),
+    colorBaseRed,
+    colorBaseYellow,
+    colorBaseGreen,
   ];
   static const Color activitiesRankingTagColor = Color(0xFFA8C7FA);
   static const Color activitiesSpinTagColor = colorBaseYellow;
   static const Color activitiesTreasureTagColor = Color(0xFFA8DAB5);
   static const Color podiumFirstColor = colorBaseYellow;
-  static const Color podiumSecondColor = Color(0xFF34A853);
-  static const Color podiumThirdColor = Color(0xFFEA4335);
+  static const Color podiumSecondColor = colorBaseGreen;
+  static const Color podiumThirdColor = colorBaseRed;
   static const Color treasureFoundColor = podiumSecondColor;
 
   // GDG SPIN (blue pop-brutalist cabinet on cream HomeBackdrop)

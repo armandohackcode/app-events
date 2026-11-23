@@ -36,7 +36,7 @@ class ActivityRankingCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        AppStrings.activitiesRankingTitle,
+                        AppStrings.homeTournamentGDG,
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w900,

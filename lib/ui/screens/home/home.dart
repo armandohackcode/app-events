@@ -67,7 +67,7 @@ class Home extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
             children: [
-              const HomeHeaderDecoration(child: _HomeHeader()),
+              const HomeHeaderDecoration(child: HomeHeader()),
               LiveTalkCard(
                 talk: _placeholderTalk,
                 photo: const AssetImage(AppAssetsPath.liveTalkPhoto),
@@ -153,44 +153,6 @@ class Home extends StatelessWidget {
       floatingActionButton: (dataCenter.userCompetitor != null)
           ? const ButtonScan()
           : null,
-    );
-  }
-}
-
-class _HomeHeader extends StatelessWidget {
-  const _HomeHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 18),
-      child: Row(
-        children: [
-          Image.asset(AppAssetsPath.logoGdg, height: 34),
-          const SizedBox(width: 10),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.organizersGDGSucre,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: AppStyles.fontColor,
-                ),
-              ),
-              Text(
-                AppStrings.homeHeaderSubtitle,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w500,
-                  color: AppStyles.fontSecondaryColor,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

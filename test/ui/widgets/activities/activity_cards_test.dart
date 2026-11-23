@@ -17,7 +17,7 @@ void main() {
     var taps = 0;
     await tester.pumpWidget(wrap(ActivityRankingCard(onTap: () => taps++)));
 
-    await tester.tap(find.text(AppStrings.activitiesRankingTitle));
+    await tester.tap(find.text(AppStrings.homeTournamentGDG));
 
     expect(taps, 1);
   });
@@ -44,7 +44,7 @@ void main() {
       // 3 letters in compact SpinSign (G, D, G) + 3 letters in mini reels (G, D, G).
       expect(miniLetters, ['G', 'D', 'G', 'G', 'D', 'G']);
 
-      await tester.tap(find.text(AppStrings.activitiesSpinAction));
+      await tester.tap(find.text(AppStrings.playLabel));
       await tester.pumpAndSettle();
 
       expect(taps, 1);

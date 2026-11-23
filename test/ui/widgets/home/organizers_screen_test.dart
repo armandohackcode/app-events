@@ -124,6 +124,8 @@ void main() {
         of: find.text(AppStrings.organizersTeamWeb),
         matching: find.byType(InkWell),
       );
+      await tester.ensureVisible(webChip);
+      await tester.pumpAndSettle();
       await tester.tap(webChip);
       await tester.pumpAndSettle();
 
@@ -146,10 +148,41 @@ void main() {
       // Clear search and return to All
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(AppStrings.organizersFilterAll));
+      final allChip = find.text(AppStrings.organizersFilterAll);
+      await tester.ensureVisible(allChip);
+      await tester.pumpAndSettle();
+      await tester.tap(allChip);
       await tester.pumpAndSettle();
       expect(find.text('Ada Lovelace'), findsOneWidget);
       expect(find.text('Margaret Hamilton'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'renders filter chips in a horizontal strip and aligns names across LEAD and regular tiles',
+    (tester) async {
+      final sample = [
+        _makeOrganizer(id: 1, name: 'Lead Member', team: ['App'], lead: true),
+        _makeOrganizer(id: 2, name: 'Regular Member', team: ['App']),
+      ];
+      when(() => otherRepo.getOrganizer()).thenAnswer((_) async => sample);
+
+      await tester.pumpWidget(wrapScreen());
+      await tester.pumpAndSettle();
+
+      final horizontalFilterScroll = find.ancestor(
+        of: find.text(AppStrings.organizersFilterAll),
+        matching: find.byWidgetPredicate(
+          (w) =>
+              w is SingleChildScrollView &&
+              w.scrollDirection == Axis.horizontal,
+        ),
+      );
+      expect(horizontalFilterScroll, findsOneWidget);
+
+      final leadNameDy = tester.getTopLeft(find.text('Lead Member')).dy;
+      final regularNameDy = tester.getTopLeft(find.text('Regular Member')).dy;
+      expect(leadNameDy, regularNameDy);
     },
   );
 

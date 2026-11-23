@@ -90,7 +90,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(buildScreen());
 
-    final askButton = find.text(AppStrings.spinActionAsk);
+    final askButton = find.text(AppStrings.askLabel);
     await tester.ensureVisible(askButton);
     await tester.pumpAndSettle();
     await tester.tap(askButton);

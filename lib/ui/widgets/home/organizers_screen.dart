@@ -12,6 +12,7 @@ import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
 import 'package:app_events/ui/widgets/shared/social_circle_button.dart';
 import 'package:app_events/ui/widgets/shared/title_pill.dart';
+import 'package:app_events/ui/widgets/utils/text_normalizer.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -56,11 +57,11 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
 
   static final Map<String, int> _knownRank = {
     for (var i = 0; i < _knownTeamOrder.length; i++)
-      _normalizeKey(_knownTeamOrder[i]): i,
+      normalizeLookupKey(_knownTeamOrder[i]): i,
   };
 
   static final Map<String, String> _knownLabels = {
-    for (final name in _knownTeamOrder) _normalizeKey(name): name,
+    for (final name in _knownTeamOrder) normalizeLookupKey(name): name,
   };
 
   @override
@@ -78,59 +79,13 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
     super.dispose();
   }
 
-  static String _foldAccents(String text) {
-    const replacements = {
-      '\u00e1': 'a',
-      '\u00e0': 'a',
-      '\u00e4': 'a',
-      '\u00e2': 'a',
-      '\u00e9': 'e',
-      '\u00e8': 'e',
-      '\u00eb': 'e',
-      '\u00ea': 'e',
-      '\u00ed': 'i',
-      '\u00ec': 'i',
-      '\u00ef': 'i',
-      '\u00ee': 'i',
-      '\u00f3': 'o',
-      '\u00f2': 'o',
-      '\u00f6': 'o',
-      '\u00f4': 'o',
-      '\u00fa': 'u',
-      '\u00f9': 'u',
-      '\u00fc': 'u',
-      '\u00fb': 'u',
-      '\u00f1': 'n',
-    };
-    final buffer = StringBuffer();
-    for (final rune in text.toLowerCase().runes) {
-      final ch = String.fromCharCode(rune);
-      buffer.write(replacements[ch] ?? ch);
-    }
-    return buffer.toString();
-  }
-
-  static String _normalizeKey(String raw) {
-    return _foldAccents(raw.trim()).replaceAll(RegExp(r'\s+'), ' ');
-  }
-
-  static final RegExp _coLeadPattern = RegExp(r'^co[- ]?lead$');
-
-  static bool _isCoLeadTag(String raw) =>
-      _coLeadPattern.hasMatch(_normalizeKey(raw));
-
-  static bool _isRoleOnlyTag(String raw) {
-    final normalized = _normalizeKey(raw);
-    return normalized == 'lead' || _isCoLeadTag(normalized);
-  }
-
   static List<({String key, String label})> _extractTeams(Organizer item) {
     final seen = <String>{};
     final result = <({String key, String label})>[];
     for (final raw in item.team) {
       final trimmed = raw.trim();
-      if (trimmed.isEmpty || _isRoleOnlyTag(trimmed)) continue;
-      final key = _normalizeKey(trimmed);
+      if (trimmed.isEmpty || isRoleOnlyTag(trimmed)) continue;
+      final key = normalizeLookupKey(trimmed);
       if (seen.add(key)) {
         result.add((key: key, label: _knownLabels[key] ?? trimmed));
       }
@@ -139,7 +94,10 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
       final fallbackLabel = item.lead
           ? AppStrings.organizersFilterLeadership
           : AppStrings.organizersFilterCommunity;
-      result.add((key: _normalizeKey(fallbackLabel), label: fallbackLabel));
+      result.add((
+        key: normalizeLookupKey(fallbackLabel),
+        label: fallbackLabel,
+      ));
     }
     return result;
   }
@@ -155,8 +113,12 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
         bucket.members.add(item);
       }
     }
-    final leadershipKey = _normalizeKey(AppStrings.organizersFilterLeadership);
-    final communityKey = _normalizeKey(AppStrings.organizersFilterCommunity);
+    final leadershipKey = normalizeLookupKey(
+      AppStrings.organizersFilterLeadership,
+    );
+    final communityKey = normalizeLookupKey(
+      AppStrings.organizersFilterCommunity,
+    );
 
     final buckets = byKey.values.toList();
     buckets.sort((a, b) {
@@ -252,27 +214,31 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _FilterChipButton(
-                        label: AppStrings.organizersFilterAll,
-                        count: organizers.length,
-                        selected: activeSelection == null,
-                        onTap: () => setState(() => _selectedTeamKey = null),
-                      ),
-                      for (final bucket in allBuckets)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
                         _FilterChipButton(
-                          label: bucket.label,
-                          count: bucket.members.length,
-                          selected: activeSelection == bucket.key,
-                          onTap: () =>
-                              setState(() => _selectedTeamKey = bucket.key),
+                          label: AppStrings.organizersFilterAll,
+                          count: organizers.length,
+                          selected: activeSelection == null,
+                          onTap: () => setState(() => _selectedTeamKey = null),
                         ),
-                    ],
+                        for (final bucket in allBuckets) ...[
+                          const SizedBox(width: 8),
+                          _FilterChipButton(
+                            label: bucket.label,
+                            count: bucket.members.length,
+                            selected: activeSelection == bucket.key,
+                            onTap: () =>
+                                setState(() => _selectedTeamKey = bucket.key),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   if (organizers.isEmpty)
                     const _EmptyOrganizersBox(
                       message: AppStrings.organizersEmptyState,
@@ -741,7 +707,7 @@ class _OrganizerTile extends StatelessWidget {
   String? _roleLabel() {
     if (member.lead) return AppStrings.organizersTagLead;
     for (final team in member.team) {
-      if (_OrganizersScreenState._isCoLeadTag(team)) {
+      if (isCoLeadRoleTag(team)) {
         return AppStrings.organizersTagCoLead;
       }
     }
@@ -762,39 +728,56 @@ class _OrganizerTile extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          InitialsAvatar(
-            name: member.name,
-            photoUrl: member.photoUrl,
-            backgroundColor: avatarColor,
-            size: 48,
-            borderWidth: 2,
-            fontSize: 15,
-          ),
-          if (roleLabel != null) ...[
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: isLead
-                    ? AppStyles.podiumThirdColor
-                    : AppStyles.backdropBlueColor,
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppStyles.borderColor, width: 1.2),
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  roleLabel,
-                  style: const TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.w900,
-                    color: AppStyles.onAccentColor,
-                    height: 1,
-                  ),
+          SizedBox(
+            width: 56,
+            height: 54,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                InitialsAvatar(
+                  name: member.name,
+                  photoUrl: member.photoUrl,
+                  backgroundColor: avatarColor,
+                  size: 48,
+                  borderWidth: 2,
+                  fontSize: 15,
                 ),
-              ),
+                if (roleLabel != null)
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isLead
+                            ? AppStyles.podiumThirdColor
+                            : AppStyles.backdropBlueColor,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: AppStyles.borderColor,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          roleLabel,
+                          style: const TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                            color: AppStyles.onAccentColor,
+                            height: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
+          ),
           const SizedBox(height: 5),
           Text(
             member.name,
@@ -829,30 +812,37 @@ class _MoreMembersTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 48,
-            height: 48,
-            child: DashedBorderBox(
-              circle: true,
-              color: AppStyles.colorCardYellow,
-              strokeWidth: 1.8,
-              dashLength: 4,
-              gapLength: 3,
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    AppStrings.organizersMoreCount(remaining),
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w900,
-                      color: AppStyles.fontColor,
+            width: 56,
+            height: 54,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: DashedBorderBox(
+                  circle: true,
+                  color: AppStyles.colorCardYellow,
+                  strokeWidth: 1.8,
+                  dashLength: 4,
+                  gapLength: 3,
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        AppStrings.organizersMoreCount(remaining),
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w900,
+                          color: AppStyles.fontColor,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
           const Text(
             AppStrings.organizersSeeAll,
             maxLines: 2,

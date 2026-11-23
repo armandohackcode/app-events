@@ -114,7 +114,7 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
           body: Center(
             child: Image.asset(
               AppAssetsPath.loadingAnimation,
-              width: MediaQuery.of(context).size.width * 0.65,
+              width: MediaQuery.sizeOf(context).width * 0.65,
             ),
           ),
         ),

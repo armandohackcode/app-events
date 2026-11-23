@@ -5,7 +5,6 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
-import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
 import 'package:app_events/ui/widgets/schedule_screen/edit_schedule.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
@@ -56,71 +55,62 @@ class ScheduleDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAdmin = Provider.of<UserProvider>(context, listen: false).isAdmin;
-    return HomeBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Text(info.type),
-          actions: [
-            if (isAdmin) ...[
-              IconButton(
-                tooltip: AppStrings.scheduleEditEntry,
-                icon: const Icon(Icons.edit_outlined, size: 22),
-                onPressed: () => Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (_) => EditSchedule(eventId: eventId, info: info),
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(info.type),
+        actions: [
+          if (isAdmin) ...[
+            IconButton(
+              tooltip: AppStrings.scheduleEditEntry,
+              icon: const Icon(Icons.edit_outlined, size: 22),
+              onPressed: () => Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (_) => EditSchedule(eventId: eventId, info: info),
                 ),
               ),
-              IconButton(
-                tooltip: AppStrings.scheduleDeleteEntry,
-                icon: const Icon(Icons.delete_outline, size: 22),
-                onPressed: () => _confirmDelete(context),
-              ),
+            ),
+            IconButton(
+              tooltip: AppStrings.scheduleDeleteEntry,
+              icon: const Icon(Icons.delete_outline, size: 22),
+              onPressed: () => _confirmDelete(context),
+            ),
+          ],
+        ],
+      ),
+
+      body: ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          CardSchedule(info: info, showTitle: true, action: false),
+          if (info.type == "Taller")
+            ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
+          const SizedBox(height: 20),
+          const Text(
+            AppStrings.scheduleDescription,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Text(info.description),
+          const SizedBox(height: 20),
+          const Text(
+            AppStrings.scheduleAboutMe,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Text(info.aboutMe),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              for (var item in info.socialNetwork)
+                InkWell(
+                  child: SvgPicture.asset(getSVG(item), width: 60, height: 40),
+                  onTap: () async => launcherUrlInfo(item.link),
+                ),
             ],
-          ],
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            CardSchedule(info: info, showTitle: true, action: false),
-            if (info.type == "Taller")
-              ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
-            const SizedBox(height: 20),
-            const Text(
-              AppStrings.scheduleDescription,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(info.description),
-            const SizedBox(height: 20),
-            const Text(
-              AppStrings.scheduleAboutMe,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(info.aboutMe),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                for (var item in info.socialNetwork)
-                  InkWell(
-                    child: SvgPicture.asset(
-                      getSVG(item),
-                      width: 60,
-                      height: 40,
-                    ),
-                    onTap: () async => launcherUrlInfo(item.link),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 50),
-          ],
-        ),
+          ),
+          const SizedBox(height: 50),
+        ],
       ),
     );
   }

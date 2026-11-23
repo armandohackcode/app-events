@@ -5,7 +5,6 @@ import 'package:app_events/ui/providers/event_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/events/add_event.dart';
 import 'package:app_events/ui/widgets/events/card_event.dart';
-import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -17,57 +16,48 @@ class EventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAdmin = Provider.of<UserProvider>(context).isAdmin;
-    return HomeBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: const Text(AppStrings.eventsTitle),
-          actions: [
-            if (isAdmin)
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).push(CupertinoPageRoute(builder: (_) => const AddEvent()));
-                },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(AppStrings.eventsTitle),
+        actions: [
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(CupertinoPageRoute(builder: (_) => const AddEvent()));
+              },
+            ),
+        ],
+      ),
+      body: StreamBuilder<List<Event>>(
+        stream: Provider.of<EventProvider>(context, listen: false).eventsStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: LoadingAnimationWidget.twistingDots(
+                leftDotColor: AppStyles.colorBaseBlue,
+                rightDotColor: AppStyles.colorBaseYellow,
+                size: 40,
               ),
-          ],
-        ),
-        body: StreamBuilder<List<Event>>(
-          stream: Provider.of<EventProvider>(
-            context,
-            listen: false,
-          ).eventsStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: LoadingAnimationWidget.twistingDots(
-                  leftDotColor: AppStyles.colorBaseBlue,
-                  rightDotColor: AppStyles.colorBaseYellow,
-                  size: 40,
-                ),
-              );
-            }
-            final events = snapshot.data ?? [];
-            if (events.isEmpty) {
-              return const Center(
-                child: Text(
-                  AppStrings.eventsNoData,
-                  style: TextStyle(color: AppStyles.fontSecondaryColor),
-                ),
-              );
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.all(15),
-              itemCount: events.length,
-              itemBuilder: (_, index) => CardEvent(event: events[index]),
             );
-          },
-        ),
+          }
+          final events = snapshot.data ?? [];
+          if (events.isEmpty) {
+            return const Center(
+              child: Text(
+                AppStrings.eventsNoData,
+                style: TextStyle(color: AppStyles.fontSecondaryColor),
+              ),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(15),
+            itemCount: events.length,
+            itemBuilder: (_, index) => CardEvent(event: events[index]),
+          );
+        },
       ),
     );
   }

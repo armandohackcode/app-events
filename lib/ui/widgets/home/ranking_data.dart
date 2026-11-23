@@ -5,7 +5,6 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
-import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,175 +37,164 @@ class _RankingDataState extends State<RankingData> {
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<OtherProvider>(context);
-    return HomeBackdrop(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: const Text(AppStrings.rankingTitle),
-        ),
-        body: data.ranking.length >= 3
-            ? Column(
-                children: [
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    AppAssetsPath.androidPed,
-                                    height: 100,
+    return Scaffold(
+      appBar: AppBar(title: const Text(AppStrings.rankingTitle)),
+      body: data.ranking.length >= 3
+          ? Column(
+              children: [
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  AppAssetsPath.androidPed,
+                                  height: 100,
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: 80,
+                                  height: 100,
+                                  decoration: const BoxDecoration(
+                                    color: AppStyles.colorBaseGreen,
                                   ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 80,
-                                    height: 100,
-                                    decoration: const BoxDecoration(
-                                      color: AppStyles.colorBaseGreen,
-                                    ),
-                                    child: const Text(
-                                      "2",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w900,
-                                        color: AppStyles.cardColor,
-                                      ),
+                                  child: const Text(
+                                    "2",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppStyles.cardColor,
                                     ),
                                   ),
-                                  Text(
-                                    data.ranking[1].score.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                ),
+                                Text(
+                                  data.ranking[1].score.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 5),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  AppAssetsPath.firePedIcon,
+                                  height: 100,
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: 80,
+                                  height: 160,
+                                  decoration: const BoxDecoration(
+                                    color: AppStyles.colorBaseYellow,
+                                  ),
+                                  child: const Text(
+                                    "1",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppStyles.cardColor,
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(width: 5),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    AppAssetsPath.firePedIcon,
-                                    height: 100,
+                                ),
+                                Text(
+                                  data.ranking[0].score.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 80,
-                                    height: 160,
-                                    decoration: const BoxDecoration(
-                                      color: AppStyles.colorBaseYellow,
-                                    ),
-                                    child: const Text(
-                                      "1",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w900,
-                                        color: AppStyles.cardColor,
-                                      ),
-                                    ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 5),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(AppAssetsPath.dashPed, height: 100),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: 80,
+                                  height: 70,
+                                  decoration: const BoxDecoration(
+                                    color: AppStyles.colorBaseBlue,
                                   ),
-                                  Text(
-                                    data.ranking[0].score.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                  child: const Text(
+                                    "3",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppStyles.cardColor,
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(width: 5),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    AppAssetsPath.dashPed,
-                                    height: 100,
+                                ),
+                                Text(
+                                  data.ranking[2].score.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 80,
-                                    height: 70,
-                                    decoration: const BoxDecoration(
-                                      color: AppStyles.colorBaseBlue,
-                                    ),
-                                    child: const Text(
-                                      "3",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w900,
-                                        color: AppStyles.cardColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    data.ranking[2].score.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Image.asset(AppAssetsPath.partyAnimation, height: 150),
-                    ],
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: data.ranking.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == 0) {
-                          return CardRanking(
-                            data: data.ranking[index],
-                            index: index + 1,
-                            color: AppStyles.colorBaseYellow,
-                          );
-                        }
-                        if (index == 1) {
-                          return CardRanking(
-                            data: data.ranking[index],
-                            index: index + 1,
-                            color: AppStyles.colorBaseGreen,
-                          );
-                        }
-                        if (index == 2) {
-                          return CardRanking(
-                            data: data.ranking[index],
-                            index: index + 1,
-                            color: AppStyles.colorBaseBlue,
-                          );
-                        }
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Image.asset(AppAssetsPath.partyAnimation, height: 150),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: data.ranking.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
                         return CardRanking(
                           data: data.ranking[index],
                           index: index + 1,
-                          color: AppStyles.fontColor,
+                          color: AppStyles.colorBaseYellow,
                         );
-                      },
-                    ),
+                      }
+                      if (index == 1) {
+                        return CardRanking(
+                          data: data.ranking[index],
+                          index: index + 1,
+                          color: AppStyles.colorBaseGreen,
+                        );
+                      }
+                      if (index == 2) {
+                        return CardRanking(
+                          data: data.ranking[index],
+                          index: index + 1,
+                          color: AppStyles.colorBaseBlue,
+                        );
+                      }
+                      return CardRanking(
+                        data: data.ranking[index],
+                        index: index + 1,
+                        color: AppStyles.fontColor,
+                      );
+                    },
                   ),
-                ],
-              )
-            : Center(
-                child: Image.asset(
-                  AppAssetsPath.loadingAnimation,
-                  width: MediaQuery.of(context).size.width * 0.7,
                 ),
+              ],
+            )
+          : Center(
+              child: Image.asset(
+                AppAssetsPath.loadingAnimation,
+                width: MediaQuery.of(context).size.width * 0.7,
               ),
-      ),
+            ),
     );
   }
 }
@@ -231,7 +219,6 @@ class CardRanking extends StatelessWidget {
       margin: const EdgeInsets.all(5),
       // padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: AppStyles.cardColor,
         border: Border.all(color: AppStyles.colorBaseYellow, width: 1.5),
         borderRadius: BorderRadius.circular(15),
       ),
