@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/ui/widgets/shared/live_badge.dart';
 import 'package:app_events/ui/widgets/shared/social_links_bar.dart';
 import 'package:app_events/ui/widgets/shared/window_card.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
@@ -142,7 +143,7 @@ class _TalkPhoto extends StatelessWidget {
                 child: _TechnologyTag(area: talk.technologyType),
               ),
             ),
-          const Positioned(top: -10, right: -18, child: _LiveBadge()),
+          const Positioned(top: -10, right: -18, child: LiveBadge()),
         ],
       ),
     );
@@ -204,50 +205,6 @@ class _TechnologyTag extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: AppStyles.fontColor,
-        ),
-      ),
-    );
-  }
-}
-
-class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 20 * math.pi / 180,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: AppStyles.colorBaseRed,
-          border: Border.all(color: AppStyles.borderColor, width: 2),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 7,
-              height: 7,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppStyles.onAccentColor,
-                ),
-              ),
-            ),
-            SizedBox(width: 5),
-            Text(
-              AppStrings.homeLiveBadge,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.4,
-                color: AppStyles.onAccentColor,
-              ),
-            ),
-          ],
         ),
       ),
     );

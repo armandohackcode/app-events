@@ -10,7 +10,11 @@ import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/schedule/schedule_detail.dart';
 import 'package:app_events/ui/widgets/events/edit_event.dart';
 import 'package:app_events/ui/widgets/schedule_screen/add_schedule.dart';
-import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
+import 'package:app_events/ui/widgets/schedule_screen/calendar_badge.dart';
+import 'package:app_events/ui/widgets/schedule_screen/event_info_tile.dart';
+import 'package:app_events/ui/widgets/schedule_screen/schedule_activity_card.dart';
+import 'package:app_events/ui/widgets/schedule_screen/schedule_header.dart';
 import 'package:app_events/ui/widgets/shared/event_status_badge.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +34,7 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
+  static const double _gutter = 18;
   static const double _expandedHeight = 260.0;
   // Threshold at which the AppBar is considered fully collapsed
   static const double _collapseThreshold = _expandedHeight - kToolbarHeight;
@@ -88,6 +93,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     )!;
 
     return Scaffold(
+      backgroundColor: AppStyles.homeBackgroundColor,
       floatingActionButton: canJoin
           ? FloatingActionButton.extended(
               backgroundColor: AppStyles.colorBaseGreen,
@@ -105,156 +111,162 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               },
             )
           : null,
-      body: RefreshIndicator(
-        onRefresh: () => schedule.loadSchedule(event.id),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              expandedHeight: event.imageUrl.isNotEmpty
-                  ? _expandedHeight
-                  : null,
-              pinned: true,
-              backgroundColor: appBarBg,
-              foregroundColor: fgColor,
-              titleTextStyle: TextStyle(
-                color: fgColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'GoogleSans',
-              ),
-              title: Opacity(
-                opacity: ((t - 0.4) / 0.6).clamp(0.0, 1.0),
-                child: Text(event.title),
-              ),
-              actions: [
-                if (isAdmin) ...[
-                  IconButton(
-                    tooltip: AppStrings.eventEdit,
-                    onPressed: () => Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (_) => EditEvent(event: event),
-                      ),
-                    ),
-                    icon: const Icon(Icons.edit_outlined, size: 22),
-                  ),
-                  IconButton(
-                    tooltip: AppStrings.scheduleAddSpeakerOrActivity,
-                    onPressed: () => Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (_) => AddSchedule(eventId: event.id),
-                      ),
-                    ),
-                    icon: const Icon(Icons.person_add, size: 24),
-                  ),
-                ],
-              ],
-              flexibleSpace: event.imageUrl.isNotEmpty
-                  ? FlexibleSpaceBar(
-                      stretchModes: const [StretchMode.zoomBackground],
-                      background: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Hero(
-                            tag: 'event_image_${event.id}',
-                            child: CachedNetworkImage(
-                              imageUrl: event.imageUrl,
-                              fit: BoxFit.contain,
-                              placeholder: (ctx, url) => ColoredBox(
-                                color: AppStyles.borderColor,
-                                child: Center(
-                                  child: LoadingAnimationWidget.twistingDots(
-                                    leftDotColor: AppStyles.colorBaseBlue,
-                                    rightDotColor: AppStyles.colorBaseYellow,
-                                    size: 36,
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (ctx, url, err) => const ColoredBox(
-                                color: AppStyles.backgroundColor,
-                              ),
-                            ),
-                          ),
-                          // Top gradient → icons always readable regardless of image color
-                          const DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment(0, 0.45),
-                                colors: [
-                                  AppStyles.imageOverlayColor,
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : null,
-            ),
-
-            // Event info section
-            SliverToBoxAdapter(
-              child: _EventInfoSection(
-                event: event,
-                user: user,
-                eventProvider: eventProvider,
-                hasJoined: hasJoined,
-                collapseT: t,
-              ),
-            ),
-
-            // Schedule section header
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 4, 15, 10),
-                child: Text(
-                  AppStrings.scheduleSchedule,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppStyles.fontColor,
-                  ),
+      body: HomeBackdrop(
+        child: RefreshIndicator(
+          onRefresh: () => schedule.loadSchedule(event.id),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverAppBar(
+                expandedHeight: event.imageUrl.isNotEmpty
+                    ? _expandedHeight
+                    : null,
+                pinned: true,
+                backgroundColor: appBarBg,
+                foregroundColor: fgColor,
+                titleTextStyle: TextStyle(
+                  color: fgColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'GoogleSans',
                 ),
-              ),
-            ),
-
-            // Speaker list
-            if (schedule.loadingSchedule)
-              SliverFillRemaining(
-                child: Center(
-                  child: LoadingAnimationWidget.twistingDots(
-                    leftDotColor: AppStyles.colorBaseBlue,
-                    rightDotColor: AppStyles.colorBaseYellow,
-                    size: 40,
-                  ),
+                title: Opacity(
+                  opacity: ((t - 0.4) / 0.6).clamp(0.0, 1.0),
+                  child: Text(event.title),
                 ),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(15, 0, 15, 80),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final item = schedule.schedule[index];
-                    if (item.type == EventTypeSpeaker.panel.value) {
-                      return ZoomIn(child: _PanelItem(item: item));
-                    }
-                    return ZoomIn(
-                      child: CardSchedule(
-                        info: item,
-                        onTap: () => Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (_) =>
-                                ScheduleDetail(eventId: event.id, info: item),
-                          ),
+                actions: [
+                  if (isAdmin) ...[
+                    IconButton(
+                      tooltip: AppStrings.eventEdit,
+                      onPressed: () => Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (_) => EditEvent(event: event),
                         ),
                       ),
-                    );
-                  }, childCount: schedule.schedule.length),
+                      icon: const Icon(Icons.edit_outlined, size: 22),
+                    ),
+                    IconButton(
+                      tooltip: AppStrings.scheduleAddSpeakerOrActivity,
+                      onPressed: () => Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (_) => AddSchedule(eventId: event.id),
+                        ),
+                      ),
+                      icon: const Icon(Icons.person_add, size: 24),
+                    ),
+                  ],
+                ],
+                flexibleSpace: event.imageUrl.isNotEmpty
+                    ? FlexibleSpaceBar(
+                        stretchModes: const [StretchMode.zoomBackground],
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Hero(
+                              tag: 'event_image_${event.id}',
+                              child: CachedNetworkImage(
+                                imageUrl: event.imageUrl,
+                                fit: BoxFit.contain,
+                                placeholder: (ctx, url) => ColoredBox(
+                                  color: AppStyles.borderColor,
+                                  child: Center(
+                                    child: LoadingAnimationWidget.twistingDots(
+                                      leftDotColor: AppStyles.colorBaseBlue,
+                                      rightDotColor: AppStyles.colorBaseYellow,
+                                      size: 36,
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (ctx, url, err) =>
+                                    const ColoredBox(
+                                      color: AppStyles.backgroundColor,
+                                    ),
+                              ),
+                            ),
+                            // Top gradient → icons always readable regardless of image color
+                            const DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment(0, 0.45),
+                                  colors: [
+                                    AppStyles.imageOverlayColor,
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : null,
+              ),
+
+              // Event info section
+              SliverToBoxAdapter(
+                child: _EventInfoSection(
+                  event: event,
+                  user: user,
+                  eventProvider: eventProvider,
+                  hasJoined: hasJoined,
+                  collapseT: t,
                 ),
               ),
-          ],
+
+              // Schedule section header
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(_gutter, 4, _gutter, 14),
+                  child: ScheduleHeader(count: schedule.schedule.length),
+                ),
+              ),
+
+              // Speaker list
+              if (schedule.loadingSchedule)
+                SliverFillRemaining(
+                  child: Center(
+                    child: LoadingAnimationWidget.twistingDots(
+                      leftDotColor: AppStyles.colorBaseBlue,
+                      rightDotColor: AppStyles.colorBaseYellow,
+                      size: 40,
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter, 80),
+                  sliver: SliverList.separated(
+                    itemCount: schedule.schedule.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final item = schedule.schedule[index];
+                      final kind = EventTypeSpeaker.fromValue(item.type);
+                      final opensDetail =
+                          kind != EventTypeSpeaker.panel &&
+                          !kind.isGeneralActivity;
+                      return ZoomIn(
+                        child: ScheduleActivityCard(
+                          item: item,
+                          // The live marker is wired to the activity in progress
+                          // in a separate ticket.
+                          highlighted: false,
+                          onTap: opensDetail
+                              ? () => Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (_) => ScheduleDetail(
+                                      eventId: event.id,
+                                      info: item,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -282,8 +294,9 @@ class _EventInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sameDay = DateUtils.isSameDay(event.startDate, event.endDate);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 16, 15, 8),
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -298,6 +311,7 @@ class _EventInfoSection extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 6),
           Row(
             children: [
               EventStatusBadge(status: event.status),
@@ -306,61 +320,36 @@ class _EventInfoSection extends StatelessWidget {
                 _AdminStatusMenu(event: event, eventProvider: eventProvider),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Text(
             event.description,
             style: const TextStyle(
               color: AppStyles.fontSecondaryColor,
-              fontSize: 14,
+              fontSize: 15,
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(
-                Icons.calendar_today,
-                size: 15,
-                color: AppStyles.fontSecondaryColor,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '${_dateFmt.format(event.startDate)} — ${_dateFmt.format(event.endDate)}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppStyles.fontSecondaryColor,
-                ),
-              ),
-            ],
+          const SizedBox(height: 18),
+          EventInfoTile(
+            leading: CalendarBadge(date: event.startDate),
+            title: DateFormat.yMMMMd('es').format(event.startDate),
+            subtitle: sameDay
+                ? DateFormat.EEEE('es').format(event.startDate).capitalized
+                : '${_dateFmt.format(event.startDate)} — ${_dateFmt.format(event.endDate)}',
           ),
           if (event.locationUrl.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            GestureDetector(
+            const SizedBox(height: 14),
+            EventInfoTile(
+              leading: const _PlaceIcon(),
+              title: AppStrings.eventPlace,
+              subtitle: AppStrings.eventViewLocationHowTo,
               onTap: () => launcherUrlInfo(event.locationUrl),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    size: 15,
-                    color: AppStyles.colorBaseBlue,
-                  ),
-                  SizedBox(width: 6),
-                  Text(
-                    AppStrings.eventViewLocation,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppStyles.colorBaseBlue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
           if (event.status == EventStatus.active &&
               user.userCompetitor != null &&
               hasJoined) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               children: [
                 const Icon(
@@ -369,9 +358,9 @@ class _EventInfoSection extends StatelessWidget {
                   size: 18,
                 ),
                 const SizedBox(width: 6),
-                Text(
+                const Text(
                   AppStrings.eventAlreadyJoined,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppStyles.colorBaseGreen,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -380,11 +369,33 @@ class _EventInfoSection extends StatelessWidget {
               ],
             ),
           ],
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Divider(color: AppStyles.borderColor),
+          Padding(
+            padding: const EdgeInsets.only(top: 18),
+            child: Divider(color: AppStyles.dividerColor, thickness: 1.5),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Map-pin tile shown at the start of the place row.
+class _PlaceIcon extends StatelessWidget {
+  const _PlaceIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: AppStyles.colorCardBlue,
+        border: Border.all(color: AppStyles.borderColor, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.location_on_outlined,
+        color: AppStyles.colorBaseBlue,
       ),
     );
   }
@@ -424,42 +435,7 @@ class _AdminStatusMenu extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Panel item (non-speaker schedule entry)
-// ---------------------------------------------------------------------------
-
-class _PanelItem extends StatelessWidget {
-  final Speaker item;
-  const _PanelItem({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: AppStyles.colorBaseBlue,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppStyles.fontColor, width: 1.5),
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text(
-          item.title.toUpperCase(),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppStyles.backgroundColor,
-          ),
-        ),
-        trailing: Text(
-          item.schedule.toUpperCase(),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppStyles.backgroundColor,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
-  }
+extension _Capitalized on String {
+  String get capitalized =>
+      isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
 }

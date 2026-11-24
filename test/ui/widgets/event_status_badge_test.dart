@@ -17,7 +17,7 @@ void main() {
         MaterialApp(home: EventStatusBadge(status: status)),
       );
 
-      expect(find.text(label), findsOneWidget);
+      expect(find.text(label.toUpperCase()), findsOneWidget);
     });
   }
 }
