@@ -53,6 +53,9 @@ class AppStrings {
   static const String scheduleAboutMe = 'Acerca de mí';
   static const String scheduleWhatIsItAbout = '¿De qué trata?';
   static const String scheduleWhoTellsIt = '¿Quién la cuenta?';
+  static const String eventTypeConference = 'Conferencia';
+  static const String eventTypeWorkshop = 'Taller';
+  static const String eventTypePanel = 'Panel';
 
   static const String scheduleRegistrationOpen =
       "Las inscripciones estarán disponibles desde el";

@@ -8,8 +8,9 @@ import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/schedule_screen/edit_schedule.dart';
 import 'package:app_events/ui/widgets/schedule_screen/talk_detail_card.dart';
-import 'package:app_events/ui/widgets/shared/labeled_card.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/social_links_bar.dart';
+import 'package:app_events/ui/widgets/shared/tilted_tag.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,7 +62,7 @@ class ScheduleDetail extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppStyles.homeBackgroundColor,
       appBar: AppBar(
-        title: Text(info.type),
+        title: Text(eventTypeLabel(info.type)),
         actions: [
           if (isAdmin) ...[
             IconButton(
@@ -96,25 +97,21 @@ class ScheduleDetail extends StatelessWidget {
             ],
             if (info.description.trim().isNotEmpty) ...[
               const SizedBox(height: 24),
-              LabeledCard(
-                label: AppStrings.scheduleWhatIsItAbout,
-                labelColor: AppStyles.colorBaseYellow,
-                labelTextColor: AppStyles.fontColor,
-                color: AppStyles.cardColor,
-                child: Text(info.description, style: _bodyStyle),
+              _TextSection(
+                tag: AppStrings.scheduleWhatIsItAbout,
+                tagColor: AppStyles.colorBaseYellow,
+                angle: -2,
+                text: info.description,
               ),
             ],
             if (info.aboutMe.trim().isNotEmpty) ...[
-              const SizedBox(height: 26),
-              LabeledCard(
-                label: AppStrings.scheduleWhoTellsIt,
-                labelColor: AppStyles.colorBaseBlue,
-                labelTextColor: AppStyles.onAccentColor,
+              const SizedBox(height: 24),
+              _TextSection(
+                tag: AppStrings.scheduleWhoTellsIt,
+                tagColor: AppStyles.titlePillColor,
+                angle: 2,
                 color: AppStyles.colorCardBlue,
-                speechTail: true,
-                labelAngle: 2,
-                angle: 0.6,
-                child: Text(info.aboutMe, style: _bodyStyle),
+                text: info.aboutMe,
               ),
             ],
             const SizedBox(height: 24),
@@ -124,13 +121,51 @@ class ScheduleDetail extends StatelessWidget {
       ),
     );
   }
+}
 
-  static const TextStyle _bodyStyle = TextStyle(
-    fontSize: 14,
-    height: 1.6,
-    fontWeight: FontWeight.w500,
-    color: AppStyles.fontColor,
-  );
+/// Card with a tilted tag over its top edge and a block of text inside.
+class _TextSection extends StatelessWidget {
+  final String tag;
+  final Color tagColor;
+  final double angle;
+  final Color color;
+  final String text;
+
+  const _TextSection({
+    required this.tag,
+    required this.tagColor,
+    required this.angle,
+    required this.text,
+    this.color = AppStyles.cardColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TaggedCard(
+      tag: tag,
+      tagColor: tagColor,
+      angleDegrees: angle,
+      compact: true,
+      child: HardShadowBox(
+        color: color,
+        radius: 16,
+        shadowOffset: 4,
+        padding: const EdgeInsets.fromLTRB(14, 22, 14, 14),
+        child: SizedBox(
+          width: double.infinity,
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+              color: AppStyles.fontColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ButtonWorkshop extends StatefulWidget {

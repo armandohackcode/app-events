@@ -48,8 +48,8 @@ class AppStyles {
   static final Color colorCardYellow = colorBaseYellow.withValues(alpha: 0.2);
   static const Color titlePillColor = Color(0xFFAFC6E8);
   static const Color backdropBlueColor = Color(0xFF4285F4);
-  // Dark fade at the bottom of a photo.
-  static final Color imageFadeColor = scrimColor.withValues(alpha: 0.45);
+  // Thin separator line inside cards.
+  static final Color dividerColor = fontFaintColor.withValues(alpha: 0.4);
 
   // Floating particles of the home background.
   static const Color particleBlueColor = Color(0xFF3B82F6);
