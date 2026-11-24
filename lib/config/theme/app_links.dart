@@ -24,7 +24,4 @@ class AppLinks {
   static const String instagramProfilePrefix = 'https://www.instagram.com/';
   static const String githubProfilePrefix = 'https://github.com/';
   static const String linkedInProfilePrefix = 'https://www.linkedin.com/in/';
-
-  static const String resourcePlaceholderImage =
-      'https://img.icons8.com/?size=512&id=92941&format=png';
 }
