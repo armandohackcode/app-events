@@ -19,6 +19,11 @@ class AppStrings {
   static const String commonWordNo = 'NO';
   static const String commonWordLoading = 'loading';
   static const String rankingTitle = 'Ranking';
+  static const String rankingPodiumTag = 'Podio';
+  static const String rankingLeaderboardTag = 'Tabla general';
+  static const String rankingLoading = 'Cargando ranking...';
+  static String rankingPositionLabel(int rank) => '#$rank';
+  static String rankingPointsBadge(int score) => '$score pts';
   static const String saveChanges = 'Guardar cambios';
   static const String playLabel = 'Jugar';
   static const String askLabel = 'Preguntar';
@@ -126,6 +131,11 @@ class AppStrings {
   static const String navBarActivities = 'Actividades';
 
   // Scan
+  static const String scanTitle = 'Escanear QR';
+  static const String scanActionTooltip = 'Escanear código QR';
+  static const String scanBackTooltip = 'Volver';
+  static const String scanToggleFlashTooltip = 'Alternar flash';
+  static const String scanFlipCameraTooltip = 'Cambiar cámara';
   static const String scanMessage = "Scanea el código QR de tu nuevo amigo";
   static const String scanMessageCredential =
       "Escanea el código QR de tu manilla";
@@ -184,6 +194,24 @@ class AppStrings {
       "Feliciadades, ganastes los puntos extras por completar tu perfil!";
   static const String profileMsEditProfile =
       "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝";
+  static const String profileFriendsStat = 'Amigos';
+  static const String profileEmailUnavailable = 'Correo no disponible';
+  static const String profileProfessionUnavailable = 'Sin ocupación registrada';
+  static String profileMemberSinceYear(int year) =>
+      'En la comunidad desde $year';
+  static const String profileMemberSinceUnknown = 'Miembro de la comunidad';
+  static const String profileSocialLabel = 'Redes';
+  static const String profileNoSocialLinks = 'Sin redes agregadas todavía';
+  static const String profileQrAction = 'Código QR';
+  static const String profileQrModalTitle = 'Mi Código QR';
+  static const String profileQrModalHint =
+      'Muestra este código para conectar al instante';
+  static const String profileSeeAllConnections = 'Ver todas';
+  static const String profileSeeLessConnections = 'Ver menos';
+  static const String profileNewConnection = 'Nueva conexión';
+  static const String profileShareQr = 'Comparte tu QR';
+  static const String profileNoConnections =
+      'Aún no tienes conexiones. Escanea un código QR para conectar.';
 
   // delete account
   static const String deleteAccount = "Eliminar cuenta";
@@ -211,7 +239,29 @@ class AppStrings {
   // Organizers
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
+  static const String organizersTagCoLead = "CO-LEAD";
   static const String organizersGDGSucre = "GDG Sucre";
+  static const String organizersSearchHint = "Buscar organizador";
+  static const String organizersFilterAll = "Todos";
+  static const String organizersFilterLeadership = "Liderazgo";
+  static const String organizersFilterCommunity = "Comunidad";
+  static const String organizersTeamApp = "App";
+  static const String organizersTeamDesign = "Diseño";
+  static const String organizersTeamStaging = "Escenografía";
+  static const String organizersTeamMarketing = "Marketing";
+  static const String organizersTeamLogistics = "Logística";
+  static const String organizersTeamAudioVideo = "Audio y Video";
+  static const String organizersTeamSponsors = "Sponsors";
+  static const String organizersTeamRoadToDevFest = "Road to DevFest";
+  static const String organizersTeamWeb = "Web";
+  static const String organizersTeamAccreditation = "Acreditación";
+  static const String organizersSeeAll = "Ver todos";
+  static const String organizersSeeLess = "Ver menos";
+  static const String organizersEmptyState =
+      "Aún no hay organizadores disponibles.";
+  static const String organizersEmptySearch =
+      "No se encontraron organizadores con ese filtro.";
+  static String organizersMoreCount(int count) => '+$count';
 
   // Add Sponsors
   static const String sponsorModalTitle = "Registrar Sponsor";
