@@ -93,12 +93,16 @@ class _NavItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                item.label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  color: AppStyles.fontColor,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  item.label,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                    color: AppStyles.fontColor,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),

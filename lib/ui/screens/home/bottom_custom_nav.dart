@@ -3,6 +3,7 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/screens/activities/activities_screen.dart';
 import 'package:app_events/ui/screens/home/home.dart';
 import 'package:app_events/ui/screens/resources/library_screen.dart';
 import 'package:app_events/ui/screens/user/profile_screen.dart';
@@ -23,6 +24,7 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
     Home(),
     LibraryScreen(),
     ProfileScreen(),
+    ActivitiesScreen(),
   ];
 
   @override
@@ -64,6 +66,10 @@ class _BottomCustomNavState extends State<BottomCustomNav> {
           FloatingNavItem(
             icon: AppAssetsPath.iconProfile,
             label: AppStrings.navBarProfile,
+          ),
+          FloatingNavItem(
+            icon: AppAssetsPath.iconActivities,
+            label: AppStrings.navBarActivities,
           ),
         ],
         currentIndex: _selectedIndex,

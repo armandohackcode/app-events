@@ -19,6 +19,15 @@ class AppStrings {
   static const String commonWordNo = 'NO';
   static const String commonWordLoading = 'loading';
   static const String rankingTitle = 'Ranking';
+  static const String rankingPodiumTag = 'Podio';
+  static const String rankingLeaderboardTag = 'Tabla general';
+  static const String rankingLoading = 'Cargando ranking...';
+  static String rankingPositionLabel(int rank) => '#$rank';
+  static String rankingPointsBadge(int score) => '$score pts';
+  static const String saveChanges = 'Guardar cambios';
+  static const String playLabel = 'Jugar';
+  static const String askLabel = 'Preguntar';
+  static const String rateLabel = 'Calificar';
 
   // schedule
   static const String scheduleAddSpeakerOrActivity =
@@ -44,6 +53,9 @@ class AppStrings {
   static const String scheduleAboutMe = 'Acerca de mí';
   static const String scheduleWhatIsItAbout = '¿De qué trata?';
   static const String scheduleWhoTellsIt = '¿Quién la cuenta?';
+  static const String eventTypeConference = 'Conferencia';
+  static const String eventTypeWorkshop = 'Taller';
+  static const String eventTypePanel = 'Panel';
 
   static const String scheduleRegistrationOpen =
       "Las inscripciones estarán disponibles desde el";
@@ -121,8 +133,14 @@ class AppStrings {
   static const String navBarHome = "Inicio";
   static const String navBarLibrary = "Biblioteca";
   static const String navBarProfile = "Perfil";
+  static const String navBarActivities = 'Actividades';
 
   // Scan
+  static const String scanTitle = 'Escanear QR';
+  static const String scanActionTooltip = 'Escanear código QR';
+  static const String scanBackTooltip = 'Volver';
+  static const String scanToggleFlashTooltip = 'Alternar flash';
+  static const String scanFlipCameraTooltip = 'Cambiar cámara';
   static const String scanMessage = "Scanea el código QR de tu nuevo amigo";
   static const String scanMessageCredential =
       "Escanea el código QR de tu manilla";
@@ -181,6 +199,24 @@ class AppStrings {
       "Feliciadades, ganastes los puntos extras por completar tu perfil!";
   static const String profileMsEditProfile =
       "Deja que el mundo te conozca, escribe algo sobre tí mismo 😊 y gana puntos, completa tu información en la sección de editar Perfil. 📝";
+  static const String profileFriendsStat = 'Amigos';
+  static const String profileEmailUnavailable = 'Correo no disponible';
+  static const String profileProfessionUnavailable = 'Sin ocupación registrada';
+  static String profileMemberSinceYear(int year) =>
+      'En la comunidad desde $year';
+  static const String profileMemberSinceUnknown = 'Miembro de la comunidad';
+  static const String profileSocialLabel = 'Redes';
+  static const String profileNoSocialLinks = 'Sin redes agregadas todavía';
+  static const String profileQrAction = 'Código QR';
+  static const String profileQrModalTitle = 'Mi Código QR';
+  static const String profileQrModalHint =
+      'Muestra este código para conectar al instante';
+  static const String profileSeeAllConnections = 'Ver todas';
+  static const String profileSeeLessConnections = 'Ver menos';
+  static const String profileNewConnection = 'Nueva conexión';
+  static const String profileShareQr = 'Comparte tu QR';
+  static const String profileNoConnections =
+      'Aún no tienes conexiones. Escanea un código QR para conectar.';
 
   // delete account
   static const String deleteAccount = "Eliminar cuenta";
@@ -208,7 +244,29 @@ class AppStrings {
   // Organizers
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
+  static const String organizersTagCoLead = "CO-LEAD";
   static const String organizersGDGSucre = "GDG Sucre";
+  static const String organizersSearchHint = "Buscar organizador";
+  static const String organizersFilterAll = "Todos";
+  static const String organizersFilterLeadership = "Liderazgo";
+  static const String organizersFilterCommunity = "Comunidad";
+  static const String organizersTeamApp = "App";
+  static const String organizersTeamDesign = "Diseño";
+  static const String organizersTeamStaging = "Escenografía";
+  static const String organizersTeamMarketing = "Marketing";
+  static const String organizersTeamLogistics = "Logística";
+  static const String organizersTeamAudioVideo = "Audio y Video";
+  static const String organizersTeamSponsors = "Sponsors";
+  static const String organizersTeamRoadToDevFest = "Road to DevFest";
+  static const String organizersTeamWeb = "Web";
+  static const String organizersTeamAccreditation = "Acreditación";
+  static const String organizersSeeAll = "Ver todos";
+  static const String organizersSeeLess = "Ver menos";
+  static const String organizersEmptyState =
+      "Aún no hay organizadores disponibles.";
+  static const String organizersEmptySearch =
+      "No se encontraron organizadores con ese filtro.";
+  static String organizersMoreCount(int count) => '+$count';
 
   // Add Sponsors
   static const String sponsorModalTitle = "Registrar Sponsor";
@@ -264,7 +322,118 @@ class AppStrings {
   static const String eventSelectImage = 'Seleccionar imagen';
   static const String eventChangeImage = 'Cambiar imagen';
   static const String eventEdit = 'Editar evento';
-  static const String eventSaveChanges = 'Guardar cambios';
   static const String eventUpdatedSuccess = 'Evento actualizado correctamente';
   static const String eventAlreadyJoined = 'Ya te uniste a este evento';
+
+  // activities tab
+  static const String activitiesSubtitle = 'Juega, suma tickets y gana premios';
+  static const String activitiesRankingTag = 'Torneo';
+  static const String activitiesRankingDescription =
+      'Ranking de jugadores del evento';
+  static const String activitiesRankingAction = 'Ver ranking';
+  static const String activitiesSpinTag = 'Máquina de la suerte';
+  static const String activitiesSpinDescription =
+      'Gira la palanca y gana premios del evento';
+  static const String activitiesTreasureDescription =
+      'Encuentra los QR escondidos en el evento y responde sus preguntas';
+  static const String activitiesTreasureAction = 'Buscar tesoros';
+  static String activitiesTreasureProgress(int found, int total) =>
+      '$found de $total tesoros';
+  static const String activitiesJoinEventFirst = 'Únete al evento para jugar';
+
+  // gdg spin
+  static const String spinTitle = 'GDG SPIN';
+  static const List<String> spinSignGdgLetters = ['G', 'D', 'G'];
+  static String spinTicketCount(int n) => n == 1 ? '1 ticket' : '$n tickets';
+  static const String spinPullHint = 'Tira de la palanca hacia abajo.';
+  static const String spinSpinning = 'Girando…';
+  static const String spinTease = '¡Dos de tres! A ver el último…';
+  static const String spinNoTickets =
+      'Sin tickets. Gana más abajo o usa +5 de prueba.';
+  static const String spinOutOfTickets =
+      'Se acabaron tus tickets. Gana más abajo.';
+  static String spinLose(int left) =>
+      'No ganaste esta vez. Te quedan ${spinTicketCount(left)}.';
+  static String spinWinMessage(String prize) => '¡Ganaste! $prize';
+  static String spinBonusMessage(int n) =>
+      '¡Trofeo GDG! +${spinTicketCount(n)}';
+  static const String spinDemoReloaded = 'Listo: +5 tickets de prueba.';
+  static const String spinTrayHint = 'Aquí caen las monedas cuando ganas.';
+  static const String spinCoinsCollected = 'Recogiste tus monedas.';
+  static String spinMissionDone(int total) => '+1 ticket. Ya tienes $total.';
+  static const String spinTriviaRight = '¡Correcto! +1 ticket.';
+  static const String spinTriviaWrong =
+      'Era Firebase AI Logic. Esta vez sin ticket.';
+  static const String spinWinTitle = '¡GANASTE!';
+  static const String spinBonusTitle = '¡BONUS!';
+  static const String spinNearTitle = '¡CASI!';
+  static const String spinTicketsLabel = 'TICKETS';
+  static const String spinSpinsLabel = 'GIROS';
+  static const String spinCoinTray = 'BANDEJA DE MONEDAS';
+  static const String spinFooterBrand = 'GDG SPIN · SUCRE';
+  static const String spinDemoReload = '+5 tickets de prueba';
+  static const String spinPayTableLink = 'Pagos';
+  static const String spinMyPrizes = 'Mis premios';
+  static const String spinMyPrizesEmpty = 'Aún nada. Tira de la palanca.';
+  static const String spinRedeemHint =
+      'Canjea cada premio en el stand con su código.';
+  static const String spinPayTable = 'Tabla de premios';
+  static const String spinThreeOfAKind = 'Tres iguales ganan';
+  static String spinRemaining(int left, int total) => 'Quedan $left de $total';
+  static const String spinSoldOut = 'Agotado';
+  static const String spinRarityCommon = 'Común';
+  static const String spinRarityRare = 'Raro';
+  static const String spinRarityEpic = 'Épico';
+  static const String spinRarityLegendary = 'Legendario';
+  static const String spinRarityBonus = 'Bonus';
+  static const String spinRarityWild = 'Comodín';
+  static const String spinBonusRowName = 'Trofeo GDG';
+  static const String spinBonusRowNote = '+1, +2 o +3 tickets';
+  static const String spinWildRowName = 'Comodín GDG';
+  static const String spinWildRowNote =
+      'Reemplaza a cualquier símbolo menos GDG';
+  static const String spinEarnTickets = 'Gana tickets';
+  static String spinReward(int n) => '+${spinTicketCount(n)}';
+  static const String spinTriviaReward = '+1 ticket si aciertas';
+  static const String spinTriviaQuestion =
+      '¿Con qué SDK de Firebase se llama a Gemini desde una app móvil?';
+  static const String spinTriviaOptionA = 'Firebase AI Logic';
+  static const String spinTriviaOptionB = 'Firebase Crashlytics';
+  static const String spinTriviaOptionC = 'Firebase Hosting';
+  // demo data (removed in phase 2)
+  static const String spinMissionCheckIn = 'Check-in en la puerta';
+  static const String spinMissionQr = 'Conectaste con 3 personas por QR';
+  static const String spinMissionAsk = 'Haz una pregunta a un speaker';
+  static const String spinMissionRate = 'Califica una charla';
+  static const String spinMissionTrivia = 'Trivia del break';
+  static const String spinPrizeStickers = 'Stickers GDG';
+  static const String spinPrizeMug = 'Taza GDG';
+  static const String spinPrizeShirt = 'Polera GDG';
+  static const String spinPrizeSparky = 'Peluche de Sparky';
+  static const String spinPrizeDash = 'Peluche de Dash';
+  static const String spinPrizeAndroid = 'Figura de Android';
+  // ticket popup
+  static const String spinTicketHeader = 'TICKET';
+  static const String spinTicketWon = '¡Ganaste un ticket!';
+  static const String spinTicketWonSub = 'Válido para una vuelta en el casino';
+  static const String spinTicketBalanceSub =
+      'Cada ticket vale por una vuelta en el casino';
+  static const String spinTicketBrand = 'GDG SPIN · Sucre';
+  static const String spinTicketNumber = 'N.º';
+  static const String spinTicketBalance = 'SALDO';
+  static String spinTicketHave(int n) => 'Tienes ${spinTicketCount(n)}';
+  // accessibility
+  static const String spinLeverSemantic = 'Tirar de la palanca para girar';
+  static const String spinTicketsSemantic = 'Ver cuántos tickets tienes';
+  static const String spinReelsSpinning = 'Rodillos girando';
+  static String spinReelsSemantic(String names) => 'Rodillos: $names';
+  static const String spinTraySemantic =
+      'Bandeja de monedas: tócala para recoger';
+  static const String spinSymbolSevenName = 'GDG';
+  static const String spinSymbolBarName = 'Android';
+  static const String spinSymbolCherriesName = 'Dino';
+  static const String spinSymbolBellName = 'Computadora';
+  static const String spinSymbolStarName = 'Sparky';
+  static const String spinSymbolDiamondName = 'Dash';
+  static const String spinSymbolLemonName = 'Chrome';
 }

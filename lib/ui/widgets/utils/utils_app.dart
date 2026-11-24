@@ -106,6 +106,24 @@ Color technologyColor(String area) {
   }
 }
 
+/// Icon of a technology area, drawn on its tags and category tiles.
+IconData technologyIcon(String area) {
+  switch (area) {
+    case "Mobile":
+      return Icons.smartphone_rounded;
+    case "IA":
+      return Icons.auto_awesome_rounded;
+    case "Cloud":
+      return Icons.cloud_outlined;
+    case "Web":
+      return Icons.language_rounded;
+    case "UI/UX":
+      return Icons.palette_outlined;
+    default:
+      return Icons.label_outline_rounded;
+  }
+}
+
 Future<void> launcherUrlInfo(String url) async {
   try {
     var link = Uri.parse(url);
@@ -117,4 +135,25 @@ Future<void> launcherUrlInfo(String url) async {
       print(e);
     }
   }
+}
+
+/// Text shown for a stored activity type: its capitalized label from AppStrings.
+/// An unknown type is shown as it is, with its first letter uppercase.
+String eventTypeLabel(String type) {
+  return switch (EventTypeSpeaker.fromValue(type)) {
+    EventTypeSpeaker.conference => AppStrings.eventTypeConference,
+    EventTypeSpeaker.workshop => AppStrings.eventTypeWorkshop,
+    EventTypeSpeaker.panel => AppStrings.eventTypePanel,
+    EventTypeSpeaker.unknown =>
+      type.isEmpty ? type : '${type[0].toUpperCase()}${type.substring(1)}',
+  };
+}
+
+IconData eventTypeIcon(String type) {
+  return switch (EventTypeSpeaker.fromValue(type)) {
+    EventTypeSpeaker.conference => Icons.mic_none_rounded,
+    EventTypeSpeaker.workshop => Icons.construction_rounded,
+    EventTypeSpeaker.panel => Icons.groups_rounded,
+    EventTypeSpeaker.unknown => Icons.event_note_rounded,
+  };
 }

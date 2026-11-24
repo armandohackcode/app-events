@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/shared/star_path.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -18,18 +19,25 @@ class ParticleField extends StatefulWidget {
 
 class _ParticleFieldState extends State<ParticleField>
     with SingleTickerProviderStateMixin {
-  static const int _count = 260;
-  static const int _reducedCount = 80;
-  static const double _pointerRadius = 170;
+  static const int _count = 140;
+  static const int _reducedCount = 64;
+  static const int _maxBursts = 45;
+  static const double _pointerRadius = 185;
   static const List<Color> _palette = [
     AppStyles.particleBlueColor,
     AppStyles.particleDeepBlueColor,
     AppStyles.particleLightBlueColor,
+    AppStyles.particleBlueColor,
+    AppStyles.particleDeepBlueColor,
+    AppStyles.colorBaseRed,
+    AppStyles.colorBaseYellow,
+    AppStyles.colorBaseGreen,
   ];
   static const List<Color> _burstPalette = [
     AppStyles.particleBlueColor,
-    AppStyles.particleDeepBlueColor,
+    AppStyles.colorBaseRed,
     AppStyles.colorBaseYellow,
+    AppStyles.colorBaseGreen,
     AppStyles.onAccentColor,
   ];
 
@@ -82,32 +90,35 @@ class _ParticleFieldState extends State<ParticleField>
         _Particle(
           anchorX: x,
           anchorY: y,
-          radius: 0.7 + _random.nextDouble() * 1.6,
-          baseOpacity: 0.22 + _random.nextDouble() * 0.5,
+          radius: 1.1 + _random.nextDouble() * 1.9,
+          baseOpacity: 0.34 + _random.nextDouble() * 0.48,
           phase: _random.nextDouble() * math.pi * 2,
-          speed: 0.25 + _random.nextDouble() * 0.45,
+          speed: 0.32 + _random.nextDouble() * 0.5,
           color: _palette[i % _palette.length],
-          star: i % 6 == 0,
+          star: i % 4 == 0,
         ),
       );
     }
   }
 
   void _spawnBurst(Offset at) {
+    if (_bursts.length >= _maxBursts) {
+      _bursts.removeRange(0, _bursts.length - _maxBursts + 14);
+    }
     const total = 14;
     for (var i = 0; i < total; i++) {
       final angle = (math.pi * 2 * i) / total + _random.nextDouble() * 0.4;
-      final speed = 1.6 + _random.nextDouble() * 2.6;
+      final speed = 2.0 + _random.nextDouble() * 3.0;
       _bursts.add(
         _Burst(
           x: at.dx,
           y: at.dy,
           vx: math.cos(angle) * speed,
           vy: math.sin(angle) * speed,
-          radius: 1 + _random.nextDouble() * 2,
-          decay: 0.025 + _random.nextDouble() * 0.02,
+          radius: 1.4 + _random.nextDouble() * 2.2,
+          decay: 0.02 + _random.nextDouble() * 0.018,
           color: _burstPalette[i % _burstPalette.length],
-          star: i % 3 == 0,
+          star: i % 2 == 0,
         ),
       );
     }
@@ -122,8 +133,8 @@ class _ParticleFieldState extends State<ParticleField>
     final pointer = _pointer;
 
     for (final p in _particles) {
-      var targetX = p.anchorX + math.sin(_time * p.speed + p.phase) * 6;
-      var targetY = p.anchorY + math.cos(_time * p.speed * 0.8 + p.phase) * 6;
+      var targetX = p.anchorX + math.sin(_time * p.speed + p.phase) * 11;
+      var targetY = p.anchorY + math.cos(_time * p.speed * 0.8 + p.phase) * 11;
       if (pointer != null) {
         final dx = p.x - pointer.dx;
         final dy = p.y - pointer.dy;
@@ -186,8 +197,12 @@ class _ParticleFieldState extends State<ParticleField>
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(painter: _ParticlePainter(this, _frame)),
+                  child: RepaintBoundary(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _ParticlePainter(this, _frame),
+                      ),
+                    ),
                   ),
                 ),
                 widget.child,
@@ -285,15 +300,7 @@ class _ParticlePainter extends CustomPainter {
       canvas.drawCircle(Offset(x, y), radius, paint);
       return;
     }
-    final s = radius * starScale;
-    final path = Path()
-      ..moveTo(x, y - s)
-      ..quadraticBezierTo(x + s * 0.18, y - s * 0.18, x + s, y)
-      ..quadraticBezierTo(x + s * 0.18, y + s * 0.18, x, y + s)
-      ..quadraticBezierTo(x - s * 0.18, y + s * 0.18, x - s, y)
-      ..quadraticBezierTo(x - s * 0.18, y - s * 0.18, x, y - s)
-      ..close();
-    canvas.drawPath(path, paint);
+    drawScaledFourPointStar(canvas, paint, x, y, radius * starScale);
   }
 
   @override
