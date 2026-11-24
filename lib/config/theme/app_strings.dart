@@ -51,6 +51,8 @@ class AppStrings {
   static const String scheduleBlog = 'Blog';
   static const String scheduleSchedule = 'Cronograma';
   static const String scheduleAboutMe = 'Acerca de mí';
+  static const String scheduleWhatIsItAbout = '¿De qué trata?';
+  static const String scheduleWhoTellsIt = '¿Quién la cuenta?';
 
   static const String scheduleRegistrationOpen =
       "Las inscripciones estarán disponibles desde el";
