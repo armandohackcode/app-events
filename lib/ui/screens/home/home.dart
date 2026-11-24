@@ -13,9 +13,7 @@ import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/home/live_talk_card.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
 import 'package:app_events/ui/widgets/home/question_box.dart';
-import 'package:app_events/ui/widgets/home/ranking_data.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
-import 'package:app_events/ui/widgets/home/treasure_bunt.dart';
 import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,7 +67,7 @@ class Home extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
             children: [
-              const HomeHeaderDecoration(child: _HomeHeader()),
+              const HomeHeaderDecoration(child: HomeHeader()),
               LiveTalkCard(
                 talk: _placeholderTalk,
                 photo: const AssetImage(AppAssetsPath.liveTalkPhoto),
@@ -95,24 +93,6 @@ class Home extends StatelessWidget {
               //   text: AppStrings.homeSpeedRunBuild,
               //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
               // ),
-              const SizedBox(height: _rowGap),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.trophyIcon),
-                iconBackground: AppStyles.colorCardRed,
-                title: AppStrings.homeTournamentGDG,
-                onTap: () => Navigator.of(
-                  context,
-                ).push(CupertinoPageRoute(builder: (_) => const RankingData())),
-              ),
-              const SizedBox(height: _rowGap),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.firePedExplorerIcon),
-                iconBackground: AppStyles.colorCardBlue,
-                title: AppStrings.homeTreasureBunt,
-                onTap: () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const TreasureBunt()),
-                ),
-              ),
               const SizedBox(height: _rowGap),
               ActivityRow(
                 icon: Image.asset(AppAssetsPath.logoGdg),
@@ -173,44 +153,6 @@ class Home extends StatelessWidget {
       floatingActionButton: (dataCenter.userCompetitor != null)
           ? const ButtonScan()
           : null,
-    );
-  }
-}
-
-class _HomeHeader extends StatelessWidget {
-  const _HomeHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 18),
-      child: Row(
-        children: [
-          Image.asset(AppAssetsPath.logoGdg, height: 34),
-          const SizedBox(width: 10),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.organizersGDGSucre,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: AppStyles.fontColor,
-                ),
-              ),
-              Text(
-                AppStrings.homeHeaderSubtitle,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w500,
-                  color: AppStyles.fontSecondaryColor,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

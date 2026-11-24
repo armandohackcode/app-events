@@ -1,5 +1,6 @@
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 
@@ -33,15 +34,10 @@ class ResourceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = technologyColor(type);
     final summary = description?.trim() ?? '';
-    return Container(
-      decoration: BoxDecoration(
-        color: AppStyles.cardColor,
-        border: Border.all(color: AppStyles.borderColor, width: _borderWidth),
-        borderRadius: BorderRadius.circular(_radius),
-        boxShadow: const [
-          BoxShadow(color: AppStyles.borderColor, offset: Offset(4, 4)),
-        ],
-      ),
+    return HardShadowBox(
+      radius: _radius,
+      shadowOffset: 4,
+      borderWidth: _borderWidth,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_radius - _borderWidth),
         child: Material(
@@ -189,31 +185,25 @@ class _TypeTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return HardShadowBox(
+      radius: 20,
+      shadowOffset: 2,
+      borderWidth: 1.5,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppStyles.tagOverlayColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
+          Icon(technologyIcon(type), size: 13, color: color),
           const SizedBox(width: 5),
           Flexible(
             child: Text(
-              type.toUpperCase(),
+              type,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-                color: AppStyles.onAccentColor,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: AppStyles.fontColor,
               ),
             ),
           ),

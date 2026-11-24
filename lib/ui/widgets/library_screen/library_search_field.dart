@@ -1,5 +1,6 @@
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:flutter/material.dart';
 
 /// Search box of the library: a rounded card with a hard shadow. It only
@@ -18,16 +19,11 @@ class LibrarySearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return HardShadowBox(
+      radius: 14,
+      shadowOffset: 3,
+      borderWidth: 2,
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppStyles.cardColor,
-        border: Border.all(color: AppStyles.borderColor, width: 2),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
-          BoxShadow(color: AppStyles.borderColor, offset: Offset(3, 3)),
-        ],
-      ),
       child: Row(
         children: [
           Expanded(

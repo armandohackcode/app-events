@@ -5,11 +5,15 @@ import 'dart:io';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
+import 'package:app_events/ui/widgets/shared/tilted_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
+/// Full-screen QR scanner styled with pop-brutalist camera controls and footer.
 class QRScanContent extends StatefulWidget {
   final String msg;
+
   const QRScanContent({super.key, this.msg = AppStrings.scanMessageCredential});
 
   @override
@@ -50,8 +54,6 @@ class _QRScanContentState extends State<QRScanContent>
     }
   }
 
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
   @override
   void reassemble() {
     super.reassemble();
@@ -71,140 +73,131 @@ class _QRScanContentState extends State<QRScanContent>
         }
       },
       child: Scaffold(
-        backgroundColor: AppStyles.backgroundColor,
+        backgroundColor: AppStyles.borderColor,
         body: Column(
-          children: <Widget>[
+          children: [
             Expanded(
-              flex: 4,
               child: Stack(
-                alignment: Alignment.bottomCenter,
                 children: [
                   _buildQrView(context),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.all(8),
-                            child: IconButton(
-                              color: AppStyles.colorFlashRed,
-                              onPressed: () async {
-                                await controller?.toggleFlash();
-                                setState(() {});
-                              },
-                              icon: FutureBuilder(
-                                future: controller?.getFlashStatus(),
-                                builder: (context, snapshot) {
-                                  // Text('Flash: ${snapshot.data}');
-                                  return Icon(
-                                    ((snapshot.data ?? false))
-                                        ? Icons.flash_on_rounded
-                                        : Icons.flash_off_rounded,
-                                    color: AppStyles.onAccentColor,
-                                    size: 32,
-                                  );
-                                },
-                              ),
-                            ),
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          _ScannerControlButton(
+                            icon: Icons.arrow_back_rounded,
+                            tooltip: AppStrings.scanBackTooltip,
+                            color: AppStyles.cardColor,
+                            onPressed: () => Navigator.of(context).maybePop(),
                           ),
-                          Container(
-                            margin: const EdgeInsets.all(8),
-                            child: IconButton(
-                              onPressed: () async {
-                                await controller?.flipCamera();
-                                setState(() {});
-                              },
-                              icon: FutureBuilder(
-                                future: controller?.getCameraInfo(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.data != null) {
-                                    // return Text(
-                                    //     'Camera facing ${describeEnum(snapshot.data!)}');
-                                    return const Icon(
-                                      Icons.flip_camera_android_outlined,
-                                      color: AppStyles.onAccentColor,
-                                      size: 32,
-                                    );
-                                  } else {
-                                    return const Text(
-                                      AppStrings.commonWordLoading,
-                                    );
-                                  }
+                          const Spacer(),
+                          FutureBuilder<bool?>(
+                            future: controller?.getFlashStatus(),
+                            builder: (context, snapshot) {
+                              final flashOn = snapshot.data ?? false;
+                              return _ScannerControlButton(
+                                icon: flashOn
+                                    ? Icons.flash_on_rounded
+                                    : Icons.flash_off_rounded,
+                                tooltip: AppStrings.scanToggleFlashTooltip,
+                                color: flashOn
+                                    ? AppStyles.colorBaseYellow
+                                    : AppStyles.cardColor,
+                                onPressed: () async {
+                                  await controller?.toggleFlash();
+                                  if (mounted) setState(() {});
                                 },
-                              ),
-                            ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          _ScannerControlButton(
+                            icon: Icons.flip_camera_android_rounded,
+                            tooltip: AppStrings.scanFlipCameraTooltip,
+                            color: AppStyles.cardColor,
+                            onPressed: () async {
+                              await controller?.flipCamera();
+                              if (mounted) setState(() {});
+                            },
                           ),
                         ],
                       ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                      //   children: <Widget>[
-                      //     Container(
-                      //       margin: const EdgeInsets.all(8),
-                      //       child: ElevatedButton(
-                      //         onPressed: () async {
-                      //           await controller?.pauseCamera();
-                      //         },
-                      //         child: const Text('pause',
-                      //             style: TextStyle(fontSize: 20)),
-                      //       ),
-                      //     ),
-                      //     Container(
-                      //       margin: const EdgeInsets.all(8),
-                      //       child: ElevatedButton(
-                      //         onPressed: () async {
-                      //           await controller?.resumeCamera();
-                      //         },
-                      //         child: const Text('resume',
-                      //             style: TextStyle(fontSize: 20)),
-                      //       ),
-                      //     )
-                      //   ],
-                      // ),
-                    ],
+                    ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    // if (result != null)
-                    //   Text(
-                    //       'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                    // else
-                    //   const Text('Scan a code'),
-                    Row(
+            Container(
+              decoration: const BoxDecoration(
+                color: AppStyles.homeBackgroundColor,
+                border: Border(
+                  top: BorderSide(color: AppStyles.borderColor, width: 2.5),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  child: HardShadowBox(
+                    color: AppStyles.cardColor,
+                    radius: 18,
+                    shadowOffset: 3,
+                    borderWidth: 2,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Row(
                       children: [
-                        Image.asset(
-                          AppAssetsPath.firePedIcon,
-                          height: 80,
-                          width: MediaQuery.of(context).size.width * 0.2,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              widget.msg,
-                              style: const TextStyle(
-                                color: AppStyles.fontColor,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        Container(
+                          width: 52,
+                          height: 52,
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppStyles.activitiesRankingTagColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppStyles.borderColor,
+                              width: 2,
                             ),
+                          ),
+                          child: Image.asset(
+                            AppAssetsPath.firePedIcon,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const TiltedTag(
+                                text: AppStrings.scanTitle,
+                                color: AppStyles.colorBaseYellow,
+                                angleDegrees: -1,
+                                compact: true,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                widget.msg,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppStyles.fontColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -215,22 +208,16 @@ class _QRScanContentState extends State<QRScanContent>
   }
 
   Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
-    var scanArea =
-        (MediaQuery.of(context).size.width < 400 ||
-            MediaQuery.of(context).size.height < 400)
-        ? 250.0
-        : 300.0;
-    // To ensure the Scanner view is properly sizes after rotation
-    // we need to listen for Flutter SizeChanged notification and update controller
+    final size = MediaQuery.sizeOf(context);
+    final scanArea = (size.width < 400 || size.height < 400) ? 240.0 : 280.0;
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-        borderColor: AppStyles.qrScanBorderColor,
-        borderRadius: 10,
-        borderLength: 30,
-        borderWidth: 10,
+        borderColor: AppStyles.colorBaseYellow,
+        borderRadius: 16,
+        borderLength: 32,
+        borderWidth: 8,
         cutOutSize: scanArea,
       ),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
@@ -246,29 +233,25 @@ class _QRScanContentState extends State<QRScanContent>
       if (!mounted || _isProcessing) return;
 
       _isProcessing = true;
-
       controller.pauseCamera();
-
       Navigator.pop(context, scanData);
     });
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-    if (!p) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(AppStrings.scanCameraPermissionDenied),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        Future.delayed(const Duration(seconds: 3), () {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
-        });
-      }
+    if (!p && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(AppStrings.scanCameraPermissionDenied),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      Future.delayed(const Duration(seconds: 3), () {
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      });
     }
   }
 
@@ -288,5 +271,45 @@ class _QRScanContentState extends State<QRScanContent>
     WidgetsBinding.instance.removeObserver(this);
     _cleanupCamera();
     super.dispose();
+  }
+}
+
+class _ScannerControlButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const _ScannerControlButton({
+    required this.icon,
+    required this.tooltip,
+    required this.color,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: HardShadowBox(
+        color: color,
+        radius: 14,
+        shadowOffset: 3,
+        borderWidth: 2,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            child: SizedBox(
+              width: 46,
+              height: 46,
+              child: Icon(icon, size: 22, color: AppStyles.fontColor),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

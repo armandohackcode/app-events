@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:flutter/material.dart';
 
 /// Tilted yellow sticker with four book spines and the number of resources.
@@ -13,16 +14,12 @@ class ResourceCountBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.rotate(
       angle: -3 * math.pi / 180,
-      child: Container(
+      child: HardShadowBox(
+        color: AppStyles.colorBaseYellow,
+        radius: 12,
+        shadowOffset: 3,
+        borderWidth: 2,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppStyles.colorBaseYellow,
-          border: Border.all(color: AppStyles.borderColor, width: 2),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(color: AppStyles.borderColor, offset: Offset(3, 3)),
-          ],
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

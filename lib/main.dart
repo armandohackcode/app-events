@@ -1,13 +1,13 @@
 import 'package:app_events/config/di/service_locator.dart';
 import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
-import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/config/theme/app_theme.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/domain/repositories/speed_run_repository.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
+import 'package:app_events/ui/providers/gdg_spin_provider.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
@@ -17,6 +17,7 @@ import 'package:app_events/firebase_options.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/home/bottom_custom_nav.dart';
 import 'package:app_events/ui/screens/user/sing_in_screen.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(
         create: (_) => SpeedRunProvider(sl<SpeedRunRepository>()),
       ),
+      ChangeNotifierProvider(create: (_) => GdgSpinProvider()),
     ];
   }
 
@@ -106,12 +108,14 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
   Widget build(BuildContext context) {
     final auth = Provider.of<SignInSocialNetworkProvider>(context);
     if (auth.loadingValidate) {
-      return Scaffold(
-        backgroundColor: AppStyles.colorAppbar,
-        body: Center(
-          child: Image.asset(
-            AppAssetsPath.loadingAnimation,
-            width: MediaQuery.of(context).size.width * 0.65,
+      return HomeBackdrop(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Image.asset(
+              AppAssetsPath.loadingAnimation,
+              width: MediaQuery.sizeOf(context).width * 0.65,
+            ),
           ),
         ),
       );

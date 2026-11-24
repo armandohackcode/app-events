@@ -29,7 +29,7 @@ void main() {
   testWidgets('shows All, Mobile and AI tiles', (tester) async {
     await pumpTiles(tester);
 
-    expect(find.text(AppStrings.resourceLibraryAllCategories), findsOneWidget);
+    expect(find.text(AppStrings.organizersFilterAll), findsOneWidget);
     expect(find.text(AppStrings.technologyMobile), findsOneWidget);
     expect(find.text(AppStrings.technologyAI), findsOneWidget);
   });
@@ -51,7 +51,7 @@ void main() {
       onSelected: (type) => received = type,
     );
 
-    await tester.tap(find.text(AppStrings.resourceLibraryAllCategories));
+    await tester.tap(find.text(AppStrings.organizersFilterAll));
 
     expect(received, isNull);
   });

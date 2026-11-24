@@ -189,7 +189,7 @@ class _EditEventState extends State<EditEvent> {
                   Navigator.of(context).pop();
                 }
               },
-              child: const Text(AppStrings.eventSaveChanges),
+              child: const Text(AppStrings.saveChanges),
             ),
           const SizedBox(height: 30),
         ],

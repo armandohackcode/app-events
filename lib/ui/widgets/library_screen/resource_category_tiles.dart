@@ -2,71 +2,33 @@ import 'dart:math' as math;
 
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 
 /// Technology area used to browse the library. A null [type] means every
-/// resource.
+/// resource. Label, icon and color come from the shared technology helpers.
 class ResourceCategory {
   final String? type;
-  final String label;
-  final IconData icon;
-  final Color color;
 
   /// Tilt of the tile, in degrees.
   final double angle;
 
-  const ResourceCategory({
-    required this.type,
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.angle,
-  });
+  const ResourceCategory({required this.type, required this.angle});
+
+  String get label => type ?? AppStrings.organizersFilterAll;
+  IconData get icon =>
+      type == null ? Icons.view_headline_rounded : technologyIcon(type!);
+  Color get color =>
+      type == null ? AppStyles.primaryColor : technologyColor(type!);
 }
 
 const List<ResourceCategory> resourceCategories = [
-  ResourceCategory(
-    type: null,
-    label: AppStrings.resourceLibraryAllCategories,
-    icon: Icons.view_headline_rounded,
-    color: AppStyles.primaryColor,
-    angle: 0,
-  ),
-  ResourceCategory(
-    type: AppStrings.technologyMobile,
-    label: AppStrings.technologyMobile,
-    icon: Icons.smartphone_rounded,
-    color: AppStyles.colorBaseGreen,
-    angle: -4,
-  ),
-  ResourceCategory(
-    type: AppStrings.technologyAI,
-    label: AppStrings.technologyAI,
-    icon: Icons.auto_awesome_rounded,
-    color: AppStyles.colorBaseYellow,
-    angle: 3,
-  ),
-  ResourceCategory(
-    type: AppStrings.technologyCloud,
-    label: AppStrings.technologyCloud,
-    icon: Icons.cloud_outlined,
-    color: AppStyles.colorBaseRed,
-    angle: -3,
-  ),
-  ResourceCategory(
-    type: AppStrings.technologyWeb,
-    label: AppStrings.technologyWeb,
-    icon: Icons.language_rounded,
-    color: AppStyles.colorBaseBlue,
-    angle: 4,
-  ),
-  ResourceCategory(
-    type: AppStrings.technologyUIUX,
-    label: AppStrings.technologyUIUX,
-    icon: Icons.palette_outlined,
-    color: AppStyles.colorBasePurple,
-    angle: -2,
-  ),
+  ResourceCategory(type: null, angle: 0),
+  ResourceCategory(type: AppStrings.technologyMobile, angle: -4),
+  ResourceCategory(type: AppStrings.technologyAI, angle: 3),
+  ResourceCategory(type: AppStrings.technologyCloud, angle: -3),
+  ResourceCategory(type: AppStrings.technologyWeb, angle: 4),
+  ResourceCategory(type: AppStrings.technologyUIUX, angle: -2),
 ];
 
 /// Horizontally scrollable row of category tiles. The tile of
@@ -87,7 +49,7 @@ class ResourceCategoryTiles extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: EdgeInsets.symmetric(horizontal: 18),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -120,7 +82,7 @@ class ResourceCategoryTiles extends StatelessWidget {
         const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(15, 6, 15, 10),
+          padding: const EdgeInsets.fromLTRB(18, 6, 18, 10),
           child: Row(
             children: [
               for (var i = 0; i < resourceCategories.length; i++) ...[
