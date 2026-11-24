@@ -5,12 +5,16 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
-import 'package:app_events/ui/widgets/schedule_screen/card_schedule.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/schedule_screen/edit_schedule.dart';
+import 'package:app_events/ui/widgets/schedule_screen/talk_detail_card.dart';
+import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
+import 'package:app_events/ui/widgets/shared/social_links_bar.dart';
+import 'package:app_events/ui/widgets/shared/tilted_tag.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -56,8 +60,9 @@ class ScheduleDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAdmin = Provider.of<UserProvider>(context, listen: false).isAdmin;
     return Scaffold(
+      backgroundColor: AppStyles.homeBackgroundColor,
       appBar: AppBar(
-        title: Text(info.type),
+        title: Text(eventTypeLabel(info.type)),
         actions: [
           if (isAdmin) ...[
             IconButton(
@@ -78,39 +83,86 @@ class ScheduleDetail extends StatelessWidget {
         ],
       ),
 
-      body: ListView(
-        padding: const EdgeInsets.all(15),
-        children: [
-          CardSchedule(info: info, showTitle: true, action: false),
-          if (info.type == "Taller")
-            ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
-          const SizedBox(height: 20),
-          const Text(
-            AppStrings.scheduleDescription,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(info.description),
-          const SizedBox(height: 20),
-          const Text(
-            AppStrings.scheduleAboutMe,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(info.aboutMe),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              for (var item in info.socialNetwork)
-                InkWell(
-                  child: SvgPicture.asset(getSVG(item), width: 60, height: 40),
-                  onTap: () async => launcherUrlInfo(item.link),
-                ),
+      body: HomeBackdrop(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 15, 18, 40),
+          children: [
+            TalkDetailCard(
+              info: info,
+              photo: CachedNetworkImageProvider(info.photoUrl),
+            ),
+            if (info.type == "Taller") ...[
+              const SizedBox(height: 16),
+              ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
             ],
+            if (info.description.trim().isNotEmpty) ...[
+              const SizedBox(height: 24),
+              _TextSection(
+                tag: AppStrings.scheduleWhatIsItAbout,
+                tagColor: AppStyles.colorBaseYellow,
+                angle: -2,
+                text: info.description,
+              ),
+            ],
+            if (info.aboutMe.trim().isNotEmpty) ...[
+              const SizedBox(height: 24),
+              _TextSection(
+                tag: AppStrings.scheduleWhoTellsIt,
+                tagColor: AppStyles.titlePillColor,
+                angle: 2,
+                color: AppStyles.colorCardBlue,
+                text: info.aboutMe,
+              ),
+            ],
+            const SizedBox(height: 24),
+            SocialLinksBar(networks: info.socialNetwork),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Card with a tilted tag over its top edge and a block of text inside.
+class _TextSection extends StatelessWidget {
+  final String tag;
+  final Color tagColor;
+  final double angle;
+  final Color color;
+  final String text;
+
+  const _TextSection({
+    required this.tag,
+    required this.tagColor,
+    required this.angle,
+    required this.text,
+    this.color = AppStyles.cardColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TaggedCard(
+      tag: tag,
+      tagColor: tagColor,
+      angleDegrees: angle,
+      compact: true,
+      child: HardShadowBox(
+        color: color,
+        radius: 16,
+        shadowOffset: 4,
+        padding: const EdgeInsets.fromLTRB(14, 22, 14, 14),
+        child: SizedBox(
+          width: double.infinity,
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+              color: AppStyles.fontColor,
+            ),
           ),
-          const SizedBox(height: 50),
-        ],
+        ),
       ),
     );
   }
