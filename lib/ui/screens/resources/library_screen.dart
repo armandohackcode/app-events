@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/resource_library.dart';
@@ -11,7 +10,6 @@ import 'package:app_events/ui/widgets/library_screen/library_search_field.dart';
 import 'package:app_events/ui/widgets/library_screen/resource_category_tiles.dart';
 import 'package:app_events/ui/widgets/library_screen/resource_count_badge.dart';
 import 'package:app_events/ui/widgets/library_screen/resource_link_card.dart';
-import 'package:app_events/ui/widgets/shared/window_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -26,6 +24,8 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   final _paramSearch = TextEditingController();
+
+  static const double _gutter = 18;
 
   /// Technology area chosen in the category tiles. Null shows every resource.
   String? _selectedType;
@@ -59,66 +59,65 @@ class _LibraryScreenState extends State<LibraryScreen> {
       backgroundColor: AppStyles.homeBackgroundColor,
       body: HomeBackdrop(
         child: SafeArea(
-          child: Column(
-            children: [
-              WindowBar(
-                title: AppStrings.resourceLibraryWindowTitle,
-                trailing: Image.asset(AppAssetsPath.logoGdg, height: 18),
-              ),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await resource.loadResources();
-                  },
-                  displacement: 40,
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: _LibraryHeader(count: resource.resources.length),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 12, 15, 12),
-                          child: LibrarySearchField(
-                            controller: _paramSearch,
-                            onSubmitted: (value) =>
-                                resource.searchResource(param: value),
-                            onClear: () {
-                              resource.loadResources();
-                              _paramSearch.clear();
-                            },
-                          ),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: ResourceCategoryTiles(
-                          selectedType: _selectedType,
-                          onSelected: (type) =>
-                              setState(() => _selectedType = type),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 4, 15, 14),
-                          child: Text(
-                            _selectedType ??
-                                AppStrings.resourceLibraryAllContent,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: AppStyles.fontColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ..._content(context, resource, visible),
-                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    ],
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await resource.loadResources();
+            },
+            displacement: 40,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                const SliverPadding(
+                  padding: EdgeInsets.fromLTRB(_gutter, 8, _gutter, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: HomeHeaderDecoration(child: HomeHeader()),
                   ),
                 ),
-              ),
-            ],
+                SliverToBoxAdapter(
+                  child: _LibraryHeader(count: resource.resources.length),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      _gutter,
+                      14,
+                      _gutter,
+                      14,
+                    ),
+                    child: LibrarySearchField(
+                      controller: _paramSearch,
+                      onSubmitted: (value) =>
+                          resource.searchResource(param: value),
+                      onClear: () {
+                        resource.loadResources();
+                        _paramSearch.clear();
+                      },
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: ResourceCategoryTiles(
+                    selectedType: _selectedType,
+                    onSelected: (type) => setState(() => _selectedType = type),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(_gutter, 4, _gutter, 14),
+                    child: Text(
+                      _selectedType ?? AppStrings.resourceLibraryAllContent,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppStyles.fontColor,
+                      ),
+                    ),
+                  ),
+                ),
+                ..._content(context, resource, visible),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
+            ),
           ),
         ),
       ),
@@ -145,7 +144,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return [
         SliverToBoxAdapter(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.sizeOf(context).height * 0.3,
             child: Center(
               child: LoadingAnimationWidget.twistingDots(
                 leftDotColor: AppStyles.colorBaseBlue,
@@ -161,7 +160,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       return [
         SliverToBoxAdapter(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.sizeOf(context).height * 0.3,
             child: const Center(
               child: Text(
                 AppStrings.resourceLibraryNoData,
@@ -178,7 +177,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
     return [
       SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: _gutter),
         sliver: SliverList.separated(
           itemCount: visible.length,
           separatorBuilder: (_, _) => const SizedBox(height: 18),
@@ -203,7 +202,7 @@ class _LibraryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 16, 15, 2),
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 2),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [

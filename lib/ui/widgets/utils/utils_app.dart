@@ -106,6 +106,24 @@ Color technologyColor(String area) {
   }
 }
 
+/// Icon of a technology area, drawn on its tags and category tiles.
+IconData technologyIcon(String area) {
+  switch (area) {
+    case "Mobile":
+      return Icons.smartphone_rounded;
+    case "IA":
+      return Icons.auto_awesome_rounded;
+    case "Cloud":
+      return Icons.cloud_outlined;
+    case "Web":
+      return Icons.language_rounded;
+    case "UI/UX":
+      return Icons.palette_outlined;
+    default:
+      return Icons.label_outline_rounded;
+  }
+}
+
 Future<void> launcherUrlInfo(String url) async {
   try {
     var link = Uri.parse(url);

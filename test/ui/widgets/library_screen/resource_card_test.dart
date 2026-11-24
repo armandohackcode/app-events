@@ -32,7 +32,7 @@ void main() {
   ) async {
     await pumpCard(tester);
 
-    expect(find.text('MOBILE'), findsOneWidget);
+    expect(find.text('Mobile'), findsOneWidget);
     expect(find.text('Flutter documentation'), findsOneWidget);
     expect(find.text('Guides, widgets and API references.'), findsOneWidget);
     expect(find.text('docs.flutter.dev'), findsOneWidget);
