@@ -139,6 +139,22 @@ class AppStrings {
   static const String resourceLibraryDescription = "Título o Descripción";
 
   static const String resourceLibrarySearchHint = "Buscar recurso...";
+  static const String resourceLibraryWindowTitle = "BIBLIOTECA.APP";
+  static const String resourceLibraryDescriptionText =
+      "Recursos, documentación y charlas que nos comparte la comunidad GDG Sucre";
+  static const String resourceLibraryCountLabel = "RECURSOS";
+  static const String resourceLibraryExplore = "Explora por categoría";
+  static const String resourceLibrarySwipeHint = "Desliza →";
+  static const String resourceLibraryAllContent = "Todo el contenido";
+  static const String resourceLibraryAllCategories = "Todos";
+  static const String resourceLibraryOpen = "Abrir";
+
+  // technology areas (the same text is stored in Firestore)
+  static const String technologyMobile = "Mobile";
+  static const String technologyAI = "IA";
+  static const String technologyCloud = "Cloud";
+  static const String technologyWeb = "Web";
+  static const String technologyUIUX = "UI/UX";
 
   // profile
   static const String profileTitle = "Perfil";
@@ -223,7 +239,7 @@ class AppStrings {
   static const String sponsorDeleteTitle = "Eliminar sponsor";
   static const String sponsorDeleteConfirm = "¿Estás seguro de eliminar a";
 
-  static String resourceLibraryNoData = "No hay recursos disponibles";
+  static const String resourceLibraryNoData = "No hay recursos disponibles";
 
   // SpeedRun Build
   static const String speedRunTitle = 'SpeedRun Build';

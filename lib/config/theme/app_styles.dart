@@ -67,5 +67,12 @@ class AppStyles {
   static const Color socialWebColor = colorBaseBlue;
   static const Color socialWhatsAppColor = Color(0xFF25D366);
 
+  // Translucent dark layers drawn over images.
+  static final Color tagOverlayColor = scrimColor.withValues(alpha: 0.35);
+
+  /// [color] mixed with black: the dark end of a gradient that starts at [color].
+  static Color darken(Color color, [double amount = 0.2]) =>
+      Color.lerp(color, scrimColor, amount)!;
+
   static const String monospaceFontFamily = 'Courier New';
 }
