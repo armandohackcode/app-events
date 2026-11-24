@@ -1,19 +1,19 @@
-import 'package:app_events/config/theme/app_links.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:any_link_preview/any_link_preview.dart';
-import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
+import 'package:app_events/domain/models/resource_library.dart';
 import 'package:app_events/ui/providers/resources_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
+import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:app_events/ui/widgets/library_screen/add_resource.dart';
-import 'package:app_events/ui/widgets/utils/utils_app.dart';
+import 'package:app_events/ui/widgets/library_screen/library_search_field.dart';
+import 'package:app_events/ui/widgets/library_screen/resource_category_tiles.dart';
+import 'package:app_events/ui/widgets/library_screen/resource_count_badge.dart';
+import 'package:app_events/ui/widgets/library_screen/resource_link_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -24,6 +24,11 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   final _paramSearch = TextEditingController();
+
+  static const double _gutter = 18;
+
+  /// Technology area chosen in the category tiles. Null shows every resource.
+  String? _selectedType;
 
   @override
   void initState() {
@@ -47,87 +52,73 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     final resource = Provider.of<ResourcesProvider>(context);
     final dataCenter = Provider.of<UserProvider>(context);
+    final visible = resource.resources
+        .where((item) => _selectedType == null || item.type == _selectedType)
+        .toList();
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Image.asset(AppAssetsPath.headerImage, height: 40),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await resource.loadResources();
-        },
-        displacement: 40,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              pinned: false,
-              floating: false,
-              expandedHeight: 75,
-              flexibleSpace: FlexibleSpaceBar(
-                background: FiltersLibrary(
-                  paramSearch: _paramSearch,
-                  resourcesProvider: resource,
+      backgroundColor: AppStyles.homeBackgroundColor,
+      body: HomeBackdrop(
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await resource.loadResources();
+            },
+            displacement: 40,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                const SliverPadding(
+                  padding: EdgeInsets.fromLTRB(_gutter, 8, _gutter, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: HomeHeaderDecoration(child: HomeHeader()),
+                  ),
                 ),
-              ),
-            ),
-            // FiltersLibrary(
-            //   paramSearch: _paramSearch,
-            //   resourcesProvider: resource,
-            // ),
-            if (resource.loadingResource)
-              SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  alignment: Alignment.center,
-                  child: Center(
-                    child: LoadingAnimationWidget.twistingDots(
-                      leftDotColor: AppStyles.colorBaseBlue,
-                      rightDotColor: AppStyles.colorBaseYellow,
-                      size: 40,
+                SliverToBoxAdapter(
+                  child: _LibraryHeader(count: resource.resources.length),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      _gutter,
+                      14,
+                      _gutter,
+                      14,
+                    ),
+                    child: LibrarySearchField(
+                      controller: _paramSearch,
+                      onSubmitted: (value) =>
+                          resource.searchResource(param: value),
+                      onClear: () {
+                        resource.loadResources();
+                        _paramSearch.clear();
+                      },
                     ),
                   ),
                 ),
-              )
-            else if (resource.resources.isEmpty)
-              SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  alignment: Alignment.center,
-                  child: Center(
+                SliverToBoxAdapter(
+                  child: ResourceCategoryTiles(
+                    selectedType: _selectedType,
+                    onSelected: (type) => setState(() => _selectedType = type),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(_gutter, 4, _gutter, 14),
                     child: Text(
-                      AppStrings.resourceLibraryNoData,
-                      style: TextStyle(
+                      _selectedType ?? AppStrings.resourceLibraryAllContent,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
                         color: AppStyles.fontColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ),
-              )
-            else
-              SliverList.builder(
-                itemCount: resource.resources.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var item = resource.resources[index];
-                  return ZoomIn(
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: CardLibrary(
-                        key: UniqueKey(),
-                        width: MediaQuery.of(context).size.width,
-                        link: item.link,
-                        title: item.title,
-                        color: _getColor(item.type),
-                      ),
-                    ),
-                  );
-                },
-              ),
-          ],
+                ..._content(context, resource, visible),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
+            ),
+          ),
         ),
       ),
       floatingActionButton: (dataCenter.isAdmin)
@@ -144,272 +135,105 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
-  Color _getColor(String area) {
-    switch (area) {
-      case "Web":
-        return AppStyles.colorBaseBlue;
-      case "Mobile":
-        return AppStyles.colorBaseGreen;
-      case "Cloud":
-        return AppStyles.colorBaseRed;
-      case "IA":
-        return AppStyles.colorBaseYellow;
-      case "UI/UX":
-        return AppStyles.colorBasePurple;
-      default:
-        return AppStyles.colorBaseBlue;
-    }
-  }
-}
-
-class FiltersLibrary extends StatelessWidget {
-  const FiltersLibrary({
-    super.key,
-    required TextEditingController paramSearch,
-    required this.resourcesProvider,
-  }) : _paramSearch = paramSearch;
-
-  final TextEditingController _paramSearch;
-  final ResourcesProvider resourcesProvider;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            controller: _paramSearch,
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              hintText: AppStrings.resourceLibrarySearchHint,
-              suffixIcon: (_paramSearch.text.isNotEmpty)
-                  ? IconButton(
-                      onPressed: () {
-                        resourcesProvider.loadResources();
-                        _paramSearch.clear();
-                      },
-                      icon: const Icon(Icons.clear),
-                    )
-                  : const Icon(
-                      Icons.search,
-                      color: AppStyles.fontColor,
-                      size: 32,
-                    ),
-            ),
-            onFieldSubmitted: (value) async {
-              await resourcesProvider.searchResource(param: value);
-            },
-          ),
-        ),
-
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     ButtonLibrary(
-        //       color: AppStyles.colorBaseBlue,
-        //       active: resourcesProvider.activeWeb,
-        //       text: 'Web',
-        //       onPressed: () async {
-        //         resourcesProvider.activeWeb = !resourcesProvider.activeWeb;
-
-        //         await resourcesProvider.searchResource(
-        //           param: _paramSearch.text,
-        //         );
-        //       },
-        //     ),
-        //     ButtonLibrary(
-        //       active: resourcesProvider.activeMobile,
-        //       color: AppStyles.colorBaseGreen,
-        //       text: 'Mobile',
-        //       onPressed: () async {
-        //         resourcesProvider.activeMobile =
-        //             !resourcesProvider.activeMobile;
-
-        //         await resourcesProvider.searchResource(
-        //           param: _paramSearch.text,
-        //         );
-        //       },
-        //     ),
-        //     ButtonLibrary(
-        //       active: resourcesProvider.activeCloud,
-        //       color: AppStyles.colorBaseRed,
-        //       text: 'Cloud',
-        //       onPressed: () async {
-        //         resourcesProvider.activeCloud = !resourcesProvider.activeCloud;
-
-        //         await resourcesProvider.searchResource(
-        //           param: _paramSearch.text,
-        //         );
-        //       },
-        //     ),
-        //     ButtonLibrary(
-        //       active: resourcesProvider.activeIA,
-        //       color: AppStyles.colorBaseYellow,
-        //       text: 'IA',
-        //       onPressed: () async {
-        //         resourcesProvider.activeIA = !resourcesProvider.activeIA;
-        //         await resourcesProvider.searchResource(
-        //           param: _paramSearch.text,
-        //         );
-        //       },
-        //     ),
-        //   ],
-        // ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     ButtonLibrary(
-        //       active: resourcesProvider.activeUIUX,
-        //       color: AppStyles.colorBasePurple,
-        //       text: 'UI/UX',
-        //       onPressed: () async {
-        //         resourcesProvider.activeUIUX = !resourcesProvider.activeUIUX;
-        //         await resourcesProvider.searchResource(
-        //           param: _paramSearch.text,
-        //         );
-        //       },
-        //     ),
-        //   ],
-        // ),
-      ],
-    );
-  }
-}
-
-class CardLibrary extends StatelessWidget {
-  final double? width;
-  final double? heightLink;
-  final String link;
-  final Color color;
-  final String title;
-  const CardLibrary({
-    super.key,
-    required this.link,
-    required this.color,
-    required this.title,
-    this.width,
-    this.heightLink,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        await launcherUrlInfo(link);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          children: [
-            // Container(
-            //   padding: const EdgeInsets.all(10),
-            //   width: width,
-            //   child: Text(
-            //     title,
-            //     textAlign: TextAlign.center,
-            //     style: const TextStyle(fontWeight: FontWeight.w500),
-            //   ),
-            // ),
-            SizedBox(
-              height: MediaQuery.sizeOf(context).height * 0.35,
-              child: AnyLinkPreview(
-                urlLaunchMode: LaunchMode.externalApplication,
-                placeholderWidget: Center(
-                  child: LoadingAnimationWidget.stretchedDots(
-                    color: AppStyles.colorBaseBlue,
-                    size: 40,
-                  ),
-                ),
-                link: link,
-                previewHeight: 1,
-                displayDirection: UIDirection.uiDirectionVertical,
-                showMultimedia: true,
-                bodyMaxLines: 5,
-                bodyTextOverflow: TextOverflow.ellipsis,
-                titleStyle: TextStyle(
-                  color: AppStyles.fontColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-                bodyStyle: const TextStyle(
-                  color: AppStyles.fontColor,
-                  fontSize: 16,
-                ),
-                errorBody: title,
-                errorTitle: title,
-
-                errorWidget: Row(
-                  children: [
-                    Image.network(
-                      AppLinks.resourcePlaceholderImage,
-                      width: 60,
-                      height: 60,
-                    ),
-                    Container(
-                      color: AppStyles.placeholderColor,
-                      child: Text(title),
-                    ),
-                  ],
-                ),
-                errorImage: AppLinks.resourcePlaceholderImage,
-                cache: const Duration(days: 1),
-                backgroundColor: AppStyles.backgroundColor,
-                borderRadius: 10,
-                removeElevation: true,
-                // This disables tap event
+  List<Widget> _content(
+    BuildContext context,
+    ResourcesProvider resource,
+    List<ResourceLibrary> visible,
+  ) {
+    if (resource.loadingResource) {
+      return [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.3,
+            child: Center(
+              child: LoadingAnimationWidget.twistingDots(
+                leftDotColor: AppStyles.colorBaseBlue,
+                rightDotColor: AppStyles.colorBaseYellow,
+                size: 40,
               ),
             ),
-          ],
+          ),
+        ),
+      ];
+    }
+    if (visible.isEmpty) {
+      return [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.3,
+            child: const Center(
+              child: Text(
+                AppStrings.resourceLibraryNoData,
+                style: TextStyle(
+                  color: AppStyles.fontColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: _gutter),
+        sliver: SliverList.separated(
+          itemCount: visible.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 18),
+          itemBuilder: (context, index) {
+            final item = visible[index];
+            return FadeInUp(
+              from: 12,
+              duration: const Duration(milliseconds: 380),
+              child: ResourceLinkCard(key: ValueKey(item.link), resource: item),
+            );
+          },
         ),
       ),
-    );
+    ];
   }
 }
 
-class ButtonLibrary extends StatefulWidget {
-  final Color color;
-  final VoidCallback onPressed;
-  final String text;
-  final bool active;
-  const ButtonLibrary({
-    super.key,
-    required this.color,
-    required this.text,
-    required this.onPressed,
-    required this.active,
-  });
+class _LibraryHeader extends StatelessWidget {
+  final int count;
+  const _LibraryHeader({required this.count});
 
-  @override
-  State<ButtonLibrary> createState() => _ButtonLibraryState();
-}
-
-class _ButtonLibraryState extends State<ButtonLibrary> {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: widget.active
-            ? widget.color
-            : AppStyles.backgroundColor,
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: widget.active ? AppStyles.fontColor : widget.color,
-            width: 1.2,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.navBarLibrary,
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w800,
+                    color: AppStyles.fontColor,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  AppStrings.resourceLibraryDescriptionText,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                    color: AppStyles.fontSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      onPressed: widget.onPressed,
-      child: Text(
-        widget.text,
-        style: TextStyle(
-          color: widget.active ? AppStyles.backgroundColor : widget.color,
-        ),
+          const SizedBox(width: 10),
+          ResourceCountBadge(count: count),
+        ],
       ),
     );
   }
