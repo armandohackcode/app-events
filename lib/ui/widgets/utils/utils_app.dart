@@ -144,6 +144,9 @@ String eventTypeLabel(String type) {
     EventTypeSpeaker.conference => AppStrings.eventTypeConference,
     EventTypeSpeaker.workshop => AppStrings.eventTypeWorkshop,
     EventTypeSpeaker.panel => AppStrings.eventTypePanel,
+    EventTypeSpeaker.breakTime => AppStrings.eventTypeBreak,
+    EventTypeSpeaker.lunch => AppStrings.eventTypeLunch,
+    EventTypeSpeaker.networking => AppStrings.eventTypeNetworking,
     EventTypeSpeaker.unknown =>
       type.isEmpty ? type : '${type[0].toUpperCase()}${type.substring(1)}',
   };
@@ -154,6 +157,26 @@ IconData eventTypeIcon(String type) {
     EventTypeSpeaker.conference => Icons.mic_none_rounded,
     EventTypeSpeaker.workshop => Icons.construction_rounded,
     EventTypeSpeaker.panel => Icons.groups_rounded,
+    EventTypeSpeaker.breakTime => Icons.coffee_rounded,
+    EventTypeSpeaker.lunch => Icons.restaurant_rounded,
+    EventTypeSpeaker.networking => Icons.people_alt_rounded,
     EventTypeSpeaker.unknown => Icons.event_note_rounded,
+  };
+}
+
+/// Background of the tag that shows an activity type.
+Color eventTypeColor(String type) {
+  return switch (EventTypeSpeaker.fromValue(type)) {
+    EventTypeSpeaker.workshop => AppStyles.colorBaseYellow,
+    EventTypeSpeaker.panel => AppStyles.cardColor,
+    _ => AppStyles.colorBaseRed,
+  };
+}
+
+/// Text and icon color that reads well over [eventTypeColor].
+Color eventTypeForegroundColor(String type) {
+  return switch (EventTypeSpeaker.fromValue(type)) {
+    EventTypeSpeaker.workshop || EventTypeSpeaker.panel => AppStyles.fontColor,
+    _ => AppStyles.onAccentColor,
   };
 }
