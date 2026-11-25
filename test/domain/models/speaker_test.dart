@@ -14,25 +14,6 @@ void main() {
       expect(EventTypeSpeaker.fromValue(null), EventTypeSpeaker.unknown);
       expect(EventTypeSpeaker.fromValue('keynote'), EventTypeSpeaker.unknown);
     });
-
-    test('general activities are stored as break, lunch and networking', () {
-      expect(EventTypeSpeaker.fromValue('break'), EventTypeSpeaker.breakTime);
-      expect(EventTypeSpeaker.fromValue('Lunch'), EventTypeSpeaker.lunch);
-      expect(
-        EventTypeSpeaker.fromValue('networking'),
-        EventTypeSpeaker.networking,
-      );
-      expect(EventTypeSpeaker.breakTime.value, 'break');
-    });
-
-    test('only breaks, lunch and networking are general activities', () {
-      final general = EventTypeSpeaker.values.where((t) => t.isGeneralActivity);
-      expect(general, [
-        EventTypeSpeaker.breakTime,
-        EventTypeSpeaker.lunch,
-        EventTypeSpeaker.networking,
-      ]);
-    });
   });
 
   group('SocialNetworkType', () {

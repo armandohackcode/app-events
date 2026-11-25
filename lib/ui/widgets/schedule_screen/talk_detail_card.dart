@@ -2,7 +2,9 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
-import 'package:app_events/ui/widgets/shared/time_and_tags.dart';
+import 'package:app_events/ui/widgets/shared/icon_tag.dart';
+import 'package:app_events/ui/widgets/shared/time_pill.dart';
+import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:flutter/material.dart';
 
 /// Main card of a talk detail: the speaker photo, then the schedule with the
@@ -34,11 +36,7 @@ class TalkDetailCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TimeAndTags(
-                    schedule: info.schedule,
-                    technologyType: info.technologyType,
-                    type: info.type,
-                  ),
+                  _TimeAndTags(info: info),
                   const SizedBox(height: 14),
                   Text(
                     info.title,
@@ -87,6 +85,52 @@ class _Photo extends StatelessWidget {
         imageErrorBuilder: (_, _, _) =>
             const ColoredBox(color: AppStyles.placeholderColor),
       ),
+    );
+  }
+}
+
+/// Schedule on the left; technology and activity tags on the right. They wrap
+/// to a second line when the screen is too narrow.
+class _TimeAndTags extends StatelessWidget {
+  final Speaker info;
+  const _TimeAndTags({required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasTags = info.technologyType.isNotEmpty || info.type.isNotEmpty;
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        if (info.schedule.isNotEmpty) TimePill(text: info.schedule),
+        if (hasTags)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (info.technologyType.isNotEmpty)
+                Flexible(
+                  child: IconTag(
+                    text: info.technologyType,
+                    icon: technologyIcon(info.technologyType),
+                    color: technologyColor(info.technologyType),
+                  ),
+                ),
+              if (info.technologyType.isNotEmpty && info.type.isNotEmpty)
+                const SizedBox(width: 8),
+              if (info.type.isNotEmpty)
+                Flexible(
+                  child: IconTag(
+                    text: eventTypeLabel(info.type),
+                    icon: eventTypeIcon(info.type),
+                    color: AppStyles.colorBaseRed,
+                    foregroundColor: AppStyles.onAccentColor,
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }

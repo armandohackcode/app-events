@@ -56,9 +56,6 @@ class AppStrings {
   static const String eventTypeConference = 'Conferencia';
   static const String eventTypeWorkshop = 'Taller';
   static const String eventTypePanel = 'Panel';
-  static const String eventTypeBreak = 'Descanso';
-  static const String eventTypeLunch = 'Almuerzo';
-  static const String eventTypeNetworking = 'Networking';
 
   static const String scheduleRegistrationOpen =
       "Las inscripciones estarán disponibles desde el";
@@ -315,10 +312,6 @@ class AppStrings {
   static const String eventViewSchedule = 'Ver agenda';
   static const String eventJoin = 'Unirse';
   static const String eventViewLocation = 'Ver ubicación';
-  static const String eventPlace = 'Lugar del evento';
-  static const String eventViewLocationHowTo = 'Ver ubicación y cómo llegar';
-  static const String scheduleActivitySingular = 'actividad';
-  static const String scheduleActivityPlural = 'actividades';
   static const String eventJoinSuccess = '¡Te uniste al evento ';
   static const String eventStatusUpcoming = 'Próximo';
   static const String eventStatusActive = 'Activo';
