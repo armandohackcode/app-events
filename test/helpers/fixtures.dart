@@ -47,11 +47,12 @@ Speaker makeSpeaker({
   String type = 'conference',
   String technologyType = 'Mobile',
   String profession = 'GDE',
+  String description = 'Talk',
   List<SocialNetwork>? socialNetwork,
 }) => Speaker(
   uuid: uuid,
   title: title,
-  description: 'Talk',
+  description: description,
   name: name,
   profession: profession,
   aboutMe: '',

@@ -46,6 +46,12 @@ class AppStyles {
   static const Color fontFaintColor = Color(0xFF9A9A95);
   // Soft icon background: the base yellow with reduced opacity.
   static final Color colorCardYellow = colorBaseYellow.withValues(alpha: 0.2);
+  // The same soft yellow over white, opaque: for cards with a hard shadow,
+  // which would show through a translucent fill.
+  static final Color colorCardYellowOpaque = Color.alphaBlend(
+    colorCardYellow,
+    cardColor,
+  );
   static const Color titlePillColor = Color(0xFFAFC6E8);
   static const Color backdropBlueColor = Color(0xFF4285F4);
   // Thin separator line inside cards.

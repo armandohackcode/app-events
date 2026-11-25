@@ -21,6 +21,12 @@ void main() {
       );
     });
 
+    test('labels breaks, lunch and networking', () {
+      expect(eventTypeLabel('break'), AppStrings.eventTypeBreak);
+      expect(eventTypeLabel('lunch'), AppStrings.eventTypeLunch);
+      expect(eventTypeLabel('networking'), AppStrings.eventTypeNetworking);
+    });
+
     test('ignores the case of the stored type', () {
       expect(eventTypeLabel('CONFERENCE'), AppStrings.eventTypeConference);
     });
@@ -40,8 +46,11 @@ void main() {
         eventTypeIcon(EventTypeSpeaker.conference.value),
         eventTypeIcon(EventTypeSpeaker.workshop.value),
         eventTypeIcon(EventTypeSpeaker.panel.value),
+        eventTypeIcon(EventTypeSpeaker.breakTime.value),
+        eventTypeIcon(EventTypeSpeaker.lunch.value),
+        eventTypeIcon(EventTypeSpeaker.networking.value),
       };
-      expect(icons.length, 3);
+      expect(icons.length, 6);
     });
 
     test('falls back to a generic icon for an unknown type', () {
@@ -58,6 +67,24 @@ void main() {
 
     test('falls back to a generic icon for an unknown area', () {
       expect(technologyIcon('Other'), Icons.label_outline_rounded);
+    });
+  });
+
+  group('eventTypeColor', () {
+    test('uses a different tag color for conference, workshop and panel', () {
+      final colors = {
+        eventTypeColor('conference'),
+        eventTypeColor('workshop'),
+        eventTypeColor('panel'),
+      };
+      expect(colors.length, 3);
+    });
+
+    test('text over a dark tag is light and over a light tag is dark', () {
+      expect(
+        eventTypeForegroundColor('workshop'),
+        isNot(eventTypeForegroundColor('conference')),
+      );
     });
   });
 }

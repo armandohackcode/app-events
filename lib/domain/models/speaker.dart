@@ -166,18 +166,28 @@ enum EventTypeSpeaker {
   conference,
   workshop,
   panel,
+  breakTime,
+  lunch,
+  networking,
   unknown;
 
   static const Map<EventTypeSpeaker, String> _fromValue = {
     EventTypeSpeaker.conference: 'conference',
     EventTypeSpeaker.workshop: 'workshop',
     EventTypeSpeaker.panel: 'panel',
+    EventTypeSpeaker.breakTime: 'break',
+    EventTypeSpeaker.lunch: 'lunch',
+    EventTypeSpeaker.networking: 'networking',
     EventTypeSpeaker.unknown: 'unknown',
   };
 
   static final Map<String, EventTypeSpeaker> _toString = {
     for (var entry in _fromValue.entries) entry.value: entry.key,
   };
+
+  /// Breaks, lunch and networking: activities without a speaker.
+  bool get isGeneralActivity =>
+      this == breakTime || this == lunch || this == networking;
 
   String get value => _fromValue[this] ?? 'unknown';
 
