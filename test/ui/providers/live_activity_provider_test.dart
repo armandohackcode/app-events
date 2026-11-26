@@ -60,7 +60,7 @@ void main() {
     expect(provider.loading, isTrue);
   });
 
-  test('there is no live activity when no event is active', () async {
+  test('finished events are not followed', () async {
     provider.start();
 
     events.add([makeEvent(id: 'e1', status: EventStatus.finished)]);
@@ -157,7 +157,7 @@ void main() {
       await pumpEventQueue();
 
       expect(provider.activity, isNull);
-      expect(provider.eventId, 'e2');
+      expect(provider.eventId, isNull);
       expect(provider.loading, isTrue);
       expect(scheduleOf('e1').hasListener, isFalse);
       expect(scheduleOf('e2').hasListener, isTrue);
@@ -192,6 +192,80 @@ void main() {
       verify(() => scheduleRepository.getListScheduleStream('e1')).called(1);
     },
   );
+
+  test('shows the live activity of an event not activated yet', () async {
+    provider.start();
+    events.add([makeEvent(id: 'next')]);
+    await pumpEventQueue();
+
+    scheduleOf('next').add([makeSpeaker(uuid: 'a', isLive: true)]);
+    await pumpEventQueue();
+
+    expect(provider.activity?.uuid, 'a');
+    expect(provider.eventId, 'next');
+  });
+
+  test('the active event goes before an upcoming one', () async {
+    provider.start();
+    events.add([makeEvent(id: 'next'), active('now')]);
+    await pumpEventQueue();
+
+    scheduleOf('next').add([makeSpeaker(uuid: 'later', isLive: true)]);
+    await pumpEventQueue();
+    expect(provider.activity?.uuid, 'later');
+
+    scheduleOf('now').add([makeSpeaker(uuid: 'current', isLive: true)]);
+    await pumpEventQueue();
+
+    expect(provider.activity?.uuid, 'current');
+    expect(provider.eventId, 'now');
+  });
+
+  test('looks in another event when the active one has none', () async {
+    provider.start();
+    events.add([active('now'), makeEvent(id: 'next')]);
+    await pumpEventQueue();
+
+    scheduleOf('now').add([makeSpeaker(uuid: 'a')]);
+    await pumpEventQueue();
+    expect(provider.loading, isTrue);
+
+    scheduleOf('next').add([makeSpeaker(uuid: 'b', isLive: true)]);
+    await pumpEventQueue();
+
+    expect(provider.activity?.uuid, 'b');
+    expect(provider.eventId, 'next');
+    expect(provider.loading, isFalse);
+  });
+
+  test('a failing schedule does not hide the other events', () async {
+    provider.start();
+    events.add([active('now'), makeEvent(id: 'next')]);
+    await pumpEventQueue();
+    scheduleOf('next').add([makeSpeaker(uuid: 'b', isLive: true)]);
+    await pumpEventQueue();
+
+    scheduleOf('now').addError(Exception('permission denied'));
+    await pumpEventQueue();
+
+    expect(provider.activity?.uuid, 'b');
+    expect(scheduleOf('now').hasListener, isFalse);
+  });
+
+  test('start retries a schedule that failed', () async {
+    provider.start();
+    events.add([active('e1')]);
+    await pumpEventQueue();
+    scheduleOf('e1').addError(Exception('offline'));
+    await pumpEventQueue();
+
+    provider.start();
+    scheduleOf('e1').add([makeSpeaker(uuid: 'a', isLive: true)]);
+    await pumpEventQueue();
+
+    expect(provider.activity?.uuid, 'a');
+    verify(() => eventRepository.getEventsStream()).called(1);
+  });
 
   test('start listens only once', () async {
     provider.start();

@@ -7,14 +7,24 @@ import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:flutter/foundation.dart';
 
-/// Follows, in real time, the activity marked as live in the active event.
+/// Follows, in real time, the activity marked as live in any event that is not
+/// finished. The active events go first, so the home screen shows the same
+/// activity the schedule of its event marks as live, even if nobody has
+/// activated that event yet.
 class LiveActivityProvider with ChangeNotifier {
   final EventRepository _eventRepository;
   final ScheduleRepository _scheduleRepository;
   LiveActivityProvider(this._eventRepository, this._scheduleRepository);
 
   StreamSubscription<List<Event>>? _eventsSubscription;
-  StreamSubscription<List<Speaker>>? _scheduleSubscription;
+  final Map<String, StreamSubscription<List<Speaker>>> _schedules = {};
+
+  /// Events that may have a live activity, the most relevant first.
+  List<String> _candidates = [];
+
+  /// Live activity of each event whose schedule has already answered.
+  final Map<String, Speaker?> _answers = {};
+
   String? _eventId;
   Speaker? _activity;
   bool _loading = false;
@@ -28,60 +38,97 @@ class LiveActivityProvider with ChangeNotifier {
   /// True until the first answer about the live activity arrives.
   bool get loading => _loading;
 
-  /// Starts listening. It does nothing if it is already listening; after an
-  /// error it tries again.
+  /// Starts listening. If it is already listening, it only retries the
+  /// schedules that failed.
   void start() {
-    if (_eventsSubscription != null) return;
+    if (_eventsSubscription != null) {
+      _watchSchedules();
+      return;
+    }
     _loading = true;
     notifyListeners();
     _eventsSubscription = _eventRepository.getEventsStream().listen(
-      _followActiveEvent,
+      _followEvents,
       onError: _stopWithError,
     );
   }
 
-  void _followActiveEvent(List<Event> events) {
-    String? active;
-    for (final event in events) {
-      if (event.status == EventStatus.active) {
-        active = event.id;
+  void _followEvents(List<Event> events) {
+    _candidates = [
+      for (final status in [EventStatus.active, EventStatus.upcoming])
+        for (final event in events)
+          if (event.status == status) event.id,
+    ];
+    final gone = _schedules.keys
+        .where((id) => !_candidates.contains(id))
+        .toList();
+    for (final id in gone) {
+      _schedules.remove(id)?.cancel();
+    }
+    _answers.removeWhere((id, _) => !_candidates.contains(id));
+    _watchSchedules();
+    _update();
+  }
+
+  /// Listens to the schedule of every candidate that is not being followed.
+  void _watchSchedules() {
+    for (final id in _candidates) {
+      if (_schedules.containsKey(id)) continue;
+      _schedules[id] = _scheduleRepository
+          .getListScheduleStream(id)
+          .listen(
+            (schedule) {
+              _answers[id] = schedule.liveActivity;
+              _update();
+            },
+            onError: (Object error) {
+              // The other events keep working.
+              _log(error);
+              _schedules.remove(id)?.cancel();
+              _answers[id] = null;
+              _update();
+            },
+          );
+    }
+  }
+
+  void _update() {
+    String? eventId;
+    Speaker? activity;
+    for (final id in _candidates) {
+      final answer = _answers[id];
+      if (answer != null) {
+        eventId = id;
+        activity = answer;
         break;
       }
     }
-    if (active != null && active == _eventId && _scheduleSubscription != null) {
-      return;
-    }
-
-    _scheduleSubscription?.cancel();
-    _scheduleSubscription = null;
-    _eventId = active;
-    // Nothing of the previous event may stay on screen.
-    _activity = null;
-    _loading = active != null;
+    _eventId = eventId;
+    _activity = activity;
+    _loading = activity == null && !_candidates.every(_answers.containsKey);
     notifyListeners();
-    if (active == null) return;
-
-    _scheduleSubscription = _scheduleRepository
-        .getListScheduleStream(active)
-        .listen((schedule) {
-          _activity = schedule.liveActivity;
-          _loading = false;
-          notifyListeners();
-        }, onError: _stopWithError);
   }
 
   void _stopWithError(Object error) {
-    if (kDebugMode) debugPrint('Live activity failed: $error');
+    _log(error);
     _cancel();
+    _candidates = [];
+    _answers.clear();
     _eventId = null;
     _activity = null;
     _loading = false;
     notifyListeners();
   }
 
+  void _log(Object error) {
+    if (kDebugMode) debugPrint('Live activity failed: $error');
+  }
+
   void _cancel() {
-    _scheduleSubscription?.cancel();
-    _scheduleSubscription = null;
+    for (final subscription in _schedules.values) {
+      subscription.cancel();
+    }
+    _schedules.clear();
     _eventsSubscription?.cancel();
     _eventsSubscription = null;
   }

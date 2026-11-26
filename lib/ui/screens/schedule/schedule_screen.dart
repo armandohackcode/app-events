@@ -75,7 +75,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final eventProvider = Provider.of<EventProvider>(context, listen: false);
     final event = widget.event;
     final isAdmin = user.isAdmin;
-    final liveActivity = schedule.schedule.liveActivity;
+    // A finished event has no live activity, the same rule the home follows.
+    final liveActivity = event.status == EventStatus.finished
+        ? null
+        : schedule.schedule.liveActivity;
     final hasJoined = user.userCompetitor?.currentEventId == event.id;
     final canJoin =
         event.status == EventStatus.active &&

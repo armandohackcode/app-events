@@ -106,7 +106,23 @@ void main() {
     expect(find.byType(LiveTalkCard), findsNothing);
   });
 
-  testWidgets('shows the empty state when no event is active', (tester) async {
+  testWidgets('shows the live talk of an event not activated yet', (
+    tester,
+  ) async {
+    await pumpSection(tester);
+
+    events.add([makeEvent(id: 'e1')]);
+    await tester.pump();
+    schedule.add([makeSpeaker(title: 'Live talk', isLive: true)]);
+    await settle(tester);
+
+    expect(find.text('Live talk'), findsOne);
+    expect(find.text(AppStrings.homeLiveEmpty), findsNothing);
+  });
+
+  testWidgets('shows the empty state when every event is finished', (
+    tester,
+  ) async {
     await pumpSection(tester);
 
     events.add([makeEvent(id: 'e1', status: EventStatus.finished)]);

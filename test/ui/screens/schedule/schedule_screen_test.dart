@@ -227,6 +227,16 @@ void main() {
       expect(find.text(AppStrings.homeLiveBadge), findsOne);
     });
 
+    testWidgets('a finished event marks no activity as LIVE', (tester) async {
+      await pumpScreen(
+        tester,
+        schedule: [makeSpeaker(isLive: true)],
+        event: makeEvent(status: EventStatus.finished),
+      );
+
+      expect(find.text(AppStrings.homeLiveBadge), findsNothing);
+    });
+
     testWidgets('it stops listening to the schedule when the screen closes', (
       tester,
     ) async {
