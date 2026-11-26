@@ -2,6 +2,7 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,28 +11,32 @@ import 'package:provider/provider.dart';
 
 class _MockOtherRepository extends Mock implements OtherRepository {}
 
+class _MockUserProvider extends Mock implements UserProvider {}
+
 Organizer _makeOrganizer({
-  required int id,
+  String? id,
   required String name,
   List<String> team = const [],
-  bool lead = false,
+  int type = 1,
 }) => Organizer(
   id: id,
-  type: 1,
+  type: type,
   name: name,
   photoUrl: '',
   link: '',
   team: team,
-  lead: lead,
 );
 
 void main() {
   late _MockOtherRepository otherRepo;
   late OtherProvider otherProvider;
+  late _MockUserProvider userProvider;
 
   setUp(() {
     otherRepo = _MockOtherRepository();
     otherProvider = OtherProvider(otherRepo);
+    userProvider = _MockUserProvider();
+    when(() => userProvider.isAdmin).thenReturn(false);
   });
 
   tearDown(() {
@@ -45,8 +50,11 @@ void main() {
         disableAnimations: true,
         textScaler: TextScaler.linear(scale),
       ),
-      child: ChangeNotifierProvider.value(
-        value: otherProvider,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<OtherProvider>.value(value: otherProvider),
+          ChangeNotifierProvider<UserProvider>.value(value: userProvider),
+        ],
         child: const MaterialApp(home: OrganizersScreen()),
       ),
     );
@@ -56,16 +64,22 @@ void main() {
     'groups dynamically by real teams, excludes role tags from chips, and shows LEAD/CO-LEAD',
     (tester) async {
       final sample = [
-        _makeOrganizer(id: 1, name: 'Ada Lovelace', team: ['App'], lead: true),
-        _makeOrganizer(id: 2, name: 'Grace Hopper', team: ['Co-lead', 'Web']),
+        _makeOrganizer(id: '1', name: 'Ada Lovelace', team: ['App'], type: 2),
         _makeOrganizer(
-          id: 3,
+          id: '2',
+          name: 'Grace Hopper',
+          team: ['Co-lead', 'Web'],
+          type: 1,
+        ),
+        _makeOrganizer(
+          id: '3',
           name: 'Alan Turing',
           team: [AppStrings.organizersTeamDesign.replaceAll('\u00f1', 'n')],
+          type: 1,
         ),
-        _makeOrganizer(id: 4, name: 'Linus Torvalds', team: ['IA']),
+        _makeOrganizer(id: '4', name: 'Linus Torvalds', team: ['IA']),
         _makeOrganizer(
-          id: 5,
+          id: '5',
           name: 'Margaret Hamilton',
           team: ['Marketing', 'Sponsors'],
         ),
@@ -109,10 +123,10 @@ void main() {
     'combines team filter and search query cleanly, and resets with Todos',
     (tester) async {
       final sample = [
-        _makeOrganizer(id: 1, name: 'Ada Lovelace', team: ['App'], lead: true),
-        _makeOrganizer(id: 2, name: 'Linus Torvalds', team: ['Web']),
-        _makeOrganizer(id: 3, name: 'Grace Hopper', team: ['Web']),
-        _makeOrganizer(id: 4, name: 'Margaret Hamilton', team: ['Marketing']),
+        _makeOrganizer(id: '1', name: 'Ada Lovelace', team: ['App']),
+        _makeOrganizer(id: '2', name: 'Linus Torvalds', team: ['Web']),
+        _makeOrganizer(id: '3', name: 'Grace Hopper', team: ['Web']),
+        _makeOrganizer(id: '4', name: 'Margaret Hamilton', team: ['Marketing']),
       ];
       when(() => otherRepo.getOrganizer()).thenAnswer((_) async => sample);
 
@@ -162,8 +176,8 @@ void main() {
     'renders filter chips in a horizontal strip and aligns names across LEAD and regular tiles',
     (tester) async {
       final sample = [
-        _makeOrganizer(id: 1, name: 'Lead Member', team: ['App'], lead: true),
-        _makeOrganizer(id: 2, name: 'Regular Member', team: ['App']),
+        _makeOrganizer(id: '1', name: 'Lead Member', team: ['App']),
+        _makeOrganizer(id: '2', name: 'Regular Member', team: ['App']),
       ];
       when(() => otherRepo.getOrganizer()).thenAnswer((_) async => sample);
 
@@ -192,7 +206,7 @@ void main() {
       final devs = List.generate(
         9,
         (i) => _makeOrganizer(
-          id: i + 10,
+          id: (i + 10).toString(),
           name: 'Developer Member $i',
           team: ['App'],
         ),
@@ -233,7 +247,7 @@ void main() {
     expect(find.text(AppStrings.organizersEmptyState), findsOneWidget);
 
     otherProvider.organizers = [
-      _makeOrganizer(id: 99, name: 'Lead Without Team', lead: true),
+      _makeOrganizer(id: '99', name: 'Lead Without Team', type: 2),
     ];
     await tester.pumpAndSettle();
 

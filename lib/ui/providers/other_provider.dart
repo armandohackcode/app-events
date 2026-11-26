@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 class OtherProvider with ChangeNotifier {
   final OtherRepository _otherRepository;
   bool _loadingSponsor = false;
+  bool _loadingOrganizers = false;
   bool _loadingTreasureHunt = false;
 
   OtherProvider(this._otherRepository);
@@ -32,6 +33,12 @@ class OtherProvider with ChangeNotifier {
   bool get loadingSponsor => _loadingSponsor;
   set loadingSponsor(bool value) {
     _loadingSponsor = value;
+    notifyListeners();
+  }
+
+  bool get loadingOrganizers => _loadingOrganizers;
+  set loadingOrganizers(bool value) {
+    _loadingOrganizers = value;
     notifyListeners();
   }
 
@@ -62,6 +69,34 @@ class OtherProvider with ChangeNotifier {
   Future<void> getOrganizer() async {
     if (organizers.isEmpty) {
       organizers = await _otherRepository.getOrganizer();
+    }
+  }
+
+  Future<void> addOrganizer(
+    Organizer organizer,
+    String? organizerImagePath,
+  ) async {
+    loadingOrganizers = true;
+    try {
+      loadingOrganizers = true;
+      await _otherRepository.addOrganizer(organizer, organizerImagePath);
+      organizers = await _otherRepository.getOrganizer();
+    } catch (e) {
+      rethrow;
+    } finally {
+      loadingOrganizers = false;
+    }
+  }
+
+  Future<void> deleteOrganizer(String organizerId) async {
+    loadingOrganizers = true;
+    try {
+      await _otherRepository.deleteOrganizer(organizerId);
+      organizers = await _otherRepository.getOrganizer();
+    } catch (e) {
+      rethrow;
+    } finally {
+      loadingOrganizers = false;
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/event.dart';
+import 'package:app_events/domain/models/live_activity.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
@@ -40,17 +41,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   static const double _collapseThreshold = _expandedHeight - kToolbarHeight;
 
   late final ScrollController _scrollController;
+  late final ScheduleProvider _scheduleProvider;
   double _scrollOffset = 0.0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()..addListener(_onScroll);
+    _scheduleProvider = Provider.of<ScheduleProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ScheduleProvider>(
-        context,
-        listen: false,
-      ).loadSchedule(widget.event.id);
+      if (mounted) _scheduleProvider.watchSchedule(widget.event.id);
     });
   }
 
@@ -61,6 +61,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   void dispose() {
+    _scheduleProvider.stopWatchingSchedule(widget.event.id);
     _scrollController
       ..removeListener(_onScroll)
       ..dispose();
@@ -74,6 +75,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final eventProvider = Provider.of<EventProvider>(context, listen: false);
     final event = widget.event;
     final isAdmin = user.isAdmin;
+    final liveActivity = schedule.schedule.liveActivity;
     final hasJoined = user.userCompetitor?.currentEventId == event.id;
     final canJoin =
         event.status == EventStatus.active &&
@@ -247,9 +249,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       return ZoomIn(
                         child: ScheduleActivityCard(
                           item: item,
-                          // The live marker is wired to the activity in progress
-                          // in a separate ticket.
-                          highlighted: false,
+                          highlighted: identical(item, liveActivity),
                           onTap: opensDetail
                               ? () => Navigator.of(context).push(
                                   CupertinoPageRoute(

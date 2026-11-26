@@ -48,6 +48,8 @@ Speaker makeSpeaker({
   String technologyType = 'Mobile',
   String profession = 'GDE',
   String description = 'Talk',
+  int position = 1,
+  bool isLive = false,
   List<SocialNetwork>? socialNetwork,
 }) => Speaker(
   uuid: uuid,
@@ -61,7 +63,8 @@ Speaker makeSpeaker({
   type: type,
   color: 'blue',
   schedule: schedule,
-  position: 1,
+  position: position,
+  isLive: isLive,
   socialNetwork:
       socialNetwork ??
       [SocialNetwork(type: 'github', link: 'https://github.com')],

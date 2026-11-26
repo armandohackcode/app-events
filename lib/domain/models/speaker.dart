@@ -20,6 +20,9 @@ class Speaker {
   int current;
   int limit;
   String? openDate;
+
+  /// Whether the activity is happening right now. It is managed in Firebase.
+  bool isLive;
   List<SocialNetwork> socialNetwork;
 
   Speaker({
@@ -39,6 +42,7 @@ class Speaker {
     this.openDate,
     this.current = 0,
     this.limit = 0,
+    this.isLive = false,
   });
 
   Speaker copyWith({
@@ -58,6 +62,7 @@ class Speaker {
     int? position,
     String? openDate,
     List<SocialNetwork>? socialNetwork,
+    bool? isLive,
   }) => Speaker(
     limit: limit ?? this.limit,
     current: current ?? this.current,
@@ -74,6 +79,7 @@ class Speaker {
     schedule: schedule ?? this.schedule,
     position: position ?? this.position,
     openDate: openDate ?? this.openDate,
+    isLive: isLive ?? this.isLive,
     socialNetwork: socialNetwork ?? this.socialNetwork,
   );
 
@@ -93,6 +99,7 @@ class Speaker {
     schedule: json["schedule"] ?? "",
     position: json["position"] ?? 0,
     openDate: json["openDate"] ?? "",
+    isLive: json["isLive"] == true,
     socialNetwork: (json["SocialNetwork"] == null)
         ? []
         : List<SocialNetwork>.from(
@@ -116,6 +123,7 @@ class Speaker {
     "schedule": schedule,
     "position": position,
     "openDate": openDate,
+    "isLive": isLive,
     "SocialNetwork": List<dynamic>.from(socialNetwork.map((x) => x.toJson())),
   };
 }

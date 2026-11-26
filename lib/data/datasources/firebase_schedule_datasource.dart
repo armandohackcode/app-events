@@ -82,9 +82,11 @@ class FirebaseScheduleDatasource implements ScheduleDatasource {
         await storageRef.putFile(File(imagePath));
         photoUrl = await storageRef.getDownloadURL();
       }
-      await _scheduleRef(
-        eventId,
-      ).doc(speaker.uuid).update(speaker.copyWith(photoUrl: photoUrl).toJson());
+      // The live flag is managed in Firebase: editing an activity must not
+      // overwrite it with the value that was loaded before the edit.
+      final json = speaker.copyWith(photoUrl: photoUrl).toJson()
+        ..remove('isLive');
+      await _scheduleRef(eventId).doc(speaker.uuid).update(json);
     } catch (e) {
       rethrow;
     }
