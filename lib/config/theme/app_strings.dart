@@ -251,12 +251,19 @@ class AppStrings {
       "Se añadieron 10 puntos correctamente a";
 
   // Sign in
-  static const String signInTitle = "Bienvenido a GDG Sucre Events";
-  static const String signInGDGAsk = "¿Qué es un Google Developer Groups?";
+  static const String signInEventSchedule = '28 NOV 2026 · 08:00 - 13:00';
+  static const String signInEventName = 'DevFest';
+  static const String signInTitle = '¡Bienvenido al GDG Sucre!';
+  static const String signInSubtitle =
+      'Inicia sesión para revisar información sobre nuestros eventos y mucho material tech';
+  static const String signInGDGAsk = '¿Qué es un Google Developer Group?';
   static const String signInGDGDescription =
       'El "Google Developer Groups Sucre", es una comunidad sin fines de lucro de desarrolladores con enfoque al uso de las tecnologías de desarrollo de Google en Bolivia. No es una herramienta oficial de Google, esta aplicación está diseñada específicamente para ofrecer información detallada sobre los eventos que organizamos en Sucre, Bolivia. Descubre todo sobre nuestros eventos, mantente actualizado sobre las últimas tecnologías de Google, comparte conocimientos y conecta con la comunidad. Únete a nosotros mientras exploramos juntos las oportunidades emocionantes que ofrece el mundo de la tecnología y la innovación.';
-  static const String signInGoogleButton = "Iniciar sesión con Google";
-  static const String signInAppleButton = "Iniciar sesión con Apple";
+  static const String signInGoogleButton = 'Iniciar sesión con Google';
+  static const String signInAppleButton = 'Iniciar sesión con Apple';
+  static const String signInCommunityName = 'Google Developer Group';
+  static const String signInCommunityCity = 'Sucre';
+  static String signInVersionLabel(String version) => 'Versión $version';
 
   // Organizers
   static const String organizersTitle = "Organizadores del evento";
