@@ -15,7 +15,7 @@ void main() {
             body: SingleChildScrollView(
               child: TalkDetailCard(
                 info: speaker,
-                photo: const AssetImage(AppAssetsPath.liveTalkPhoto),
+                photo: const AssetImage(AppAssetsPath.logoGdg),
               ),
             ),
           ),
@@ -100,5 +100,12 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('an activity without speaker has no speaker row', (tester) async {
+    await pumpCard(tester, makeSpeaker(name: '', profession: 'GDE'));
+
+    expect(find.text('GDE', findRichText: true), findsNothing);
+    expect(find.text('Flutter Clean Architecture'), findsOneWidget);
   });
 }

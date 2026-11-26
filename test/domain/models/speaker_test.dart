@@ -94,4 +94,39 @@ void main() {
       expect(() => Speaker.fromJson({}), returnsNormally);
     });
   });
+
+  group('Speaker.isLive', () {
+    test('is false by default', () {
+      expect(makeSpeaker().isLive, isFalse);
+      expect(makeSpeaker().toJson()['isLive'], isFalse);
+    });
+
+    test('is read from and written to JSON', () {
+      final json = makeSpeaker(isLive: true).toJson();
+
+      expect(json['isLive'], isTrue);
+      expect(Speaker.fromJson(json).isLive, isTrue);
+    });
+
+    test('is false when the field is missing', () {
+      final json = makeSpeaker(isLive: true).toJson()..remove('isLive');
+
+      expect(Speaker.fromJson(json).isLive, isFalse);
+    });
+
+    test('only a boolean true turns it on', () {
+      for (final value in [null, 'true', 1, 0, false]) {
+        final json = makeSpeaker().toJson()..['isLive'] = value;
+
+        expect(Speaker.fromJson(json).isLive, isFalse, reason: '$value');
+      }
+    });
+
+    test('copyWith keeps it unless a new value is given', () {
+      final live = makeSpeaker(isLive: true);
+
+      expect(live.copyWith(title: 'Other').isLive, isTrue);
+      expect(live.copyWith(isLive: false).isLive, isFalse);
+    });
+  });
 }

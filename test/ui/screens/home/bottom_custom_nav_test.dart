@@ -2,11 +2,15 @@ import 'dart:math';
 
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/auth_user.dart';
+import 'package:app_events/domain/models/event.dart';
 import 'package:app_events/domain/models/sponsor.dart';
 import 'package:app_events/domain/repositories/auth_repository.dart';
+import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
+import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/gdg_spin_provider.dart';
+import 'package:app_events/ui/providers/live_activity_provider.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -24,6 +28,10 @@ class _MockUserRepository extends Mock implements UserRepository {}
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+class _MockEventRepository extends Mock implements EventRepository {}
+
+class _MockScheduleRepository extends Mock implements ScheduleRepository {}
+
 void main() {
   testWidgets(
     'BottomCustomNav exposes 4 destinations and switches to Activities',
@@ -31,11 +39,15 @@ void main() {
       final otherRepo = _MockOtherRepository();
       final userRepo = _MockUserRepository();
       final authRepo = _MockAuthRepository();
+      final eventRepo = _MockEventRepository();
 
       when(() => otherRepo.getSponsors()).thenAnswer((_) async => <Sponsor>[]);
       when(() => otherRepo.getTreasureHuntItems()).thenAnswer((_) async => []);
       when(() => userRepo.validateIsAdmin('u1')).thenAnswer((_) async => false);
       when(() => userRepo.getUserInfo('u1')).thenAnswer((_) async => null);
+      when(
+        () => eventRepo.getEventsStream(),
+      ).thenAnswer((_) => Stream.value(<Event>[]));
 
       final otherProvider = OtherProvider(otherRepo);
       final userProvider = UserProvider(userRepo);
@@ -44,11 +56,16 @@ void main() {
         userProvider,
       )..userInfo = const AuthUser(uid: 'u1', displayName: 'Ada', photoUrl: '');
       final spinProvider = GdgSpinProvider(random: Random(1));
+      final liveProvider = LiveActivityProvider(
+        eventRepo,
+        _MockScheduleRepository(),
+      );
       addTearDown(() {
         otherProvider.dispose();
         userProvider.dispose();
         authProvider.dispose();
         spinProvider.dispose();
+        liveProvider.dispose();
       });
 
       await tester.binding.setSurfaceSize(const Size(320, 844));
@@ -66,6 +83,7 @@ void main() {
               ChangeNotifierProvider.value(value: userProvider),
               ChangeNotifierProvider.value(value: authProvider),
               ChangeNotifierProvider.value(value: spinProvider),
+              ChangeNotifierProvider.value(value: liveProvider),
             ],
             child: const MaterialApp(home: BottomCustomNav()),
           ),

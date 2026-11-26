@@ -103,14 +103,9 @@ class AppStrings {
   static const String homeSponsorPlaceholderOne = "CISIC";
   static const String homeSponsorPlaceholderTwo = "S.I.B.";
   static const String homeSponsorPlaceholderRegion = "Chuquisaca";
-  // Placeholder content of the live talk card until it is fed by real data.
-  static const String homeLiveTalkTitle =
-      "ADK for Dummies: Tu primer Agente en Google Cloud";
-  static const String homeLiveSpeakerName = "Ivan Martinez";
-  static const String homeLiveSpeakerProfession = "Ingeniero en Sistemas";
-  static const String homeLiveSchedule = "09:45 - 10:45";
-  static const String homeLiveTechnology = "IA";
-  static const String homeLiveQuestionHint = "Escribe tu pregunta para Ivan...";
+  static const String homeLiveQuestionHintPrefix = "Escribe tu pregunta para ";
+  static const String homeLiveEmpty =
+      "No hay ninguna actividad en vivo en este momento";
 
   // Trasure Bunt
   static const String homeTreasureBuntDescription =

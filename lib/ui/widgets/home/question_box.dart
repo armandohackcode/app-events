@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 /// Question box of the live talk card. It is visual only: nothing is sent yet.
 class QuestionBox extends StatelessWidget {
-  const QuestionBox({super.key});
+  /// First name of the speaker the question is for.
+  final String speakerName;
+  const QuestionBox({super.key, required this.speakerName});
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +20,20 @@ class QuestionBox extends StatelessWidget {
           BoxShadow(color: AppStyles.borderColor, offset: Offset(3, 3)),
         ],
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.question_mark_rounded,
             size: 14,
             color: AppStyles.fontSecondaryColor,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
-              style: TextStyle(fontSize: 12.5, color: AppStyles.fontColor),
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppStyles.fontColor,
+              ),
               decoration: InputDecoration(
                 isCollapsed: true,
                 filled: false,
@@ -36,16 +41,21 @@ class QuestionBox extends StatelessWidget {
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
-                hintText: AppStrings.homeLiveQuestionHint,
-                hintStyle: TextStyle(
+                hintText:
+                    '${AppStrings.homeLiveQuestionHintPrefix}$speakerName...',
+                hintStyle: const TextStyle(
                   fontSize: 12.5,
                   color: AppStyles.fontSecondaryColor,
                 ),
               ),
             ),
           ),
-          SizedBox(width: 8),
-          Icon(Icons.send_outlined, size: 16, color: AppStyles.colorBaseBlue),
+          const SizedBox(width: 8),
+          const Icon(
+            Icons.send_outlined,
+            size: 16,
+            color: AppStyles.colorBaseBlue,
+          ),
         ],
       ),
     );

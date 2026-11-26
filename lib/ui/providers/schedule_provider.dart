@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -10,6 +12,9 @@ class ScheduleProvider with ChangeNotifier {
   List<Speaker> _schedule = [];
   bool _loadingSchedule = false;
   bool _loadingNewSchedule = false;
+
+  StreamSubscription<List<Speaker>>? _scheduleSubscription;
+  String? _watchedEventId;
 
   bool get loadingSchedule => _loadingSchedule;
   set loadingSchedule(bool state) {
@@ -44,6 +49,42 @@ class ScheduleProvider with ChangeNotifier {
       loadingSchedule = false;
       rethrow;
     }
+  }
+
+  /// Keeps [schedule] updated with the changes of the event's schedule, until
+  /// [stopWatchingSchedule] is called or another event is watched.
+  void watchSchedule(String eventId) {
+    _scheduleSubscription?.cancel();
+    // Never show the schedule of the previously watched event.
+    if (_watchedEventId != eventId) _schedule = [];
+    _watchedEventId = eventId;
+    loadingSchedule = true;
+    _scheduleSubscription = _repository
+        .getListScheduleStream(eventId)
+        .listen(
+          (list) {
+            _schedule = list;
+            loadingSchedule = false;
+          },
+          onError: (Object error) {
+            if (kDebugMode) debugPrint('watchSchedule failed: $error');
+            loadingSchedule = false;
+          },
+        );
+  }
+
+  /// Stops listening to the schedule of [eventId]. It does nothing if another
+  /// event is being watched by then.
+  void stopWatchingSchedule(String eventId) {
+    if (_watchedEventId != eventId) return;
+    _scheduleSubscription?.cancel();
+    _scheduleSubscription = null;
+  }
+
+  @override
+  void dispose() {
+    _scheduleSubscription?.cancel();
+    super.dispose();
   }
 
   Stream<Speaker?> speakerStream(String eventId, String speakerUuid) =>

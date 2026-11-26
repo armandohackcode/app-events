@@ -6,6 +6,7 @@ import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/resource_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/domain/repositories/speed_run_repository.dart';
+import 'package:app_events/ui/providers/live_activity_provider.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
 import 'package:app_events/ui/providers/gdg_spin_provider.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => sl<SignInSocialNetworkProvider>()),
       ChangeNotifierProvider(create: (_) => sl<UserProvider>()),
       ChangeNotifierProvider(create: (_) => sl<EventProvider>()),
+      ChangeNotifierProvider(create: (_) => sl<LiveActivityProvider>()),
       ChangeNotifierProvider(
         create: (_) => OtherProvider(sl<OtherRepository>()),
       ),
