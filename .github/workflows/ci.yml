@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: '3.38.1'
+  FLUTTER_VERSION: '3.47.7'
   # Coverage ratchet: raise it as tests are added, never lower it.
   MIN_COVERAGE: '14'
 
