@@ -53,7 +53,6 @@ class AppAssetsPath {
   // Home screen decoration and placeholder content.
   static const String backdropSparkle = 'assets/img/backdrop-sparkle.svg';
   static const String backdropBars = 'assets/img/backdrop-bars.svg';
-  static const String liveTalkPhoto = 'assets/img/live-talk-photo.png';
 
   // ranking
   static const String androidPed = 'assets/img/android-ped.png';

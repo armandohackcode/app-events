@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,5 +89,78 @@ void main() {
       throwsException,
     );
     expect(provider.loadingNewSchedule, isFalse);
+  });
+
+  group('watchSchedule', () {
+    late StreamController<List<Speaker>> first;
+    late StreamController<List<Speaker>> second;
+
+    setUp(() {
+      first = StreamController<List<Speaker>>.broadcast();
+      second = StreamController<List<Speaker>>.broadcast();
+      when(
+        () => repository.getListScheduleStream('evt-1'),
+      ).thenAnswer((_) => first.stream);
+      when(
+        () => repository.getListScheduleStream('evt-2'),
+      ).thenAnswer((_) => second.stream);
+    });
+
+    tearDown(() async {
+      await first.close();
+      await second.close();
+    });
+
+    test('keeps the schedule updated', () async {
+      provider.watchSchedule('evt-1');
+      expect(provider.loadingSchedule, isTrue);
+
+      first.add([makeSpeaker(uuid: 'a')]);
+      await pumpEventQueue();
+      expect(provider.loadingSchedule, isFalse);
+      expect(provider.schedule.map((s) => s.uuid), ['a']);
+
+      first.add([makeSpeaker(uuid: 'a'), makeSpeaker(uuid: 'b')]);
+      await pumpEventQueue();
+      expect(provider.schedule.map((s) => s.uuid), ['a', 'b']);
+    });
+
+    test('never shows the schedule of the previous event', () async {
+      provider.watchSchedule('evt-1');
+      first.add([makeSpeaker(uuid: 'a')]);
+      await pumpEventQueue();
+
+      provider.watchSchedule('evt-2');
+
+      expect(provider.schedule, isEmpty);
+      expect(first.hasListener, isFalse);
+      expect(second.hasListener, isTrue);
+    });
+
+    test('stops loading when the stream fails', () async {
+      provider.watchSchedule('evt-1');
+
+      first.addError(Exception('offline'));
+      await pumpEventQueue();
+
+      expect(provider.loadingSchedule, isFalse);
+    });
+
+    test('stopWatchingSchedule cancels the subscription', () {
+      provider.watchSchedule('evt-1');
+
+      provider.stopWatchingSchedule('evt-1');
+
+      expect(first.hasListener, isFalse);
+    });
+
+    test('stopping an event that is no longer watched does nothing', () {
+      provider.watchSchedule('evt-1');
+      provider.watchSchedule('evt-2');
+
+      provider.stopWatchingSchedule('evt-1');
+
+      expect(second.hasListener, isTrue);
+    });
   });
 }

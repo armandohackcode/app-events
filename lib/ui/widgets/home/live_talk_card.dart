@@ -10,14 +10,13 @@ import 'package:app_events/ui/widgets/utils/utils_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-/// Card of the talk that is happening right now: title, speaker photo, name,
-/// profession and social links. Tapping the talk calls [onTap]; the social
-/// buttons open their own link. The photo comes from [photo] when given,
-/// otherwise from the talk's photo URL.
+/// Card of the activity that is happening right now. It shows the data the
+/// activity has: title, speaker photo, name, profession and social links; a
+/// break or lunch shows its icon and description instead of a speaker.
+/// Tapping the activity calls [onTap]; the social buttons open their own link.
 class LiveTalkCard extends StatelessWidget {
   final Speaker talk;
   final VoidCallback onTap;
-  final ImageProvider? photo;
 
   /// Extra content shown below the social links.
   final Widget? footer;
@@ -26,12 +25,13 @@ class LiveTalkCard extends StatelessWidget {
     super.key,
     required this.talk,
     required this.onTap,
-    this.photo,
     this.footer,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isGeneral = EventTypeSpeaker.fromValue(talk.type).isGeneralActivity;
+    final detail = isGeneral ? talk.description : talk.profession;
     return WindowCard(
       title: AppStrings.homeLiveWindowTitle,
       trailing: talk.schedule,
@@ -46,7 +46,7 @@ class LiveTalkCard extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 280),
                   child: Text(
-                    talk.title,
+                    talk.title.isEmpty ? eventTypeLabel(talk.type) : talk.title,
                     textAlign: TextAlign.center,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -58,27 +58,36 @@ class LiveTalkCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                _TalkPhoto(talk: talk, photo: photo),
-                const SizedBox(height: 14),
-                Text(
-                  talk.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppStyles.fontColor,
+                _TalkPhoto(talk: talk, isGeneral: isGeneral),
+                if (!isGeneral && talk.name.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    talk.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppStyles.fontColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  talk.profession,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AppStyles.fontSecondaryColor,
+                ],
+                if (detail.isNotEmpty) ...[
+                  // Without a name above, leave room for the photo shadow.
+                  SizedBox(height: !isGeneral && talk.name.isNotEmpty ? 2 : 14),
+                  Text(
+                    detail,
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppStyles.fontSecondaryColor,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -95,8 +104,8 @@ class LiveTalkCard extends StatelessWidget {
 
 class _TalkPhoto extends StatelessWidget {
   final Speaker talk;
-  final ImageProvider? photo;
-  const _TalkPhoto({required this.talk, this.photo});
+  final bool isGeneral;
+  const _TalkPhoto({required this.talk, required this.isGeneral});
 
   static const double _width = 177;
   static const double _height = 139;
@@ -128,7 +137,9 @@ class _TalkPhoto extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(_radius - _borderWidth),
-              child: _Photo(url: talk.photoUrl, image: photo),
+              child: isGeneral
+                  ? _ActivityIcon(type: talk.type)
+                  : _Photo(url: talk.photoUrl),
             ),
           ),
           if (talk.technologyType.isNotEmpty)
@@ -152,8 +163,7 @@ class _TalkPhoto extends StatelessWidget {
 
 class _Photo extends StatelessWidget {
   final String url;
-  final ImageProvider? image;
-  const _Photo({required this.url, this.image});
+  const _Photo({required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -167,19 +177,28 @@ class _Photo extends StatelessWidget {
         ),
       ),
     );
-    if (image != null) {
-      return Image(
-        image: image!,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => placeholder,
-      );
-    }
     if (url.isEmpty) return placeholder;
     return CachedNetworkImage(
       imageUrl: url,
       fit: BoxFit.cover,
       placeholder: (_, _) => placeholder,
       errorWidget: (_, _, _) => placeholder,
+    );
+  }
+}
+
+/// Large icon of an activity that has no speaker photo.
+class _ActivityIcon extends StatelessWidget {
+  final String type;
+  const _ActivityIcon({required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppStyles.colorCardBlue,
+      child: Center(
+        child: Icon(eventTypeIcon(type), size: 56, color: AppStyles.fontColor),
+      ),
     );
   }
 }
