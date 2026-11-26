@@ -16,32 +16,24 @@ class _LayerRule {
 }
 
 const _rules = [
-  _LayerRule(
-    'lib/domain/',
-    [
-      'package:flutter/',
-      'package:cloud_firestore/',
-      'package:firebase_',
-      'package:provider/',
-      'package:app_events/data/',
-      'package:app_events/ui/',
-      'package:app_events/config/',
-      'dart:io',
-    ],
-    'domain must be pure Dart and must not depend on any implementation',
-  ),
-  _LayerRule(
-    'lib/data/',
-    [
-      'package:flutter/material.dart',
-      'package:flutter/widgets.dart',
-      'package:flutter/cupertino.dart',
-      'package:provider/',
-      'package:app_events/ui/',
-      'package:app_events/config/',
-    ],
-    'data implements domain contracts and must not know about the UI',
-  ),
+  _LayerRule('lib/domain/', [
+    'package:flutter/',
+    'package:cloud_firestore/',
+    'package:firebase_',
+    'package:provider/',
+    'package:app_events/data/',
+    'package:app_events/ui/',
+    'package:app_events/config/',
+    'dart:io',
+  ], 'domain must be pure Dart and must not depend on any implementation'),
+  _LayerRule('lib/data/', [
+    'package:flutter/material.dart',
+    'package:flutter/widgets.dart',
+    'package:flutter/cupertino.dart',
+    'package:provider/',
+    'package:app_events/ui/',
+    'package:app_events/config/',
+  ], 'data implements domain contracts and must not know about the UI'),
   _LayerRule('lib/ui/', [
     'package:cloud_firestore/',
     'package:firebase_',

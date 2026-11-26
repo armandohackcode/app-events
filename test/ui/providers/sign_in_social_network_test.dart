@@ -130,22 +130,16 @@ void main() {
       );
     });
 
-    test(
-      'stops loading after a successful sign-in',
-      () async {
-        // After logging out, the sign-in screen shows a spinner instead of
-        // the buttons while loadingAuth is still true.
-        when(
-          () => repository.signInWithGoogle(),
-        ).thenAnswer((_) async => _user);
-        stubAddCompetitor();
+    test('stops loading after a successful sign-in', () async {
+      // After logging out, the sign-in screen shows a spinner instead of
+      // the buttons while loadingAuth is still true.
+      when(() => repository.signInWithGoogle()).thenAnswer((_) async => _user);
+      stubAddCompetitor();
 
-        await provider.googleAuth();
+      await provider.googleAuth();
 
-        expect(provider.loadingAuth, isFalse);
-      },
-      skip: 'BUG: googleAuth leaves loadingAuth true after success',
-    );
+      expect(provider.loadingAuth, isFalse);
+    }, skip: 'BUG: googleAuth leaves loadingAuth true after success');
   });
 
   group('appleAuth', () {
