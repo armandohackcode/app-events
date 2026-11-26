@@ -122,14 +122,14 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
+                  color: AppStyles.fontFaintColor,
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             const Text(
-              'Organizador',
+              AppStrings.organizerText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
             ),
 
@@ -141,7 +141,7 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
                   children: [
                     CircleAvatar(
                       radius: 35,
-                      backgroundColor: Colors.grey.shade300,
+                      backgroundColor: AppStyles.fontFaintColor,
                       backgroundImage: FileImage(File(_organizerImagePath!)),
                     ),
                     Positioned(
@@ -155,13 +155,13 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
                           width: 22,
                           height: 22,
                           decoration: const BoxDecoration(
-                            color: Colors.redAccent,
+                            color: AppStyles.colorBaseRed,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.close,
                             size: 14,
-                            color: Colors.white,
+                            color: AppStyles.onAccentColor,
                           ),
                         ),
                       ),
@@ -198,14 +198,18 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
-                labelText: 'Nombre',
+                labelText: AppStrings.profileName,
                 border: OutlineInputBorder(),
               ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Ingresa el nombre' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? AppStrings.profileNameValidate
+                  : null,
             ),
             const SizedBox(height: 8),
-            const Text('Tipo', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              AppStrings.commonWordType,
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
@@ -214,12 +218,12 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
                 segments: const [
                   ButtonSegment(
                     value: 1,
-                    label: Text('Organizador'),
+                    label: Text(AppStrings.organizerText),
                     icon: Icon(Icons.person_outline),
                   ),
                   ButtonSegment(
                     value: 2,
-                    label: Text('Lead'),
+                    label: Text(AppStrings.organizersTagLead),
                     icon: Icon(Icons.star_outline),
                   ),
                 ],
@@ -233,14 +237,14 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
 
             // Equipos
             const Text(
-              'Equipos',
+              AppStrings.commonWordTeams,
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               key: ValueKey(_teams.length), // reinicia el dropdown al elegir
               initialValue: null,
-              hint: const Text('Agregar equipo'),
+              hint: const Text(AppStrings.organizerAddTeams),
               decoration: const InputDecoration(border: OutlineInputBorder()),
               items: remainingTeams
                   .map((t) => DropdownMenuItem(value: t, child: Text(t)))
@@ -285,14 +289,14 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancelar'),
+                      child: const Text(AppStrings.commonWordCancel),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _submit,
-                      child: const Text('Guardar'),
+                      child: const Text(AppStrings.commonWordSave),
                     ),
                   ),
                 ],

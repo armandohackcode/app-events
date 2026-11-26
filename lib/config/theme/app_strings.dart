@@ -5,6 +5,7 @@ class AppStrings {
   // commonWord
   static const String commonWordSave = 'Guardar';
   static const String commonWordCancel = 'Cancelar';
+  static const String commonWordAccept = 'Aceptar';
   static const String commonWordDelete = 'Eliminar';
   static const String commonWordEdit = 'Editar';
   static const String commonWordClose = 'Cerrar';
@@ -18,6 +19,9 @@ class AppStrings {
   static const String commonWordYes = 'SI';
   static const String commonWordNo = 'NO';
   static const String commonWordLoading = 'loading';
+  static const String commonWordTeams = 'Equipos';
+  static const String commonWordType = 'Tipo';
+
   static const String rankingTitle = 'Ranking';
   static const String rankingPodiumTag = 'Podio';
   static const String rankingLeaderboardTag = 'Tabla general';
@@ -263,6 +267,7 @@ class AppStrings {
   static String signInVersionLabel(String version) => 'Versión $version';
 
   // Organizers
+  static const String organizerText = "Organizador";
   static const String organizersTitle = "Organizadores del evento";
   static const String organizersTagLead = "LEAD";
   static const String organizersTagCoLead = "CO-LEAD";
@@ -284,6 +289,7 @@ class AppStrings {
   static const String organizersSeeAll = "Ver todos";
   static const String organizersSeeLess = "Ver menos";
   static const String organizerDelete = "Eliminar organizador";
+  static const String organizerAddTeams = "Agregar equipos";
   static String organizerDeleteConfirm(String name) =>
       "¿Estás seguro de eliminar a $name";
   static const String organizersEmptyState =

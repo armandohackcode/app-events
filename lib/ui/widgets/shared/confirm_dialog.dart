@@ -1,3 +1,4 @@
+import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,8 @@ class ConfirmDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    this.cancelText = 'Cancelar',
-    this.acceptText = 'Aceptar',
+    this.cancelText = AppStrings.commonWordCancel,
+    this.acceptText = AppStrings.commonWordAccept,
     this.acceptColor,
   });
 
@@ -21,8 +22,8 @@ class ConfirmDialog extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String subtitle,
-    String cancelText = 'Cancelar',
-    String acceptText = 'Aceptar',
+    String cancelText = AppStrings.commonWordCancel,
+    String acceptText = AppStrings.commonWordAccept,
     Color? acceptColor,
   }) async {
     final result = await showDialog<bool>(
@@ -81,7 +82,7 @@ class ConfirmDialog extends StatelessWidget {
                     style: acceptColor != null
                         ? ElevatedButton.styleFrom(
                             backgroundColor: acceptColor,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppStyles.onAccentColor,
                           )
                         : null,
                     onPressed: () => Navigator.of(context).pop(true),

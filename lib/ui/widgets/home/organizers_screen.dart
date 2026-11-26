@@ -822,7 +822,7 @@ class _OrganizerTile extends StatelessWidget {
                               member.name,
                             ),
                             acceptText: AppStrings.commonWordDelete,
-                            acceptColor: Colors.redAccent,
+                            acceptColor: AppStyles.colorBaseRed,
                           ),
                         );
                         if (confirmDelete == true && context.mounted) {
@@ -834,7 +834,7 @@ class _OrganizerTile extends StatelessWidget {
                         width: 20,
                         height: 20,
                         decoration: BoxDecoration(
-                          color: Colors.redAccent,
+                          color: AppStyles.colorBaseRed,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: AppStyles.borderColor,
@@ -844,7 +844,7 @@ class _OrganizerTile extends StatelessWidget {
                         child: const Icon(
                           Icons.close,
                           size: 12,
-                          color: Colors.white,
+                          color: AppStyles.onAccentColor,
                         ),
                       ),
                     ),
