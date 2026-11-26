@@ -37,7 +37,7 @@ class AddOrganizerForm extends StatefulWidget {
 class _AddOrganizerFormState extends State<AddOrganizerForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
-  late int _type = organizerValue; // 1: Organizador, 2: Lead
+  late int _type = organizerValue;
   final ImagePicker _picker = ImagePicker();
   late List<String> _teams;
   String? _organizerImagePath;
@@ -193,7 +193,6 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
             ),
             const SizedBox(height: 16),
 
-            // Nombre
             TextFormField(
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
@@ -235,14 +234,13 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
             ),
             const SizedBox(height: 8),
 
-            // Equipos
             const Text(
               AppStrings.commonWordTeams,
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              key: ValueKey(_teams.length), // reinicia el dropdown al elegir
+              key: ValueKey(_teams.length),
               initialValue: null,
               hint: const Text(AppStrings.organizerAddTeams),
               decoration: const InputDecoration(border: OutlineInputBorder()),
@@ -271,7 +269,6 @@ class _AddOrganizerFormState extends State<AddOrganizerForm> {
             ],
             const SizedBox(height: 16),
 
-            // Botones
             if (isSaving)
               Center(
                 child: SizedBox(
