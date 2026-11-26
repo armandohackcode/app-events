@@ -2,7 +2,7 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speed_run_challenge.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+// import 'package:flutter_html/flutter_html.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ChallengeDetailScreen extends StatefulWidget {
@@ -133,31 +133,31 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             ),
           ),
           SliverToBoxAdapter(
-            child: Html(
-              data: challenge.challenge,
-              style: {
-                'body': Style(
-                  fontSize: FontSize(15),
-                  color: AppStyles.fontColor,
-                  margin: Margins.symmetric(horizontal: 15),
-                ),
-                'h1': Style(
-                  fontSize: FontSize(20),
-                  fontWeight: FontWeight.bold,
-                  color: AppStyles.fontColor,
-                ),
-                'h2': Style(
-                  fontSize: FontSize(18),
-                  fontWeight: FontWeight.bold,
-                  color: AppStyles.fontColor,
-                ),
-                'code': Style(
-                  backgroundColor: AppStyles.borderColor,
-                  fontFamily: 'monospace',
-                ),
-                'a': Style(color: AppStyles.colorBaseBlue),
-              },
-            ),
+            // child: Html(
+            //   data: challenge.challenge,
+            //   style: {
+            //     'body': Style(
+            //       fontSize: FontSize(15),
+            //       color: AppStyles.fontColor,
+            //       margin: Margins.symmetric(horizontal: 15),
+            //     ),
+            //     'h1': Style(
+            //       fontSize: FontSize(20),
+            //       fontWeight: FontWeight.bold,
+            //       color: AppStyles.fontColor,
+            //     ),
+            //     'h2': Style(
+            //       fontSize: FontSize(18),
+            //       fontWeight: FontWeight.bold,
+            //       color: AppStyles.fontColor,
+            //     ),
+            //     'code': Style(
+            //       backgroundColor: AppStyles.borderColor,
+            //       fontFamily: 'monospace',
+            //     ),
+            //     'a': Style(color: AppStyles.colorBaseBlue),
+            //   },
+            // ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
