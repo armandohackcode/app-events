@@ -28,6 +28,8 @@ class AppStrings {
   static const String playLabel = 'Jugar';
   static const String askLabel = 'Preguntar';
   static const String rateLabel = 'Calificar';
+  static const String commonMessageSave =
+      'Se guardaron los datos correctamente';
 
   // schedule
   static const String scheduleAddSpeakerOrActivity =
@@ -281,6 +283,9 @@ class AppStrings {
   static const String organizersTeamAccreditation = "Acreditación";
   static const String organizersSeeAll = "Ver todos";
   static const String organizersSeeLess = "Ver menos";
+  static const String organizerDelete = "Eliminar organizador";
+  static String organizerDeleteConfirm(String name) =>
+      "¿Estás seguro de eliminar a $name";
   static const String organizersEmptyState =
       "Aún no hay organizadores disponibles.";
   static const String organizersEmptySearch =

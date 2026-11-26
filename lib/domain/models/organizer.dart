@@ -7,32 +7,29 @@ String organizerToJson(List<Organizer> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Organizer {
-  int id;
+  String? id;
   String name;
   int type;
   String photoUrl;
   String link;
   List<String> team;
-  bool lead;
 
   Organizer({
-    required this.id,
+    this.id,
     required this.type,
     required this.name,
     required this.photoUrl,
     required this.link,
     required this.team,
-    required this.lead,
   });
 
   Organizer copyWith({
-    required int id,
+    required String? id,
     int? type,
     String? name,
     String? photoUrl,
     String? link,
     List<String>? team,
-    bool? lead,
   }) => Organizer(
     id: id,
     type: type ?? this.type,
@@ -40,7 +37,6 @@ class Organizer {
     photoUrl: photoUrl ?? this.photoUrl,
     link: link ?? this.link,
     team: team ?? this.team,
-    lead: lead ?? this.lead,
   );
 
   factory Organizer.fromJson(Map<String, dynamic> json) => Organizer(
@@ -50,7 +46,6 @@ class Organizer {
     photoUrl: json["photoUrl"],
     link: json["link"] ?? "",
     team: List<String>.from(json["team"] ?? []),
-    lead: json["lead"] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +55,5 @@ class Organizer {
     "photoUrl": photoUrl,
     "link": link,
     "team": team,
-    "lead": lead,
   };
 }

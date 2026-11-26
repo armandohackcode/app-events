@@ -6,7 +6,10 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/organizer.dart';
 import 'package:app_events/ui/providers/other_provider.dart';
+import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
+import 'package:app_events/ui/widgets/organizers/add_organizer_form.dart';
+import 'package:app_events/ui/widgets/shared/confirm_dialog.dart';
 import 'package:app_events/ui/widgets/shared/dashed_border_box.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/initials_avatar.dart';
@@ -91,7 +94,7 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
       }
     }
     if (result.isEmpty) {
-      final fallbackLabel = item.lead
+      final fallbackLabel = item.type == leadValue
           ? AppStrings.organizersFilterLeadership
           : AppStrings.organizersFilterCommunity;
       result.add((
@@ -139,6 +142,8 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
   @override
   Widget build(BuildContext context) {
     final organizers = Provider.of<OtherProvider>(context).organizers;
+    final userProvider = Provider.of<UserProvider>(context);
+
     final allBuckets = _buildBuckets(organizers);
 
     final activeSelection =
@@ -193,6 +198,28 @@ class _OrganizersScreenState extends State<OrganizersScreen> {
               color: AppStyles.fontColor,
             ),
           ),
+          actions: [
+            if (userProvider.isAdmin)
+              IconButton(
+                icon: const Icon(
+                  Icons.person_add,
+                  size: 20,
+                  color: AppStyles.fontColor,
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: const AddOrganizerForm(),
+                    ),
+                  );
+                },
+              ),
+          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
@@ -705,7 +732,7 @@ class _OrganizerTile extends StatelessWidget {
   ];
 
   String? _roleLabel() {
-    if (member.lead) return AppStrings.organizersTagLead;
+    if (member.type == leadValue) return AppStrings.organizersTagLead;
     for (final team in member.team) {
       if (isCoLeadRoleTag(team)) {
         return AppStrings.organizersTagCoLead;
@@ -716,8 +743,11 @@ class _OrganizerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final otherProvider = Provider.of<OtherProvider>(context, listen: false);
+
     final roleLabel = _roleLabel();
-    final isLead = member.lead;
+    final isLead = member.type == leadValue;
     final avatarColor =
         _avatarPalette[(member.name.hashCode.abs() + paletteIndex) %
             _avatarPalette.length];
@@ -771,6 +801,50 @@ class _OrganizerTile extends StatelessWidget {
                             color: AppStyles.onAccentColor,
                             height: 1,
                           ),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (userProvider.isAdmin)
+                  Positioned(
+                    top: -4,
+                    right: -4,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        FocusScope.of(context).unfocus();
+                        if (member.id == null) return;
+                        final confirmDelete = await showDialog<bool>(
+                          context: context,
+                          builder: (_) => ConfirmDialog(
+                            title: AppStrings.organizerDelete,
+                            subtitle: AppStrings.organizerDeleteConfirm(
+                              member.name,
+                            ),
+                            acceptText: AppStrings.commonWordDelete,
+                            acceptColor: Colors.redAccent,
+                          ),
+                        );
+                        if (confirmDelete == true && context.mounted) {
+                          otherProvider.deleteOrganizer(member.id!);
+                        }
+                      },
+                      // onTap: onDelete,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppStyles.borderColor,
+                            width: 1.2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 12,
+                          color: Colors.white,
                         ),
                       ),
                     ),

@@ -6,6 +6,10 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// Si es Lead, es 1, si es Organizer, es 2
+const int leadValue = 2;
+const int organizerValue = 1;
+
 void customSnackbar(
   BuildContext context,
   String text, {
