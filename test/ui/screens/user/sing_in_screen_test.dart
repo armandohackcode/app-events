@@ -149,21 +149,23 @@ void main() {
     variant: TargetPlatformVariant.only(TargetPlatform.android),
   );
 
-  testWidgets('iOS displays Google and Apple buttons and triggers Apple auth', (
-    tester,
-  ) async {
-    await pumpSignInScreen(tester);
-    await tester.pumpAndSettle();
+  testWidgets(
+    'iOS displays both Google and Apple buttons and triggers Apple sign-in',
+    (tester) async {
+      await pumpSignInScreen(tester);
+      await tester.pumpAndSettle();
 
-    expect(find.text(AppStrings.signInGoogleButton), findsOneWidget);
-    expect(find.text(AppStrings.signInAppleButton), findsOneWidget);
+      expect(find.text(AppStrings.signInGoogleButton), findsOneWidget);
+      expect(find.text(AppStrings.signInAppleButton), findsOneWidget);
 
-    await tester.tap(find.text(AppStrings.signInAppleButton));
-    await tester.pump();
+      await tester.tap(find.text(AppStrings.signInAppleButton));
+      await tester.pump();
 
-    verify(() => authRepo.signInWithApple()).called(1);
-    expect(tester.takeException(), isNull);
-  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+      verify(() => authRepo.signInWithApple()).called(1);
+      expect(tester.takeException(), isNull);
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+  );
 
   testWidgets(
     'shows loading indicator and hides auth buttons when loadingAuth is true',
