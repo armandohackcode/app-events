@@ -13,6 +13,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class FirebaseAuthDatasource implements AuthDatasource {
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
+  Future<void>? _googleInitFuture;
+
   FirebaseAuthDatasource(this._auth, this._googleSignIn);
 
   @override
@@ -20,12 +22,38 @@ class FirebaseAuthDatasource implements AuthDatasource {
     (user) => user == null ? null : _toAuthUser(user),
   );
 
+  /// Initializes Google Sign-In once and caches the future across calls,
+  /// clearing it on failure so subsequent sign-in attempts can retry.
+  Future<void> _ensureGoogleSignInInitialized() {
+    final existing = _googleInitFuture;
+    if (existing != null) return existing;
+
+    final future = _initializeGoogleSignIn();
+    _googleInitFuture = future;
+    return future;
+  }
+
+  Future<void> _initializeGoogleSignIn() async {
+    // Yield once so _googleInitFuture is cached before initialize can throw.
+    await Future<void>.value();
+    try {
+      await _googleSignIn.initialize(serverClientId: serviceClientId);
+    } catch (_) {
+      _googleInitFuture = null;
+      rethrow;
+    }
+  }
+
   @override
   Future<AuthUser> signInWithGoogle() async {
-    _googleSignIn.initialize(serverClientId: serviceClientId);
-    var googleUser = await _googleSignIn.authenticate();
-    var googleAuth = googleUser.authentication;
-    var credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+    await _ensureGoogleSignInInitialized();
+    final googleUser = await _googleSignIn.authenticate();
+    final googleAuth = googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    if (idToken == null || idToken.isEmpty) {
+      throw StateError('Google sign-in did not return an ID token.');
+    }
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
     return _signInWithCredential(credential);
   }
 
@@ -91,7 +119,7 @@ class FirebaseAuthDatasource implements AuthDatasource {
     var resInfo = await _auth.signInWithCredential(credential);
     final user = resInfo.user!;
     var storage = await SharedPreferences.getInstance();
-    storage.setString('uid_user', user.uid);
+    await storage.setString('uid_user', user.uid);
     return _toAuthUser(user);
   }
 

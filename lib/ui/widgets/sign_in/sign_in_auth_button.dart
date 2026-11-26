@@ -31,7 +31,7 @@ class _SignInAuthButtonState extends State<SignInAuthButton> {
   bool _pressed = false;
 
   void _setPressed(bool value) {
-    if (_pressed == value) return;
+    if (!mounted || _pressed == value) return;
     setState(() => _pressed = value);
   }
 

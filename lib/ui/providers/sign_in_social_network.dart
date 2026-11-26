@@ -64,42 +64,35 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> googleAuth() async {
+  Future<void> googleAuth() => _runAuth(() async {
+    _userInfo = await authRepository.signInWithGoogle();
+    await _registerCompetitor(_userInfo);
+    isAuth = true;
+  });
+
+  Future<void> appleAuth() => _runAuth(() async {
+    _userInfo = await authRepository.signInWithApple();
+    isAuth = true;
+    await _registerCompetitor(_userInfo);
+  });
+
+  Future<void> _registerCompetitor(AuthUser user) => userProvider.addCompetitor(
+    name: user.displayName ?? "Anonymous",
+    token: "",
+    photoUrl: user.photoUrl ?? "",
+  );
+
+  Future<void> _runAuth(Future<void> Function() authenticate) async {
+    if (_loadingAuth) return;
+    loadingAuth = true;
     try {
-      loadingAuth = true;
-      _userInfo = await authRepository.signInWithGoogle();
-
-      await userProvider.addCompetitor(
-        name: _userInfo.displayName ?? "Anonymous",
-        token: "",
-        photoUrl: _userInfo.photoUrl ?? "",
-      );
-
-      isAuth = true;
+      await authenticate();
     } catch (e) {
-      loadingAuth = false;
       if (kDebugMode) {
         print(e);
       }
-    }
-  }
-
-  Future<void> appleAuth() async {
-    try {
-      loadingAuth = true;
-      _userInfo = await authRepository.signInWithApple();
-      isAuth = true;
-      await userProvider.addCompetitor(
-        name: _userInfo.displayName ?? "Anonymous",
-        token: "",
-        photoUrl: _userInfo.photoUrl ?? "",
-      );
+    } finally {
       loadingAuth = false;
-    } catch (e) {
-      loadingAuth = false;
-      if (kDebugMode) {
-        print(e);
-      }
     }
   }
 

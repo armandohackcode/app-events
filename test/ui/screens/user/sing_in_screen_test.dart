@@ -11,7 +11,6 @@ import 'package:app_events/ui/widgets/sign_in/event_schedule_badge.dart';
 import 'package:app_events/ui/widgets/sign_in/sign_in_card.dart';
 import 'package:app_events/ui/widgets/sign_in/sign_in_footer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -82,6 +81,13 @@ void main() {
     );
   }
 
+  Finder findAssetImage(String assetPath) => find.byWidgetPredicate(
+    (w) =>
+        w is Image &&
+        w.image is AssetImage &&
+        (w.image as AssetImage).assetName == assetPath,
+  );
+
   testWidgets(
     'Android renders redesigned login without Apple button or Build with AI asset and triggers Google auth',
     (tester) async {
@@ -93,29 +99,16 @@ void main() {
       expect(find.text(AppStrings.signInEventSchedule), findsOneWidget);
 
       expect(find.byType(DevFestLogo), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byType(DevFestLogo),
-          matching: find.text(AppStrings.signInEventName),
-        ),
-        findsOneWidget,
+      final devFestLogoFinder = find.descendant(
+        of: find.byType(DevFestLogo),
+        matching: findAssetImage(AppAssetsPath.logoDevFest),
       );
+      expect(devFestLogoFinder, findsOneWidget);
       expect(
-        find.descendant(
-          of: find.byType(DevFestLogo),
-          matching: find.text(AppStrings.signInCommunityCity),
-        ),
-        findsOneWidget,
+        tester.widget<Image>(devFestLogoFinder).semanticLabel,
+        AppStrings.signInEventName,
       );
-      expect(
-        find.byWidgetPredicate(
-          (w) =>
-              w is Image &&
-              w.image is AssetImage &&
-              (w.image as AssetImage).assetName == AppAssetsPath.titleEvent,
-        ),
-        findsNothing,
-      );
+      expect(findAssetImage(AppAssetsPath.titleEvent), findsNothing);
 
       expect(find.byType(SignInCard), findsOneWidget);
       expect(find.text(AppStrings.signInTitle), findsOneWidget);
@@ -127,17 +120,12 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(SignInFooter),
-          matching: find.byWidgetPredicate(
-            (w) =>
-                w is SvgPicture &&
-                w.bytesLoader is SvgAssetLoader &&
-                (w.bytesLoader as SvgAssetLoader).assetName ==
-                    AppAssetsPath.gdgIcon,
-          ),
+          matching: findAssetImage(AppAssetsPath.logoGdg),
         ),
         findsOneWidget,
       );
       expect(find.text(AppStrings.signInCommunityName), findsOneWidget);
+      expect(find.text(AppStrings.signInCommunityCity), findsOneWidget);
       expect(find.text(AppStrings.signInVersionLabel('1.7.7')), findsOneWidget);
 
       await tester.tap(find.text(AppStrings.signInGoogleButton));
@@ -198,12 +186,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(ModalGDG),
-        matching: find.byWidgetPredicate(
-          (w) =>
-              w is Image &&
-              w.image is AssetImage &&
-              (w.image as AssetImage).assetName == AppAssetsPath.logoGdg,
-        ),
+        matching: findAssetImage(AppAssetsPath.logoGdg),
       ),
       findsOneWidget,
     );
