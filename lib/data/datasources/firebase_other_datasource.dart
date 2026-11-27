@@ -20,8 +20,45 @@ class FirebaseOtherDatasource implements OtherDatasource {
           .collection("organizers")
           .orderBy('type', descending: true)
           .get();
-      var info = res.docs.map((e) => Organizer.fromJson(e.data())).toList();
+      var info = res.docs.map((e) {
+        final data = e.data();
+        data['id'] = e.id;
+        return Organizer.fromJson(data);
+      }).toList();
       return info;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> addOrganizer(
+    Map<String, dynamic> organizerData,
+    String? organizerImagePath,
+  ) async {
+    String photoUrl = organizerData['photoUrl'] ?? '';
+
+    if (organizerImagePath != null && organizerImagePath.isNotEmpty) {
+      final imageFile = File(organizerImagePath);
+      final storageRef = _storage
+          .ref()
+          .child('organizers')
+          .child('${DateTime.now().millisecondsSinceEpoch}');
+
+      await storageRef.putFile(imageFile);
+      photoUrl = await storageRef.getDownloadURL();
+    }
+
+    organizerData['photoUrl'] = photoUrl;
+    organizerData['createdAt'] = FieldValue.serverTimestamp();
+
+    await _db.collection('organizers').add(organizerData);
+  }
+
+  @override
+  Future<void> deleteOrganizer(String organizerId) async {
+    try {
+      await _db.collection('organizers').doc(organizerId).delete();
     } catch (e) {
       rethrow;
     }

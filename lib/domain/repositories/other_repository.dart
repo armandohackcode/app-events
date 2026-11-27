@@ -10,6 +10,15 @@ abstract class OtherRepository {
   /// Lists all organizers
   Future<List<Organizer>> getOrganizer();
 
+  /// Add a new organizer to the list
+  Future<void> addOrganizer(
+    Organizer organizerData,
+    String? organizerImagePath,
+  );
+
+  /// Delete one organizer by id
+  Future<void> deleteOrganizer(String organizerId);
+
   /// Listens for changes in the ranking
   Stream<List<UserCompetitor>> getRanking();
 

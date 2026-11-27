@@ -27,6 +27,7 @@ import 'package:app_events/domain/repositories/schedule_repository.dart';
 import 'package:app_events/domain/repositories/speed_run_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/event_provider.dart';
+import 'package:app_events/ui/providers/live_activity_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/speed_run_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -79,6 +80,9 @@ void setupServiceLocator() {
   );
 
   sl.registerFactory(() => EventProvider(sl<EventRepository>()));
+  sl.registerFactory(
+    () => LiveActivityProvider(sl<EventRepository>(), sl<ScheduleRepository>()),
+  );
   sl.registerFactory(() => SpeedRunProvider(sl<SpeedRunRepository>()));
   sl.registerFactory(() => UserProvider(sl<UserRepository>()));
   sl.registerFactory(

@@ -7,6 +7,15 @@ abstract class OtherDatasource {
   /// Retrieves the list of sponsors
   Future<List<Sponsor>> getSponsors();
 
+  /// Add a new organizer to the list
+  Future<void> addOrganizer(
+    Map<String, dynamic> organizerData,
+    String? organizerImagePath,
+  );
+
+  ///Delete one organizer by id
+  Future<void> deleteOrganizer(String organizerId);
+
   /// Lists all organizers
   Future<List<Organizer>> getOrganizer();
 

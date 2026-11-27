@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/event.dart';
 import 'package:app_events/domain/models/speaker.dart';
@@ -28,10 +30,19 @@ class _MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
   late _MockScheduleRepository scheduleRepository;
+  late StreamController<List<Speaker>> scheduleStream;
 
   setUpAll(() => initializeDateFormatting('es'));
 
-  setUp(() => scheduleRepository = _MockScheduleRepository());
+  setUp(() {
+    scheduleRepository = _MockScheduleRepository();
+    scheduleStream = StreamController<List<Speaker>>.broadcast();
+    when(
+      () => scheduleRepository.getListScheduleStream(any()),
+    ).thenAnswer((_) => scheduleStream.stream);
+  });
+
+  tearDown(() => scheduleStream.close());
 
   // The animated backdrop never stops, so pumpAndSettle would time out.
   Future<void> settle(WidgetTester tester) async {
@@ -54,12 +65,9 @@ void main() {
 
   Future<void> pumpScreen(
     WidgetTester tester, {
-    required List<Speaker> schedule,
+    List<Speaker>? schedule,
     Event? event,
   }) async {
-    when(
-      () => scheduleRepository.getListSchedule(any()),
-    ).thenAnswer((_) async => schedule);
     tester.view.physicalSize = const Size(390, 1600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -82,6 +90,8 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
+    if (schedule != null) scheduleStream.add(schedule);
     await settle(tester);
   }
 
@@ -144,10 +154,90 @@ void main() {
     expect(find.byType(ScheduleGeneralCard), findsOne);
   });
 
-  testWidgets('no activity is marked as LIVE yet', (tester) async {
-    await pumpScreen(tester, schedule: [makeSpeaker()]);
+  group('live activity', () {
+    testWidgets('no activity is marked as LIVE when none is live', (
+      tester,
+    ) async {
+      await pumpScreen(tester, schedule: [makeSpeaker()]);
 
-    expect(find.text(AppStrings.homeLiveBadge), findsNothing);
+      expect(find.text(AppStrings.homeLiveBadge), findsNothing);
+    });
+
+    testWidgets('the activity with isLive shows the LIVE badge', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        schedule: [
+          makeSpeaker(uuid: 'a'),
+          makeSpeaker(uuid: 'b', isLive: true),
+        ],
+      );
+
+      expect(find.text(AppStrings.homeLiveBadge), findsOne);
+    });
+
+    testWidgets('a live break or lunch is marked too', (tester) async {
+      await pumpScreen(
+        tester,
+        schedule: [makeSpeaker(uuid: 'a', type: 'lunch', isLive: true)],
+      );
+
+      expect(find.text(AppStrings.homeLiveBadge), findsOne);
+    });
+
+    testWidgets('the badge follows the live activity without reloading', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        schedule: [
+          makeSpeaker(uuid: 'a', title: 'First talk', isLive: true),
+          makeSpeaker(uuid: 'b', title: 'Second talk'),
+        ],
+      );
+      expect(find.text(AppStrings.homeLiveBadge), findsOne);
+
+      scheduleStream.add([
+        makeSpeaker(uuid: 'a', title: 'First talk'),
+        makeSpeaker(uuid: 'b', title: 'Second talk', isLive: true),
+      ]);
+      await settle(tester);
+      expect(find.text(AppStrings.homeLiveBadge), findsOne);
+
+      scheduleStream.add([
+        makeSpeaker(uuid: 'a', title: 'First talk'),
+        makeSpeaker(uuid: 'b', title: 'Second talk'),
+      ]);
+      await settle(tester);
+      expect(find.text(AppStrings.homeLiveBadge), findsNothing);
+    });
+
+    testWidgets('only one activity is marked even if several are live', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        schedule: [
+          makeSpeaker(uuid: '', isLive: true),
+          makeSpeaker(uuid: '', isLive: true),
+        ],
+      );
+
+      expect(find.text(AppStrings.homeLiveBadge), findsOne);
+    });
+
+    testWidgets('it stops listening to the schedule when the screen closes', (
+      tester,
+    ) async {
+      await pumpScreen(tester, schedule: [makeSpeaker()]);
+      expect(scheduleStream.hasListener, isTrue);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+
+      expect(scheduleStream.hasListener, isFalse);
+    });
   });
 
   testWidgets('tapping a talk opens its detail screen', (tester) async {

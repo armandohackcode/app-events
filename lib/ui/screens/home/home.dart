@@ -2,7 +2,6 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_links.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
-import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/events/events_screen.dart';
 import 'package:app_events/ui/screens/user/attendees_screen.dart';
@@ -10,9 +9,8 @@ import 'package:app_events/ui/screens/user/attendees_screen.dart';
 import 'package:app_events/ui/widgets/home/activity_row.dart';
 import 'package:app_events/ui/widgets/home/channels_card.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
-import 'package:app_events/ui/widgets/home/live_talk_card.dart';
+import 'package:app_events/ui/widgets/home/home_live_section.dart';
 import 'package:app_events/ui/widgets/home/organizers_screen.dart';
-import 'package:app_events/ui/widgets/home/question_box.dart';
 import 'package:app_events/ui/widgets/home/sponsors_content.dart';
 import 'package:app_events/ui/widgets/shared/button_scan.dart';
 import 'package:app_events/ui/widgets/utils/utils_app.dart';
@@ -20,37 +18,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-
-/// Placeholder content of the live talk card. It is static until the card is
-/// fed with the talk that is really in progress.
-final Speaker _placeholderTalk = Speaker(
-  uuid: '',
-  title: AppStrings.homeLiveTalkTitle,
-  description: '',
-  name: AppStrings.homeLiveSpeakerName,
-  profession: AppStrings.homeLiveSpeakerProfession,
-  aboutMe: '',
-  photoUrl: '',
-  technologyType: AppStrings.homeLiveTechnology,
-  type: EventTypeSpeaker.conference.value,
-  color: '',
-  schedule: AppStrings.homeLiveSchedule,
-  position: 0,
-  socialNetwork: [
-    SocialNetwork(
-      type: SocialNetworkType.instagram.value,
-      link: AppLinks.gdgInstagram,
-    ),
-    SocialNetwork(
-      type: SocialNetworkType.linkedin.value,
-      link: AppLinks.gdgLinkedIn,
-    ),
-    SocialNetwork(
-      type: SocialNetworkType.tiktok.value,
-      link: AppLinks.gdgTikTok,
-    ),
-  ],
-);
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -68,13 +35,7 @@ class Home extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
             children: [
               const HomeHeaderDecoration(child: HomeHeader()),
-              LiveTalkCard(
-                talk: _placeholderTalk,
-                photo: const AssetImage(AppAssetsPath.liveTalkPhoto),
-                // Design only for now: the talk detail is not linked yet.
-                onTap: () {},
-                footer: const QuestionBox(),
-              ),
+              const HomeLiveSection(),
               const SizedBox(height: 16),
               ActivityRow(
                 icon: Image.asset(AppAssetsPath.computerIcon),
