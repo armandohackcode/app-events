@@ -131,15 +131,40 @@ void main() {
     });
 
     test('stops loading after a successful sign-in', () async {
-      // After logging out, the sign-in screen shows a spinner instead of
-      // the buttons while loadingAuth is still true.
       when(() => repository.signInWithGoogle()).thenAnswer((_) async => _user);
       stubAddCompetitor();
 
       await provider.googleAuth();
 
       expect(provider.loadingAuth, isFalse);
-    }, skip: 'BUG: googleAuth leaves loadingAuth true after success');
+    });
+
+    test('ignores concurrent googleAuth calls while loading', () async {
+      final completer = Completer<AuthUser>();
+      when(
+        () => repository.signInWithGoogle(),
+      ).thenAnswer((_) => completer.future);
+      stubAddCompetitor();
+
+      final first = provider.googleAuth();
+      final second = provider.googleAuth();
+
+      expect(provider.loadingAuth, isTrue);
+      verify(() => repository.signInWithGoogle()).called(1);
+
+      completer.complete(_user);
+      await Future.wait([first, second]);
+
+      expect(provider.isAuth, isTrue);
+      expect(provider.loadingAuth, isFalse);
+      verify(
+        () => userProvider.addCompetitor(
+          name: 'Grace',
+          token: '',
+          photoUrl: 'https://img/u.png',
+        ),
+      ).called(1);
+    });
   });
 
   group('appleAuth', () {
@@ -168,6 +193,26 @@ void main() {
       await provider.appleAuth();
 
       expect(provider.isAuth, isFalse);
+      expect(provider.loadingAuth, isFalse);
+    });
+
+    test('ignores concurrent appleAuth calls while loading', () async {
+      final completer = Completer<AuthUser>();
+      when(
+        () => repository.signInWithApple(),
+      ).thenAnswer((_) => completer.future);
+      stubAddCompetitor();
+
+      final first = provider.appleAuth();
+      final second = provider.appleAuth();
+
+      expect(provider.loadingAuth, isTrue);
+      verify(() => repository.signInWithApple()).called(1);
+
+      completer.complete(_user);
+      await Future.wait([first, second]);
+
+      expect(provider.isAuth, isTrue);
       expect(provider.loadingAuth, isFalse);
     });
   });

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_events/data/datasources/firebase_auth_datasource.dart';
 import 'package:app_events/env.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,6 +101,127 @@ void main() {
       expect(storage.getString('uid_user'), 'u-1');
     },
   );
+
+  test(
+    'signInWithGoogle awaits initialize completion before calling authenticate',
+    () async {
+      final initCompleter = Completer<void>();
+      var authenticateCalled = false;
+      final account = _MockGoogleAccount();
+      final credential = _MockUserCredential();
+      final user = firebaseUser();
+
+      when(
+        () => google.initialize(serverClientId: any(named: 'serverClientId')),
+      ).thenAnswer((_) => initCompleter.future);
+      when(() => google.authenticate()).thenAnswer((_) async {
+        authenticateCalled = true;
+        return account;
+      });
+      when(
+        () => account.authentication,
+      ).thenReturn(const GoogleSignInAuthentication(idToken: 'id-token'));
+      when(
+        () => auth.signInWithCredential(any()),
+      ).thenAnswer((_) async => credential);
+      when(() => credential.user).thenReturn(user);
+
+      final signInFuture = datasource.signInWithGoogle();
+      await pumpEventQueue();
+      expect(authenticateCalled, isFalse);
+
+      initCompleter.complete();
+      final result = await signInFuture;
+      expect(authenticateCalled, isTrue);
+      expect(result.uid, 'u-1');
+    },
+  );
+
+  test(
+    'signInWithGoogle initializes GoogleSignIn only once across calls',
+    () async {
+      final account = _MockGoogleAccount();
+      final credential = _MockUserCredential();
+      final user = firebaseUser();
+      when(
+        () => google.initialize(serverClientId: any(named: 'serverClientId')),
+      ).thenAnswer((_) async {});
+      when(() => google.authenticate()).thenAnswer((_) async => account);
+      when(
+        () => account.authentication,
+      ).thenReturn(const GoogleSignInAuthentication(idToken: 'id-token'));
+      when(
+        () => auth.signInWithCredential(any()),
+      ).thenAnswer((_) async => credential);
+      when(() => credential.user).thenReturn(user);
+
+      await datasource.signInWithGoogle();
+      await datasource.signInWithGoogle();
+
+      verify(
+        () => google.initialize(serverClientId: serviceClientId),
+      ).called(1);
+      verify(() => google.authenticate()).called(2);
+    },
+  );
+
+  test(
+    'signInWithGoogle retries initialize after an initialization failure',
+    () async {
+      var attempts = 0;
+      final account = _MockGoogleAccount();
+      final credential = _MockUserCredential();
+      final user = firebaseUser();
+      when(
+        () => google.initialize(serverClientId: any(named: 'serverClientId')),
+      ).thenAnswer((_) async {
+        attempts++;
+        if (attempts == 1) {
+          throw StateError('init failed');
+        }
+      });
+      when(() => google.authenticate()).thenAnswer((_) async => account);
+      when(
+        () => account.authentication,
+      ).thenReturn(const GoogleSignInAuthentication(idToken: 'id-token'));
+      when(
+        () => auth.signInWithCredential(any()),
+      ).thenAnswer((_) async => credential);
+      when(() => credential.user).thenReturn(user);
+
+      await expectLater(
+        datasource.signInWithGoogle(),
+        throwsA(isA<StateError>()),
+      );
+
+      final result = await datasource.signInWithGoogle();
+      expect(result.uid, 'u-1');
+      verify(
+        () => google.initialize(serverClientId: serviceClientId),
+      ).called(2);
+    },
+  );
+
+  for (final invalidToken in <String?>[null, '']) {
+    final tokenLabel = invalidToken == null ? 'null' : 'empty';
+    test('signInWithGoogle throws when idToken is $tokenLabel', () async {
+      final account = _MockGoogleAccount();
+      when(
+        () => google.initialize(serverClientId: any(named: 'serverClientId')),
+      ).thenAnswer((_) async {});
+      when(() => google.authenticate()).thenAnswer((_) async => account);
+      when(
+        () => account.authentication,
+      ).thenReturn(GoogleSignInAuthentication(idToken: invalidToken));
+
+      await expectLater(
+        datasource.signInWithGoogle(),
+        throwsA(isA<StateError>()),
+      );
+
+      verifyNever(() => auth.signInWithCredential(any()));
+    });
+  }
 
   test(
     'signOut signs out of Google, clears the session, then Firebase',

@@ -10,9 +10,9 @@ class AppAssetsPath {
 
   static const String scheduleIcon = 'assets/img/schedule-icon.png';
   static const String trophyIcon = 'assets/img/trofeo.png';
-  static const String gdgIcon = 'assets/img/icon-gdg.svg';
   // Official GDG logo mark, without the group name.
   static const String logoGdg = 'assets/img/logo-gdg.png';
+  static const String logoDevFest = 'assets/img/logo-devfest.png';
   static const String discordIcon = 'assets/img/icon-discord.svg';
   static const String dinoWriteIcon = 'assets/img/dino-write.png';
   static const String dinoRunIcon = 'assets/img/dino-runs.png';

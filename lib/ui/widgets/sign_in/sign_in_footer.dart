@@ -2,7 +2,6 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// Bottom institutional GDG Sucre branding and dynamic application version.
@@ -37,7 +36,7 @@ class _SignInFooterState extends State<SignInFooter> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(AppAssetsPath.gdgIcon, height: 18),
+        Image.asset(AppAssetsPath.logoGdg, height: 22),
         const SizedBox(height: 8),
         const Text(
           AppStrings.signInCommunityName,
