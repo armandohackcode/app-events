@@ -9,7 +9,7 @@ void main() {
   group('Organizer', () {
     test('fromJson applies defaults for link, team and lead', () {
       final organizer = Organizer.fromJson({
-        'id': 1,
+        'id': '1',
         'type': 2,
         'name': 'Lead',
         'photoUrl': 'https://img/o.png',
@@ -17,18 +17,17 @@ void main() {
 
       expect(organizer.link, '');
       expect(organizer.team, isEmpty);
-      expect(organizer.lead, isFalse);
+      expect(organizer.type, equals(2));
     });
 
     test('round-trip preserves data', () {
       final json = {
-        'id': 1,
+        'id': '1',
         'type': 1,
         'name': 'Org',
         'photoUrl': '',
         'link': 'https://github.com/org',
         'team': ['Mobile'],
-        'lead': true,
       };
 
       expect(Organizer.fromJson(json).toJson(), json);

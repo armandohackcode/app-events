@@ -16,6 +16,20 @@ class OtherRepositoryImpl implements OtherRepository {
   }
 
   @override
+  Future<void> addOrganizer(
+    Organizer organizerData,
+    String? organizerImagePath,
+  ) {
+    final organizerMap = organizerData.toJson();
+    return _db.addOrganizer(organizerMap, organizerImagePath);
+  }
+
+  @override
+  Future<void> deleteOrganizer(String organizerId) async {
+    await _db.deleteOrganizer(organizerId);
+  }
+
+  @override
   Stream<List<UserCompetitor>> getRanking() {
     return _db.getRanking();
   }
