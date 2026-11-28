@@ -169,6 +169,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.0"
+  cloud_functions:
+    dependency: "direct main"
+    description:
+      name: cloud_functions
+      sha256: dc03dee69b3e005ff3c7337766d2d0ae32d1b6ec084b87dddc7107c9ffcb038f
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.1.0"
+  cloud_functions_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_functions_platform_interface
+      sha256: "0e4e0b125837da76431bdc8729a359a1578153db26bf6259b4076cdbe6828622"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.0"
+  cloud_functions_web:
+    dependency: transitive
+    description:
+      name: cloud_functions_web
+      sha256: "897e0afc466f7b49a2f2797cebdec81d2d93eaf0c1f9767a8bba77e60fd42445"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.0"
   code_assets:
     dependency: transitive
     description:
