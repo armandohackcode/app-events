@@ -19,6 +19,7 @@ const _rules = [
   _LayerRule('lib/domain/', [
     'package:flutter/',
     'package:cloud_firestore/',
+    'package:cloud_functions/',
     'package:firebase_',
     'package:provider/',
     'package:app_events/data/',
@@ -36,6 +37,7 @@ const _rules = [
   ], 'data implements domain contracts and must not know about the UI'),
   _LayerRule('lib/ui/', [
     'package:cloud_firestore/',
+    'package:cloud_functions/',
     'package:firebase_',
     'package:app_events/data/',
     'package:app_events/config/di/',
