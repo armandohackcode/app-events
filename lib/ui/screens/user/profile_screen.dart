@@ -4,7 +4,9 @@ import 'dart:math' as math;
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/user_competitor.dart';
+import 'package:app_events/ui/providers/gdg_spin_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/spin_admin_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/user/delete_account.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
@@ -151,8 +153,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onSelected: (action) async {
                 switch (action) {
                   case _ProfileMenuAction.logout:
+                    final spinProvider = maybeProvider<GdgSpinProvider>(
+                      context,
+                      listen: false,
+                    );
+                    final spinAdminProvider = maybeProvider<SpinAdminProvider>(
+                      context,
+                      listen: false,
+                    );
                     await auth.logOut();
-                    data.userCompetitor = null;
+                    data.clearSession();
+                    spinProvider?.unbind();
+                    spinAdminProvider?.unbind();
                     auth.isAuth = false;
                   case _ProfileMenuAction.deleteAccount:
                     await Navigator.of(context).push(

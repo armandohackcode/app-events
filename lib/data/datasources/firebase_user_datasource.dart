@@ -96,20 +96,43 @@ class FirebaseUserDatasource implements UserDatasource {
     UserCompetitor userCompetitor,
   ) async {
     try {
-      await _db
+      final uid = userCompetitor.uuid;
+      if (uid.isEmpty) return false;
+
+      final workshopCol = _workshopRef(eventId, speakerUuid);
+      final enrollmentDoc = workshopCol.doc(uid);
+
+      final existingById = await enrollmentDoc.get();
+      if (existingById.exists) {
+        return true;
+      }
+
+      final legacyEnrollment = await workshopCol
+          .where('uuid', isEqualTo: uid)
+          .limit(1)
+          .get();
+      if (legacyEnrollment.docs.isNotEmpty) {
+        return true;
+      }
+
+      final scheduleDoc = _db
           .collection('events')
           .doc(eventId)
           .collection('schedule')
-          .doc(speakerUuid)
-          .update({'current': FieldValue.increment(1)});
-      await _workshopRef(eventId, speakerUuid).doc().set(
+          .doc(speakerUuid);
+
+      final batch = _db.batch();
+      batch.update(scheduleDoc, {'current': FieldValue.increment(1)});
+      batch.set(
+        enrollmentDoc,
         Friend(
-          uuid: userCompetitor.uuid,
+          uuid: uid,
           name: userCompetitor.name,
           token: userCompetitor.tokenAuthorization,
           photoUrl: userCompetitor.photoUrl,
         ).toJson(),
       );
+      await batch.commit();
       return true;
     } catch (e) {
       if (kDebugMode) {

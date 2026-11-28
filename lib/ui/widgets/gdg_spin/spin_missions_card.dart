@@ -6,25 +6,28 @@ import 'package:app_events/ui/widgets/shared/dashed_border_box.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:flutter/material.dart';
 
-/// Card listing missions to earn spin tickets, including the inline break trivia.
+/// Card listing missions to earn spin tickets, including dynamic inline trivia
+/// and sponsor/stand code redemption.
 class SpinMissionsCard extends StatelessWidget {
   final List<SpinMission> missions;
-  final bool triviaOpen;
+  final String? openTriviaMissionId;
   final ValueChanged<SpinMission> onMissionTap;
-  final ValueChanged<bool> onAnswerTrivia;
+  final void Function(String missionId, int optionIndex) onAnswerTrivia;
+  final VoidCallback? onRedeemCodeTap;
+  final bool busy;
 
   const SpinMissionsCard({
     super.key,
     required this.missions,
-    required this.triviaOpen,
+    required this.openTriviaMissionId,
     required this.onMissionTap,
     required this.onAnswerTrivia,
+    this.onRedeemCodeTap,
+    this.busy = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final triviaPending = missions.any((m) => m.isTrivia && !m.done);
-
     return HardShadowBox(
       color: AppStyles.cardColor,
       radius: 20,
@@ -34,16 +37,52 @@ class SpinMissionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (var i = 0; i < missions.length; i++) ...[
-            if (i > 0) const SizedBox(height: 8),
-            _MissionRow(
-              mission: missions[i],
-              onTap: () => onMissionTap(missions[i]),
+          if (missions.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                AppStrings.spinMissionsEmpty,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppStyles.fontSecondaryColor,
+                ),
+              ),
+            )
+          else
+            for (var i = 0; i < missions.length; i++) ...[
+              if (i > 0) const SizedBox(height: 8),
+              _MissionRow(
+                mission: missions[i],
+                busy: busy,
+                onTap: () => onMissionTap(missions[i]),
+              ),
+              if (missions[i].isTrivia &&
+                  !missions[i].done &&
+                  missions[i].id == openTriviaMissionId &&
+                  missions[i].triviaOptions.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _TriviaPanel(
+                  mission: missions[i],
+                  busy: busy,
+                  onAnswer: (index) => onAnswerTrivia(missions[i].id, index),
+                ),
+              ],
+            ],
+          if (onRedeemCodeTap != null) ...[
+            const SizedBox(height: 12),
+            ChunkyButton(
+              label: AppStrings.spinHaveStandCode,
+              color: AppStyles.activitiesRankingTagColor,
+              expand: true,
+              minHeight: 44,
+              icon: const Icon(
+                Icons.qr_code_scanner_rounded,
+                size: 18,
+                color: AppStyles.fontColor,
+              ),
+              onPressed: busy ? null : onRedeemCodeTap,
             ),
-          ],
-          if (triviaOpen && triviaPending) ...[
-            const SizedBox(height: 10),
-            _TriviaPanel(onAnswer: onAnswerTrivia),
           ],
         ],
       ),
@@ -53,15 +92,38 @@ class SpinMissionsCard extends StatelessWidget {
 
 class _MissionRow extends StatelessWidget {
   final SpinMission mission;
+  final bool busy;
   final VoidCallback onTap;
 
-  const _MissionRow({required this.mission, required this.onTap});
+  const _MissionRow({
+    required this.mission,
+    required this.busy,
+    required this.onTap,
+  });
+
+  String _resolveActionLabel() {
+    final custom = mission.actionLabel?.trim();
+    if (custom != null && custom.isNotEmpty) return custom;
+    return switch (mission.type) {
+      SpinMissionType.trivia => AppStrings.playLabel,
+      SpinMissionType.askSpeaker => AppStrings.askLabel,
+      SpinMissionType.rateTalk => AppStrings.rateLabel,
+      SpinMissionType.profileComplete ||
+      SpinMissionType.workshopRegister => AppStrings.spinMissionActionClaim,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final rewardLabel = mission.isTrivia && !mission.done
-        ? AppStrings.spinTriviaReward
+    final baseReward = mission.isTrivia && !mission.done
+        ? (mission.reward == 1
+              ? AppStrings.spinTriviaReward
+              : AppStrings.spinTriviaRewardCount(mission.reward))
         : AppStrings.spinReward(mission.reward);
+
+    final subtitle = mission.maxCompletionsPerUser > 1
+        ? '$baseReward · ${AppStrings.spinMissionProgress(mission.completions, mission.maxCompletionsPerUser)}'
+        : baseReward;
 
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),
@@ -99,7 +161,7 @@ class _MissionRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  rewardLabel,
+                  subtitle,
                   style: const TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600,
@@ -109,12 +171,12 @@ class _MissionRow extends StatelessWidget {
               ],
             ),
           ),
-          if (!mission.done && mission.actionLabel != null) ...[
+          if (!mission.done) ...[
             const SizedBox(width: 8),
             ChunkyButton(
-              label: mission.actionLabel!,
+              label: _resolveActionLabel(),
               color: AppStyles.spinBezelColor,
-              onPressed: onTap,
+              onPressed: busy ? null : onTap,
               minHeight: 40,
               minTapHeight: 44,
               radius: 12,
@@ -129,12 +191,22 @@ class _MissionRow extends StatelessWidget {
 }
 
 class _TriviaPanel extends StatelessWidget {
-  final ValueChanged<bool> onAnswer;
+  final SpinMission mission;
+  final bool busy;
+  final ValueChanged<int> onAnswer;
 
-  const _TriviaPanel({required this.onAnswer});
+  const _TriviaPanel({
+    required this.mission,
+    required this.busy,
+    required this.onAnswer,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final questionText = (mission.triviaQuestion?.trim().isNotEmpty ?? false)
+        ? mission.triviaQuestion!.trim()
+        : mission.title;
+
     return DashedBorderBox(
       color: AppStyles.gamesBackgroundColor,
       radius: 12,
@@ -142,29 +214,21 @@ class _TriviaPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            AppStrings.spinTriviaQuestion,
-            style: TextStyle(
+          Text(
+            questionText,
+            style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
               color: AppStyles.fontColor,
             ),
           ),
-          const SizedBox(height: 8),
-          _TriviaOptionButton(
-            label: AppStrings.spinTriviaOptionA,
-            onTap: () => onAnswer(true),
-          ),
-          const SizedBox(height: 8),
-          _TriviaOptionButton(
-            label: AppStrings.spinTriviaOptionB,
-            onTap: () => onAnswer(false),
-          ),
-          const SizedBox(height: 8),
-          _TriviaOptionButton(
-            label: AppStrings.spinTriviaOptionC,
-            onTap: () => onAnswer(false),
-          ),
+          for (var i = 0; i < mission.triviaOptions.length; i++) ...[
+            const SizedBox(height: 8),
+            _TriviaOptionButton(
+              label: mission.triviaOptions[i],
+              onTap: busy ? null : () => onAnswer(i),
+            ),
+          ],
         ],
       ),
     );
@@ -173,7 +237,7 @@ class _TriviaPanel extends StatelessWidget {
 
 class _TriviaOptionButton extends StatelessWidget {
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _TriviaOptionButton({required this.label, required this.onTap});
 
@@ -181,6 +245,7 @@ class _TriviaOptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
+      enabled: onTap != null,
       label: label,
       child: InkWell(
         onTap: onTap,

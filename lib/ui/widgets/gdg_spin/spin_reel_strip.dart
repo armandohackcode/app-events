@@ -71,6 +71,11 @@ class _SpinReelStripState extends State<SpinReelStrip>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _syncTeaseAndHit();
+    if (widget.spinId > 0 &&
+        widget.spinId != _activeSpinId &&
+        widget.targetCombo != null) {
+      _startSpin(setStateOnStart: false);
+    }
   }
 
   @override
@@ -108,7 +113,7 @@ class _SpinReelStripState extends State<SpinReelStrip>
     }
   }
 
-  void _startSpin() {
+  void _startSpin({bool setStateOnStart = true}) {
     _activeSpinId = widget.spinId;
     final reduced = MediaQuery.disableAnimationsOf(context);
     final reel = widget.reelIndex;
@@ -151,10 +156,15 @@ class _SpinReelStripState extends State<SpinReelStrip>
       ),
     ]).animate(_spinController);
 
-    setState(() {
+    if (setStateOnStart) {
+      setState(() {
+        _strip = strip;
+        _finals = finals;
+      });
+    } else {
       _strip = strip;
       _finals = finals;
-    });
+    }
 
     final launchedSpinId = _activeSpinId;
     _spinController.forward(from: 0).then((_) {

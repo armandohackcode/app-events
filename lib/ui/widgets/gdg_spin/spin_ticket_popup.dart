@@ -117,132 +117,150 @@ class _SpinTicketPopupState extends State<SpinTicketPopup>
         : AppStrings.spinTicketBalance;
     final footerValue = _isWonMode ? widget.serial! : widget.tickets.toString();
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => Opacity(
-        opacity: _opacity.value.clamp(0.0, 1.0),
-        child: Transform.rotate(
-          angle: _rotation.value,
-          child: Transform.scale(scale: _scale.value, child: child),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(12),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => Opacity(
+          opacity: _opacity.value.clamp(0.0, 1.0),
+          child: Transform.rotate(
+            angle: _rotation.value,
+            child: Transform.scale(scale: _scale.value, child: child),
+          ),
         ),
-      ),
-      child: Transform.rotate(
-        angle: -4 * math.pi / 180,
-        child: SizedBox(
-          width: 220,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              HardShadowBox(
-                color: AppStyles.spinBezelColor,
-                radius: 18,
-                shadowOffset: 7,
-                borderWidth: 2.5,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 8),
-                      decoration: const BoxDecoration(
-                        color: AppStyles.borderColor,
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(14),
-                        ),
-                      ),
-                      child: const Text(
-                        AppStrings.spinTicketHeader,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4.2,
-                          height: 1,
-                          color: AppStyles.spinBezelColor,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-                      child: Column(
-                        children: [
-                          Text(
-                            headline,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              color: AppStyles.fontColor,
-                            ),
+        child: Transform.rotate(
+          angle: -4 * math.pi / 180,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 260),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                HardShadowBox(
+                  color: AppStyles.spinBezelColor,
+                  radius: 18,
+                  shadowOffset: 7,
+                  borderWidth: 2.5,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+                        decoration: const BoxDecoration(
+                          color: AppStyles.borderColor,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(14),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            subtitle,
+                        ),
+                        child: const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            AppStrings.spinTicketHeader,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4,
-                              color: AppStyles.fontColor,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            AppStrings.spinTicketBrand,
-                            textAlign: TextAlign.center,
+                            maxLines: 1,
                             style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4,
-                              color: AppStyles.fontSecondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
-                      child: DashedLine(strokeWidth: 2.5),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            footerLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppStyles.fontSecondaryColor,
-                            ),
-                          ),
-                          Text(
-                            footerValue,
-                            style: const TextStyle(
-                              fontFamily: AppStyles.monospaceFontFamily,
-                              fontSize: 14,
+                              fontSize: 30,
                               fontWeight: FontWeight.w900,
-                              color: AppStyles.fontColor,
+                              letterSpacing: 4.2,
+                              height: 1,
+                              color: AppStyles.spinBezelColor,
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+                        child: Column(
+                          children: [
+                            Text(
+                              headline,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w900,
+                                color: AppStyles.fontColor,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              subtitle,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                                color: AppStyles.fontColor,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              AppStrings.spinTicketBrand,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                                color: AppStyles.fontSecondaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: DashedLine(strokeWidth: 2.5),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                footerLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppStyles.fontSecondaryColor,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  footerValue,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontFamily: AppStyles.monospaceFontFamily,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppStyles.fontColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Positioned(
-                left: 0,
-                bottom: 34,
-                child: _TicketNotch(isLeft: true),
-              ),
-              const Positioned(
-                right: 0,
-                bottom: 34,
-                child: _TicketNotch(isLeft: false),
-              ),
-            ],
+                const Positioned(
+                  left: 0,
+                  bottom: 34,
+                  child: _TicketNotch(isLeft: true),
+                ),
+                const Positioned(
+                  right: 0,
+                  bottom: 34,
+                  child: _TicketNotch(isLeft: false),
+                ),
+              ],
+            ),
           ),
         ),
       ),

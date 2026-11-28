@@ -15,6 +15,8 @@ import 'package:app_events/ui/providers/schedule_provider.dart';
 import 'package:app_events/ui/providers/sign_in_social_network.dart';
 import 'package:app_events/ui/providers/speed_run_provider.dart';
 import 'package:app_events/firebase_options.dart';
+import 'package:app_events/ui/providers/spin_admin_provider.dart';
+import 'package:app_events/ui/providers/talk_interaction_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/home/bottom_custom_nav.dart';
 import 'package:app_events/ui/screens/user/sing_in_screen.dart';
@@ -22,7 +24,6 @@ import 'package:app_events/ui/widgets/home/home_backdrop.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -53,7 +54,9 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(
         create: (_) => SpeedRunProvider(sl<SpeedRunRepository>()),
       ),
-      ChangeNotifierProvider(create: (_) => GdgSpinProvider()),
+      ChangeNotifierProvider(create: (_) => sl<GdgSpinProvider>()),
+      ChangeNotifierProvider(create: (_) => sl<SpinAdminProvider>()),
+      ChangeNotifierProvider(create: (_) => sl<TalkInteractionProvider>()),
     ];
   }
 
@@ -97,7 +100,6 @@ class __ValidateStateAuthState extends State<_ValidateStateAuth> {
       final data = Provider.of<UserProvider>(context, listen: false);
 
       auth.loadingValidate = true;
-      await Permission.camera.request();
       await auth.validateToken();
       if (auth.isAuth) {
         await data.validateIsAdmin(auth.userInfo.uid);

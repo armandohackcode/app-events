@@ -87,7 +87,7 @@ class _SpinCabinetState extends State<SpinCabinet>
 
   SpinBulbMode get _bulbMode => switch (widget.provider.phase) {
     SpinPhase.idle => SpinBulbMode.idle,
-    SpinPhase.spinning => SpinBulbMode.spinning,
+    SpinPhase.requesting || SpinPhase.spinning => SpinBulbMode.spinning,
     SpinPhase.win || SpinPhase.bonus => SpinBulbMode.win,
     SpinPhase.nearMiss => SpinBulbMode.nearMiss,
   };
@@ -213,8 +213,8 @@ class _SpinCabinetState extends State<SpinCabinet>
                               height: reelsHeight,
                               canPull: p.canPull,
                               tickets: p.tickets,
-                              onPull: p.pull,
-                              onBlockedPull: p.showNoTicketsHint,
+                              onPull: () => unawaited(p.pull()),
+                              onBlockedPull: p.showBlockedPullHint,
                             ),
                           ],
                         );
@@ -228,13 +228,12 @@ class _SpinCabinetState extends State<SpinCabinet>
                       phase: p.phase,
                       lastOutcome: p.lastOutcome,
                       lastWinSymbol: p.lastWinSymbol,
+                      customStatusMessage: p.customStatusMessage,
                     ),
                     const SizedBox(height: 12),
                     SpinCoinTray(
                       coins: p.coins,
-                      tickets: p.tickets,
                       onCollectCoins: p.collectCoins,
-                      onAddDemoTickets: p.addDemoTickets,
                       onScrollToPayTable: widget.onScrollToPayTable,
                     ),
                   ],

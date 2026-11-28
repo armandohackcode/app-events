@@ -116,11 +116,18 @@ class AppStyles {
   static const Color spinCoinShadowColor = Color(0xFF9A6F00);
   static const Color spinWarnColor = Color(0xFFF8BDB8);
   static const Color spinScrimColor = Color(0xF0F7F3EA);
-  static const Color spinDemoButtonColor = activitiesRankingTagColor;
   static const Color spinMyPrizesTagColor = spinWarnColor;
   static const Color spinPayTableTagColor = colorBaseYellow;
   static const Color spinEarnTagColor = activitiesTreasureTagColor;
   static const Color spinMissionDoneColor = activitiesTreasureTagColor;
+  static const Color spinStatusPendingColor = colorBaseYellow;
+  static const Color spinStatusRedeemedColor = activitiesTreasureTagColor;
+  static const Color spinStatusRevokedColor = spinWarnColor;
+  static const Color spinBannerPausedColor = spinTeaseColor;
+  static const Color spinBannerClosedColor = raritySpecialColor;
+  static const Color spinBannerCapColor = spinWarnColor;
+  static const Color talkRatingStarColor = colorBaseYellow;
+  static const Color talkRatingStarInactiveColor = fontFaintColor;
   static const Color rarityCommonColor = activitiesTreasureTagColor;
   static const Color rarityRareColor = activitiesRankingTagColor;
   static const Color rarityEpicColor = spinWarnColor;
@@ -135,4 +142,19 @@ class AppStyles {
     podiumSecondColor,
   ];
   static const List<Color> spinBezelBulbPalette = [borderColor, cardColor];
+
+  // GDG SPIN Admin Panel semantic roles
+  static const Color spinAdminTagColor = activitiesRankingTagColor;
+  static const Color spinAdminRushColor = colorBaseRed;
+  static const Color spinAdminRushCardColor = spinWarnColor;
+  static const Color spinAdminActiveStatusColor = activitiesTreasureTagColor;
+  static const Color spinAdminPausedStatusColor = spinTeaseColor;
+  static const Color spinAdminClosedStatusColor = raritySpecialColor;
+  static final Color spinAdminKpiCardColor = colorCardYellowOpaque;
+  static const Color spinAdminSuccessColor = colorBaseGreen;
+  static const Color spinAdminDangerColor = colorBaseRed;
+  static const Color spinAdminDangerSurfaceColor = spinWarnColor;
+  static const Color spinAdminProgressTrackColor = raritySpecialColor;
+  static final Color spinAdminSelectedTileColor = colorCardYellowOpaque;
+  static const Color spinAdminBadgeInactiveColor = raritySpecialColor;
 }

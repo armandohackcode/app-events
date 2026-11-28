@@ -48,6 +48,7 @@ dependencies:
   provider: ^6.0.5
   crypto: ^3.0.3
   cloud_firestore: ^7.2.0
+  cloud_functions: ^7.1.0
   url_launcher: ^6.1.11
   animate_do: ^5.1.0
   loading_animation_widget: ^1.2.0+4

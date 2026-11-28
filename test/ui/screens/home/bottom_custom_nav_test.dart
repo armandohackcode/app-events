@@ -8,6 +8,7 @@ import 'package:app_events/domain/repositories/auth_repository.dart';
 import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/other_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
+import 'package:app_events/domain/repositories/spin_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/gdg_spin_provider.dart';
 import 'package:app_events/ui/providers/live_activity_provider.dart';
@@ -28,6 +29,8 @@ class _MockUserRepository extends Mock implements UserRepository {}
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
+class _MockSpinRepository extends Mock implements SpinRepository {}
+
 class _MockEventRepository extends Mock implements EventRepository {}
 
 class _MockScheduleRepository extends Mock implements ScheduleRepository {}
@@ -39,6 +42,7 @@ void main() {
       final otherRepo = _MockOtherRepository();
       final userRepo = _MockUserRepository();
       final authRepo = _MockAuthRepository();
+      final spinRepo = _MockSpinRepository();
       final eventRepo = _MockEventRepository();
 
       when(() => otherRepo.getSponsors()).thenAnswer((_) async => <Sponsor>[]);
@@ -55,7 +59,7 @@ void main() {
         authRepo,
         userProvider,
       )..userInfo = const AuthUser(uid: 'u1', displayName: 'Ada', photoUrl: '');
-      final spinProvider = GdgSpinProvider(random: Random(1));
+      final spinProvider = GdgSpinProvider(spinRepo, random: Random(1));
       final liveProvider = LiveActivityProvider(
         eventRepo,
         _MockScheduleRepository(),

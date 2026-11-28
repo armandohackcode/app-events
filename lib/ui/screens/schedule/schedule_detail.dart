@@ -4,10 +4,15 @@ import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
+import 'package:app_events/ui/providers/sign_in_social_network.dart';
+import 'package:app_events/ui/providers/talk_interaction_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/widgets/home/home_backdrop.dart';
+import 'package:app_events/ui/widgets/home/question_box.dart';
 import 'package:app_events/ui/widgets/schedule_screen/edit_schedule.dart';
 import 'package:app_events/ui/widgets/schedule_screen/talk_detail_card.dart';
+import 'package:app_events/ui/widgets/schedule_screen/talk_rating_card.dart';
+import 'package:app_events/ui/widgets/shared/chunky_button.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
 import 'package:app_events/ui/widgets/shared/social_links_bar.dart';
 import 'package:app_events/ui/widgets/shared/tilted_tag.dart';
@@ -56,9 +61,34 @@ class ScheduleDetail extends StatelessWidget {
     customSnackbar(context, AppStrings.scheduleDeleteSuccess);
   }
 
+  Future<void> _openAskSpeakerDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) =>
+          _AskSpeakerDialog(eventId: eventId, speakerUuid: info.uuid),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isAdmin = Provider.of<UserProvider>(context, listen: false).isAdmin;
+    final userProvider = maybeProvider<UserProvider>(context, listen: false);
+    final authProvider = maybeProvider<SignInSocialNetworkProvider>(
+      context,
+      listen: false,
+    );
+    final talkProvider = maybeProvider<TalkInteractionProvider>(
+      context,
+      listen: false,
+    );
+    final isAdmin = userProvider?.isAdmin ?? false;
+    final authUid = (authProvider != null && authProvider.isAuth)
+        ? authProvider.userInfo.uid
+        : null;
+    final uid = (authUid != null && authUid.isNotEmpty)
+        ? authUid
+        : userProvider?.userCompetitor?.uuid;
+    final canInteract = info.uuid.isNotEmpty && talkProvider != null;
+
     return Scaffold(
       backgroundColor: AppStyles.homeBackgroundColor,
       appBar: AppBar(
@@ -84,39 +114,219 @@ class ScheduleDetail extends StatelessWidget {
       ),
 
       body: HomeBackdrop(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(18, 15, 18, 40),
-          children: [
-            TalkDetailCard(
-              info: info,
-              photo: CachedNetworkImageProvider(info.photoUrl),
-            ),
-            if (info.type == "Taller") ...[
-              const SizedBox(height: 16),
-              ButtonWorkshop(eventId: eventId, uuid: info.uuid, info: info),
-            ],
-            if (info.description.trim().isNotEmpty) ...[
-              const SizedBox(height: 24),
-              _TextSection(
-                tag: AppStrings.scheduleWhatIsItAbout,
-                tagColor: AppStyles.colorBaseYellow,
-                angle: -2,
-                text: info.description,
+        child: SafeArea(
+          top: false,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(18, 15, 18, 40),
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 540),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TalkDetailCard(
+                        info: info,
+                        photo: CachedNetworkImageProvider(info.photoUrl),
+                      ),
+                      if (info.type == "Taller") ...[
+                        const SizedBox(height: 16),
+                        ButtonWorkshop(
+                          eventId: eventId,
+                          uuid: info.uuid,
+                          info: info,
+                        ),
+                      ],
+                      if (info.description.trim().isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        _TextSection(
+                          tag: AppStrings.scheduleWhatIsItAbout,
+                          tagColor: AppStyles.colorBaseYellow,
+                          angle: -2,
+                          text: info.description,
+                        ),
+                      ],
+                      if (info.aboutMe.trim().isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        _TextSection(
+                          tag: AppStrings.scheduleWhoTellsIt,
+                          tagColor: AppStyles.titlePillColor,
+                          angle: 2,
+                          color: AppStyles.colorCardBlue,
+                          text: info.aboutMe,
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      SocialLinksBar(networks: info.socialNetwork),
+                      if (canInteract) ...[
+                        const SizedBox(height: 24),
+                        TalkRatingCard(
+                          eventId: eventId,
+                          speakerUuid: info.uuid,
+                          uid: uid,
+                        ),
+                        const SizedBox(height: 16),
+                        ChunkyButton(
+                          label: AppStrings.talkAskSpeakerAction,
+                          color: AppStyles.colorCardBlue,
+                          expand: true,
+                          icon: const Icon(
+                            Icons.question_answer_outlined,
+                            size: 18,
+                            color: AppStyles.fontColor,
+                          ),
+                          onPressed: () =>
+                              unawaited(_openAskSpeakerDialog(context)),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ],
-            if (info.aboutMe.trim().isNotEmpty) ...[
-              const SizedBox(height: 24),
-              _TextSection(
-                tag: AppStrings.scheduleWhoTellsIt,
-                tagColor: AppStyles.titlePillColor,
-                angle: 2,
-                color: AppStyles.colorCardBlue,
-                text: info.aboutMe,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AskSpeakerDialog extends StatefulWidget {
+  final String eventId;
+  final String speakerUuid;
+
+  const _AskSpeakerDialog({required this.eventId, required this.speakerUuid});
+
+  @override
+  State<_AskSpeakerDialog> createState() => _AskSpeakerDialogState();
+}
+
+class _AskSpeakerDialogState extends State<_AskSpeakerDialog> {
+  final TextEditingController _controller = TextEditingController();
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    setState(() => _submitting = true);
+    try {
+      final ok = await submitTalkQuestionWithFeedback(
+        context,
+        eventId: widget.eventId,
+        speakerUuid: widget.speakerUuid,
+        rawText: _controller.text,
+      );
+      if (ok && mounted) {
+        Navigator.of(context).pop();
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _submitting = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: SingleChildScrollView(
+          clipBehavior: Clip.none,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 18),
+                child: HardShadowBox(
+                  color: AppStyles.cardColor,
+                  radius: 22,
+                  shadowOffset: 5,
+                  borderWidth: 2.5,
+                  padding: const EdgeInsets.fromLTRB(18, 28, 18, 18),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        controller: _controller,
+                        enabled: !_submitting,
+                        maxLength: 300,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: AppStrings.talkAskSpeakerHint,
+                          counterText: '',
+                          filled: true,
+                          fillColor: AppStyles.gamesBackgroundColor,
+                          contentPadding: const EdgeInsets.all(12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppStyles.borderColor,
+                              width: 2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppStyles.borderColor,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ChunkyButton(
+                              label: AppStrings.commonWordCancel,
+                              color: AppStyles.cardColor,
+                              minHeight: 44,
+                              onPressed: _submitting
+                                  ? null
+                                  : () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ChunkyButton(
+                              label: AppStrings.talkAskSpeakerSend,
+                              color: AppStyles.colorBaseYellow,
+                              minHeight: 44,
+                              onPressed: _submitting
+                                  ? null
+                                  : () => unawaited(_send()),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: TiltedTag(
+                    text: AppStrings.talkAskSpeakerTitle,
+                    color: AppStyles.colorBaseYellow,
+                    angleDegrees: -1.5,
+                    compact: true,
+                  ),
+                ),
               ),
             ],
-            const SizedBox(height: 24),
-            SocialLinksBar(networks: info.socialNetwork),
-          ],
+          ),
         ),
       ),
     );

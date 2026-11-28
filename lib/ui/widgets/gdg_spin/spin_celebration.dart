@@ -114,20 +114,34 @@ class _SpinCelebrationState extends State<SpinCelebration>
 
   @override
   Widget build(BuildContext context) {
-    final (title, symbol, subtitle, accentColor) = switch (widget.phase) {
+    final (
+      title,
+      symbol,
+      imageUrl,
+      subtitle,
+      accentColor,
+    ) = switch (widget.phase) {
       SpinPhase.win when widget.outcome is SpinPrizeOutcome => (
         AppStrings.spinWinTitle,
         (widget.outcome as SpinPrizeOutcome).prize.symbol,
+        (widget.outcome as SpinPrizeOutcome).prize.imageUrl,
         (widget.outcome as SpinPrizeOutcome).prize.name,
         (widget.outcome as SpinPrizeOutcome).prize.symbol.accentColor,
       ),
       SpinPhase.bonus when widget.outcome is SpinBonusOutcome => (
         AppStrings.spinBonusTitle,
         SpinSymbol.mysteryBox,
+        null,
         AppStrings.spinReward((widget.outcome as SpinBonusOutcome).tickets),
         AppStyles.gdgBrandPalette[1],
       ),
-      _ => (AppStrings.spinNearTitle, null, null, AppStyles.spinNearMissColor),
+      _ => (
+        AppStrings.spinNearTitle,
+        null,
+        null,
+        null,
+        AppStyles.spinNearMissColor,
+      ),
     };
 
     return Positioned.fill(
@@ -158,84 +172,97 @@ class _SpinCelebrationState extends State<SpinCelebration>
                 ),
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: AnimatedBuilder(
-                  animation: _entryController,
-                  builder: (context, child) => Opacity(
-                    opacity: _opacityAnimation.value.clamp(0.0, 1.0),
-                    child: Transform.rotate(
-                      angle: _rotationAnimation.value,
-                      child: Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: child,
+                child: SingleChildScrollView(
+                  child: AnimatedBuilder(
+                    animation: _entryController,
+                    builder: (context, child) => Opacity(
+                      opacity: _opacityAnimation.value.clamp(0.0, 1.0),
+                      child: Transform.rotate(
+                        angle: _rotationAnimation.value,
+                        child: Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: child,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Transform.rotate(
-                        angle: -4 * math.pi / 180,
-                        child: HardShadowBox(
-                          color: AppStyles.cardColor,
-                          radius: 14,
-                          shadowOffset: 5,
-                          borderWidth: 2.5,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 4,
-                          ),
-                          child: Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w900,
-                              color: AppStyles.fontColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (symbol != null) ...[
-                        const SizedBox(height: 12),
-                        HardShadowBox(
-                          color: AppStyles.cardColor,
-                          radius: 26,
-                          shadowOffset: 6,
-                          borderWidth: 2.5,
-                          child: SizedBox(
-                            width: 108,
-                            height: 108,
-                            child: Center(
-                              child: SpinSymbolArt(symbol: symbol, size: 78),
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Transform.rotate(
-                          angle: 2 * math.pi / 180,
+                          angle: -4 * math.pi / 180,
                           child: HardShadowBox(
-                            color: AppStyles.spinBezelColor,
-                            radius: 12,
-                            shadowOffset: 4,
+                            color: AppStyles.cardColor,
+                            radius: 14,
+                            shadowOffset: 5,
                             borderWidth: 2.5,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
+                              horizontal: 16,
                               vertical: 4,
                             ),
-                            child: Text(
-                              subtitle,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                color: AppStyles.fontColor,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                title,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppStyles.fontColor,
+                                ),
                               ),
                             ),
                           ),
                         ),
+                        if (symbol != null) ...[
+                          const SizedBox(height: 12),
+                          HardShadowBox(
+                            color: AppStyles.cardColor,
+                            radius: 26,
+                            shadowOffset: 6,
+                            borderWidth: 2.5,
+                            child: SizedBox(
+                              width: 108,
+                              height: 108,
+                              child: Center(
+                                child: SpinPrizeThumbnail(
+                                  symbol: symbol,
+                                  imageUrl: imageUrl,
+                                  size: 92,
+                                  fallbackSize: 78,
+                                  borderRadius: 20,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 12),
+                          Transform.rotate(
+                            angle: 2 * math.pi / 180,
+                            child: HardShadowBox(
+                              color: AppStyles.spinBezelColor,
+                              radius: 12,
+                              shadowOffset: 4,
+                              borderWidth: 2.5,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                subtitle,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppStyles.fontColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

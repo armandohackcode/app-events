@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_events/domain/models/auth_user.dart';
 import 'package:app_events/domain/repositories/auth_repository.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
@@ -13,8 +15,10 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
   bool _outService = false;
   bool _loadingAuth = false;
   bool _loadingValidate = true;
+  bool _disposed = false;
 
   late AuthUser _userInfo;
+  StreamSubscription<AuthUser?>? _authSub;
 
   bool get isAuth => _isAuth;
   bool get loadingAuth => _loadingAuth;
@@ -49,12 +53,16 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
 
   Future<void> validateToken() async {
     try {
-      authRepository.authStateChanges().listen((user) {
+      await _authSub?.cancel();
+      _authSub = authRepository.authStateChanges().listen((user) {
+        if (_disposed) return;
         if (user != null) {
           _userInfo = user;
           if (!isAuth) {
             isAuth = true;
           }
+        } else if (isAuth) {
+          isAuth = false;
         }
       });
     } catch (e) {
@@ -98,5 +106,13 @@ class SignInSocialNetworkProvider extends ChangeNotifier {
 
   Future<void> logOut() async {
     await authRepository.signOut();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    unawaited(_authSub?.cancel());
+    _authSub = null;
+    super.dispose();
   }
 }

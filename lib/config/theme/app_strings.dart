@@ -151,6 +151,9 @@ class AppStrings {
   static const String scanMessageAddedFriend = "Añadiste a un nuevo amigo";
   static const String scanMessageInvalidQR = "QR no válido";
   static const String scanCameraPermissionDenied = "Permiso de cámara denegado";
+  static const String scanCameraPermissionBody =
+      "Permite el acceso a la cámara desde los ajustes para escanear códigos QR.";
+  static const String scanOpenSettings = "Abrir ajustes";
 
   // resource library
 
@@ -380,24 +383,56 @@ class AppStrings {
   static const List<String> spinSignGdgLetters = ['G', 'D', 'G'];
   static String spinTicketCount(int n) => n == 1 ? '1 ticket' : '$n tickets';
   static const String spinPullHint = 'Tira de la palanca hacia abajo.';
+  static const String spinConnecting = 'Conectando…';
   static const String spinSpinning = 'Girando…';
   static const String spinTease = '¡Dos de tres! A ver el último…';
   static const String spinNoTickets =
-      'Sin tickets. Gana más abajo o usa +5 de prueba.';
+      'Sin tickets. Gana más abajo completando misiones.';
   static const String spinOutOfTickets =
       'Se acabaron tus tickets. Gana más abajo.';
+  static const String spinPaused = 'La máquina está en pausa por ahora.';
+  static const String spinClosed = 'GDG SPIN cerró por este evento.';
+  static const String spinSoldOutMessage =
+      'Se acabaron los premios. ¡Gracias por jugar!';
+  static const String spinCooldown =
+      'Espera un momento antes de volver a girar.';
+  static const String spinPrizeCapReached =
+      '¡Ya alcanzaste el máximo de premios!';
+  static const String spinNetworkError =
+      'Sin conexión. Toca la palanca para reintentar.';
+  static const String spinNoActiveEvent = 'No hay un evento activo para jugar.';
   static String spinLose(int left) =>
       'No ganaste esta vez. Te quedan ${spinTicketCount(left)}.';
   static String spinWinMessage(String prize) => '¡Ganaste! $prize';
   static String spinBonusMessage(int n) =>
       '¡Trofeo GDG! +${spinTicketCount(n)}';
-  static const String spinDemoReloaded = 'Listo: +5 tickets de prueba.';
   static const String spinTrayHint = 'Aquí caen las monedas cuando ganas.';
   static const String spinCoinsCollected = 'Recogiste tus monedas.';
-  static String spinMissionDone(int total) => '+1 ticket. Ya tienes $total.';
-  static const String spinTriviaRight = '¡Correcto! +1 ticket.';
+  static String spinMissionDone(int total) =>
+      '¡Misión cumplida! Ya tienes ${spinTicketCount(total)}.';
+  static const String spinTriviaRight = '¡Correcto! Ganaste ticket.';
   static const String spinTriviaWrong =
-      'Era Firebase AI Logic. Esta vez sin ticket.';
+      'Respuesta incorrecta. Esta vez sin ticket.';
+  static String spinCodeRedeemed(String label, int tickets) => label.isEmpty
+      ? '+${spinTicketCount(tickets)} canjeados.'
+      : '$label: +${spinTicketCount(tickets)}.';
+  static const String spinCodeError = 'No se pudo canjear ese código.';
+  static const String spinCodeDepleted =
+      'Este código alcanzó su límite de usos.';
+  static const String spinCodeExpired =
+      'Este código ya expiró o aún no está activo.';
+  static const String spinCodeAlreadyClaimed =
+      'Ya canjeaste este código anteriormente.';
+  static const String spinCodeNotFound = 'Código de stand no encontrado.';
+  static const String spinCodeInvalidFormat =
+      'Ingresa o escanea un código válido.';
+  static const String spinMissionRequirementNotMet =
+      'Aún no cumples los requisitos de esta misión.';
+  static const String spinTicketCapReached =
+      'Alcanzaste el límite máximo de tickets.';
+  static const String spinTriviaClosed = 'Esta trivia ya no está disponible.';
+  static const String spinMissionInactive = 'Esta misión no está activa ahora.';
+  static const String spinMissionAlreadyClaimed = 'Ya reclamaste esta misión.';
   static const String spinWinTitle = '¡GANASTE!';
   static const String spinBonusTitle = '¡BONUS!';
   static const String spinNearTitle = '¡CASI!';
@@ -405,13 +440,24 @@ class AppStrings {
   static const String spinSpinsLabel = 'GIROS';
   static const String spinCoinTray = 'BANDEJA DE MONEDAS';
   static const String spinFooterBrand = 'GDG SPIN · SUCRE';
-  static const String spinDemoReload = '+5 tickets de prueba';
   static const String spinPayTableLink = 'Pagos';
   static const String spinMyPrizes = 'Mis premios';
   static const String spinMyPrizesEmpty = 'Aún nada. Tira de la palanca.';
   static const String spinRedeemHint =
       'Canjea cada premio en el stand con su código.';
+  static const String spinStatusPending = 'Pendiente';
+  static const String spinStatusRedeemed = 'Canjeado';
+  static const String spinStatusRevoked = 'Revocado';
+  static const String spinRedeemQrTitle = 'Canjea tu premio';
+  static const String spinRedeemQrHint =
+      'Muestra este QR o código en el stand de GDG Sucre';
+  static const String spinRedeemQrCompleted = '¡Premio entregado!';
+  static const String spinRedeemQrRevoked = 'Premio revocado';
+  static const String spinTapToShowQr =
+      'Toca un premio para ver su QR de canje';
   static const String spinPayTable = 'Tabla de premios';
+  static const String spinPayTableEmpty =
+      'Aún no hay premios activos configurados.';
   static const String spinThreeOfAKind = 'Tres iguales ganan';
   static String spinRemaining(int left, int total) => 'Quedan $left de $total';
   static const String spinSoldOut = 'Agotado';
@@ -429,23 +475,65 @@ class AppStrings {
   static const String spinEarnTickets = 'Gana tickets';
   static String spinReward(int n) => '+${spinTicketCount(n)}';
   static const String spinTriviaReward = '+1 ticket si aciertas';
-  static const String spinTriviaQuestion =
-      '¿Con qué SDK de Firebase se llama a Gemini desde una app móvil?';
-  static const String spinTriviaOptionA = 'Firebase AI Logic';
-  static const String spinTriviaOptionB = 'Firebase Crashlytics';
-  static const String spinTriviaOptionC = 'Firebase Hosting';
-  // demo data (removed in phase 2)
-  static const String spinMissionCheckIn = 'Check-in en la puerta';
-  static const String spinMissionQr = 'Conectaste con 3 personas por QR';
-  static const String spinMissionAsk = 'Haz una pregunta a un speaker';
-  static const String spinMissionRate = 'Califica una charla';
-  static const String spinMissionTrivia = 'Trivia del break';
-  static const String spinPrizeStickers = 'Stickers GDG';
-  static const String spinPrizeMug = 'Taza GDG';
-  static const String spinPrizeShirt = 'Polera GDG';
-  static const String spinPrizeSparky = 'Peluche de Sparky';
-  static const String spinPrizeDash = 'Peluche de Dash';
-  static const String spinPrizeAndroid = 'Figura de Android';
+  static String spinTriviaRewardCount(int n) =>
+      '+${spinTicketCount(n)} si aciertas';
+  static String spinMissionProgress(int current, int max) => '$current de $max';
+  static const String spinMissionsEmpty = 'No hay misiones activas por ahora.';
+  static const String spinMissionActionClaim = 'Reclamar';
+  static const String spinHaveStandCode = 'Tengo un código / QR de stand';
+  static const String spinStandCodeTitle = 'Canjear código de stand';
+  static const String spinStandCodeHint = 'Ej. CLOUD26';
+  static const String spinStandCodeScan = 'Escanear QR';
+  static const String spinStandCodeSubmit = 'Canjear';
+  static const String spinStandCodeScanMsg =
+      'Escanea el código QR del stand o sponsor';
+  static const String spinBannerPausedTitle = 'GDG SPIN en pausa';
+  static const String spinBannerClosedTitle = 'GDG SPIN cerrado';
+  static const String spinBannerClosedBody =
+      'El juego finalizó para este evento. ¡Gracias por participar!';
+  static const String spinBannerSoldOutTitle = 'Se acabaron los premios';
+  static const String spinBannerSoldOutBody =
+      'Todos los premios ya fueron entregados y GDG SPIN se cerró. Si ganaste, canjea tu premio en el stand.';
+  static const String spinBannerPrizeCapTitle = '¡Tope de premios alcanzado!';
+  static const String spinBannerPrizeCapBody =
+      'Ya ganaste el máximo de premios permitidos en este evento. ¡Aún puedes canjear los tuyos!';
+  static const String spinBannerNoEventTitle = 'Sin evento activo';
+  static const String spinBannerNoEventBody =
+      'Únete o espera a que inicie un evento activo para jugar GDG SPIN.';
+  static const String spinBannerRetryHint =
+      'No se pudo conectar con GDG SPIN. Reintentar';
+  static const String spinBannerRetryTitle = 'Error de conexión';
+  static const String spinRetryAction = 'Reintentar';
+  static const String spinWaitSpinFinish = 'Espera a que termine el giro.';
+  // talk Q&A and ratings
+  static const String talkQuestionSending = 'Enviando pregunta…';
+  static const String talkQuestionSent = '¡Pregunta enviada al speaker!';
+  static const String talkQuestionMinLength =
+      'Escribe al menos 10 caracteres para enviar tu pregunta.';
+  static const String talkQuestionRateLimited =
+      'Espera unos segundos antes de enviar otra pregunta.';
+  static const String talkQuestionLimitReached =
+      'Alcanzaste el máximo de preguntas para esta charla.';
+  static const String talkQuestionError =
+      'No se pudo enviar tu pregunta. Inténtalo de nuevo.';
+  static const String talkQuestionNoLiveTalk =
+      'Las preguntas se habilitan durante la charla en vivo';
+  static const String talkAskSpeakerAction = 'Preguntar al speaker';
+  static const String talkAskSpeakerTitle = 'Preguntar al speaker';
+  static const String talkAskSpeakerHint =
+      'Escribe tu pregunta (mín. 10 caracteres)...';
+  static const String talkAskSpeakerSend = 'Enviar pregunta';
+  static const String talkRatingTag = 'Califica esta charla';
+  static const String talkRatingPrompt = '¿Qué te pareció esta charla?';
+  static const String talkRatingCommentHint =
+      'Comentario opcional sobre la charla...';
+  static const String talkRatingSubmit = 'Enviar calificación';
+  static const String talkRatingUpdate = 'Actualizar calificación';
+  static const String talkRatingSaved = '¡Gracias! Tu calificación se guardó.';
+  static const String talkRatingSelectStars =
+      'Selecciona de 1 a 5 estrellas antes de enviar.';
+  static const String talkRatingError =
+      'No se pudo guardar tu calificación. Inténtalo de nuevo.';
   // ticket popup
   static const String spinTicketHeader = 'TICKET';
   static const String spinTicketWon = '¡Ganaste un ticket!';
@@ -470,4 +558,326 @@ class AppStrings {
   static const String spinSymbolStarName = 'Sparky';
   static const String spinSymbolDiamondName = 'Dash';
   static const String spinSymbolLemonName = 'Chrome';
+
+  // gdg spin admin panel
+  static const String spinAdminTitle = 'Panel Admin GDG SPIN';
+  static const String spinAdminSubtitle =
+      'Control en vivo, premios, misiones, tickets y canjes';
+  static const String spinAdminOpenAction = 'Abrir panel admin';
+  static const String spinAdminNoEventError =
+      'No hay un evento activo seleccionado todavía.';
+  static const String spinAdminAccessDenied = 'Acceso restringido';
+  static const String spinAdminAccessDeniedBody =
+      'Solo los organizadores administradores pueden acceder al panel de GDG SPIN.';
+  static const String spinAdminGoBack = 'Volver';
+  static const String spinAdminRefreshTooltip = 'Actualizar tablero';
+  static const String spinAdminTabControl = 'Control';
+  static const String spinAdminTabPrizes = 'Premios';
+  static const String spinAdminTabMissions = 'Misiones';
+  static const String spinAdminTabTickets = 'Tickets';
+  static const String spinAdminTabRedeem = 'Canje';
+  static const String spinAdminGenericError =
+      'No se pudo completar la operación.';
+  static const String spinAdminPermissionDenied =
+      'Tu usuario no tiene permisos de administrador.';
+  static const String spinAdminConfigNotInitialized =
+      'Configuración GDG SPIN aún no inicializada en este evento.';
+  static const String spinAdminAlreadyRedeemedError =
+      'Este premio ya fue canjeado anteriormente.';
+  static const String spinAdminAlreadyRevokedError =
+      'Este premio ya fue revocado.';
+  static const String spinAdminStockNegativeError =
+      'El ajuste dejaría el stock restante en negativo.';
+  static const String spinAdminStockImmutableError =
+      'El stock se edita únicamente desde Ajustar stock.';
+  static const String spinAdminManualGrantCapError =
+      'El monto excede el máximo permitido por entrega o usuario.';
+  static const String spinAdminCodeDuplicateError =
+      'Ya existe otro stand con ese código en este evento.';
+  static const String spinAdminWinNotFoundError =
+      'No se encontró ningún premio con ese código.';
+
+  // admin tab 1 - control
+  static const String spinAdminStatusTag = 'Estado en vivo';
+  static const String spinAdminStatusPaused = 'Pausado';
+  static const String spinAdminStatusActive = 'Activo';
+  static const String spinAdminStatusClosed = 'Cerrado';
+  static const String spinAdminPauseMessageLabel = 'Mensaje de pausa';
+  static const String spinAdminPauseMessageHint =
+      'Ej. Abrimos en el break de la mañana';
+  static const String spinAdminSaveStatus = 'Guardar estado';
+  static const String spinAdminStatusSaved = 'Estado del juego actualizado.';
+  static const String spinAdminRushLabel = 'Rush Final';
+  static const String spinAdminRushSubtitle =
+      'Libera 100 % del stock restante y aumenta la probabilidad para el cierre';
+  static const String spinAdminRushConfirmTitle = '¿Activar Rush Final?';
+  static const String spinAdminRushConfirmBody =
+      'Libera 100 % del stock restante y aumenta la probabilidad para el cierre.';
+  static const String spinAdminRushConfirmAction = 'Activar Rush Final';
+  static const String spinAdminRushDisableTitle = '¿Desactivar Rush Final?';
+  static const String spinAdminRushDisableBody =
+      'La máquina volverá al ritmo de pacing configurado.';
+  static const String spinAdminRushDisableAction = 'Desactivar';
+  static const String spinAdminRushActiveBadge = 'RUSH ACTIVO';
+  static const String spinAdminKpiTag = 'KPIs en vivo';
+  static const String spinAdminKpiSpins = 'Giros totales';
+  static const String spinAdminKpiStock = 'Stock restante';
+  static const String spinAdminKpiRedeemed = 'Canjeados / Pend.';
+  static const String spinAdminKpiPlayers = 'Jugadores activos';
+  static const String spinAdminKpiRegistrations = 'Inscritos';
+  static const String spinAdminKpiBonus = 'Giros bonus';
+  static const String spinAdminPacingTag = 'Ritmo y reglas';
+  static const String spinAdminDefaultInitialTickets =
+      'Tickets iniciales por defecto';
+  static const String spinAdminRegisteredCountLabel = 'Inscritos estimados';
+  static const String spinAdminExpectedSpinsLabel = 'Giros esperados / persona';
+  static const String spinAdminEstimatedOverrideLabel =
+      'Override giros totales (opcional)';
+  static const String spinAdminEstimatedOverrideHint =
+      'Vacío = cálculo automático';
+  static String spinAdminAutoEstimate(int spins) =>
+      'Estimado efectivo: $spins giros';
+  static String spinAdminStockRatio(int remaining, int initial) =>
+      '$remaining / $initial';
+  static String spinAdminTicketDeltaChip(int amount) => '+$amount';
+  static const String spinAdminPacingModeLabel = 'Modo de pacing';
+  static const String spinAdminPacingTimePaced = 'Por horario / oleadas';
+  static const String spinAdminPacingDynamicSpins = 'Dinámico por giros';
+  static const String spinAdminPacingManualWaves = 'Oleadas manuales';
+  static const String spinAdminPacingStart = 'Inicio pacing';
+  static const String spinAdminPacingEnd = 'Fin pacing';
+  static const String spinAdminNotConfigured = 'Sin definir';
+  static const String spinAdminWavesTitle = 'Oleadas de liberación';
+  static const String spinAdminAddWave = '+ Agregar oleada';
+  static const String spinAdminWaveLabel = 'Etiqueta';
+  static const String spinAdminWaveDefaultLabel = 'Nueva oleada';
+  static const String spinAdminWaveStart = 'Inicio';
+  static const String spinAdminWaveReleasePct = '% stock acum.';
+  static const String spinAdminWaveBudgetPct = '% pres. giros';
+  static const String spinAdminUserCapsTitle = 'Topes por usuario';
+  static const String spinAdminMaxPrizesPerUser =
+      'Máx. premios por usuario (0 = libre)';
+  static const String spinAdminAllowPlayAfterCap =
+      'Permitir girar tras alcanzar tope';
+  static const String spinAdminMinSpinsBetweenWins = 'Giros mín. entre premios';
+  static const String spinAdminMaxWinsRarityTitle =
+      'Máx. premios por rareza (0 = libre)';
+  static const String spinAdminBonusSecurityTitle = 'Bonus y seguridad';
+  static const String spinAdminBonusProbPct = 'Prob. bonus (%)';
+  static const String spinAdminBonusMinTickets = 'Tickets bonus mín.';
+  static const String spinAdminBonusMaxTickets = 'Tickets bonus máx.';
+  static const String spinAdminMaxBonusWins =
+      'Máx. bonus por usuario (0 = libre)';
+  static const String spinAdminMaxWinProbPct = 'Tope prob. premio (%)';
+  static const String spinAdminRushMaxWinProbPct = 'Tope prob. Rush (%)';
+  static const String spinAdminPayoutMultiplier = 'Multiplicador payout';
+  static const String spinAdminCooldownMs = 'Cooldown (ms)';
+  static const String spinAdminMaxEarnedTickets =
+      'Techo tickets ganados (0 = libre)';
+  static const String spinAdminSaveRules = 'Guardar reglas';
+  static const String spinAdminConfigSaved =
+      'Reglas y configuración guardadas.';
+  static const String spinAdminInvalidRulesInput =
+      'Revisa los valores numéricos e intervalos antes de guardar.';
+  static const String spinAdminInvalidWavesOrder =
+      'Las oleadas deben ordenarse por hora y % acumulado creciente (presupuesto ≤ 100%).';
+  static const String spinAdminRemoteConfigUpdated =
+      'Hay cambios remotos en la configuración.';
+  static const String spinAdminReloadConfig = 'Recargar';
+
+  // admin tab 2 - prizes
+  static const String spinAdminNewPrize = '+ Nuevo premio';
+  static const String spinAdminEditPrize = 'Editar premio';
+  static const String spinAdminNoPrizes = 'Aún no hay premios configurados.';
+  static const String spinAdminPrizeName = 'Nombre del premio';
+  static const String spinAdminPrizeDescription = 'Descripción';
+  static const String spinAdminPrizeRarity = 'Rareza';
+  static const String spinAdminPrizeSymbol = 'Símbolo en rodillos';
+  static const String spinAdminPrizeImageUrl = 'URL de imagen (opcional)';
+  static const String spinAdminPrizePickImage = 'Elegir imagen';
+  static const String spinAdminPrizeChangeImage = 'Cambiar imagen';
+  static const String spinAdminPrizeClearImage = 'Quitar imagen';
+  static const String spinAdminPrizeInitialStock = 'Stock inicial';
+  static const String spinAdminPrizeMaxPerUser = 'Máx. por usuario (0 = libre)';
+  static const String spinAdminPrizeWeight = 'Peso de sorteo';
+  static const String spinAdminPrizeOrder = 'Orden';
+  static const String spinAdminPrizeUnlockAt = 'Desbloquear desde (opcional)';
+  static const String spinAdminPrizeActive = 'Activo';
+  static const String spinAdminPrizeInactive = 'Inactivo';
+  static const String spinAdminAdjustStock = 'Ajustar stock';
+  static const String spinAdminStockDeltaLabel = 'Delta (+N / -N)';
+  static const String spinAdminStockReasonLabel = 'Motivo obligatorio';
+  static const String spinAdminStockReasonHint =
+      'Ej. Reposición física en stand';
+  static const String spinAdminReleaseOne = '+1 liberar';
+  static String spinAdminPrizeMetrics(
+    int awarded,
+    int redeemed,
+    int released,
+    int initial,
+  ) =>
+      'Adjudicados: $awarded · Canjeados: $redeemed · Liberado: $released/$initial';
+  static String spinAdminPrizeUnlockBadge(String dateText) => 'Desde $dateText';
+  static const String spinAdminPrizeSaved = 'Premio guardado correctamente.';
+  static const String spinAdminPrizeValidation =
+      'Ingresa nombre, stock válido y peso mayor a 0.';
+  static const String spinAdminStockAdjusted = 'Stock ajustado correctamente.';
+  static const String spinAdminStockReleased = 'Se liberó +1 unidad.';
+  static const String spinAdminReleaseOneReason = 'Liberación manual de oleada';
+  static const String spinAdminStockValidation =
+      'Ingresa un delta distinto de 0 y un motivo.';
+
+  // admin tab 3 - missions & trivia
+  static const String spinAdminNewMission = '+ Nueva misión / trivia';
+  static const String spinAdminEditMission = 'Editar misión';
+  static const String spinAdminNoMissions = 'Aún no hay misiones configuradas.';
+  static const String spinAdminMissionType = 'Tipo de misión';
+  static const String spinAdminMissionTypeTrivia = 'Trivia en vivo';
+  static const String spinAdminMissionTypeProfile = 'Completar perfil';
+  static const String spinAdminMissionTypeWorkshop = 'Inscribirse a taller';
+  static const String spinAdminMissionTypeAskSpeaker = 'Preguntar al speaker';
+  static const String spinAdminMissionTypeRateTalk = 'Calificar charla';
+  static const String spinAdminMissionTitle = 'Título';
+  static const String spinAdminMissionDescription = 'Descripción';
+  static const String spinAdminMissionReward = 'Tickets de recompensa';
+  static const String spinAdminMissionTargetCount = 'Meta requerida';
+  static const String spinAdminMissionMaxCompletions = 'Máx. veces por usuario';
+  static const String spinAdminMissionActionLabel =
+      'Texto del botón (opcional)';
+  static const String spinAdminMissionOrder = 'Orden';
+  static const String spinAdminMissionStartsAt = 'Inicio (opcional)';
+  static const String spinAdminMissionEndsAt = 'Fin (opcional)';
+  static const String spinAdminMissionMinAboutMe =
+      'Mín. caracteres en Acerca de mí';
+  static const String spinAdminTriviaQuestion = 'Pregunta de trivia';
+  static const String spinAdminTriviaOptions = 'Opciones (2 a 4)';
+  static const String spinAdminTriviaAddOption = '+ Opción';
+  static String spinAdminTriviaOptionHint(int index) => 'Opción ${index + 1}';
+  static const String spinAdminTriviaCorrectOption = 'Respuesta correcta';
+  static const String spinAdminTriviaExplanation =
+      'Explicación al responder (opcional)';
+  static const String spinAdminTriviaUpdateSecret =
+      'Actualizar respuesta correcta y explicación';
+  static const String spinAdminMissionSaved = 'Misión guardada correctamente.';
+  static const String spinAdminMissionValidation =
+      'Completa los campos obligatorios y fechas válidas.';
+
+  // admin tab 4 - tickets, packages, registrations
+  static const String spinAdminImportTag = 'Importar inscritos (CSV / JSON)';
+  static const String spinAdminImportHint =
+      'Pega CSV (email,nombre,paquete) o JSON [{...}]';
+  static const String spinAdminImportReplaceAll = 'Reemplazar lista existente';
+  static const String spinAdminImportAction = 'Importar / Actualizar';
+  static String spinAdminImportPreview(int valid, int skipped) =>
+      '$valid filas válidas · $skipped omitidas';
+  static String spinAdminImportSuccess(int imported, int updated, int total) =>
+      'Importación completa: $imported nuevos, $updated actualizados ($total total).';
+  static const String spinAdminPackageBonusTag = 'Bonus por paquete';
+  static const String spinAdminPackageNameHint = 'Paquete (ej. VIP)';
+  static const String spinAdminPackageBonusHint = 'Tickets';
+  static const String spinAdminAddPackageBonus = '+ Agregar paquete';
+  static const String spinAdminSavePackageBonus = 'Guardar bonus';
+  static const String spinAdminPackageSaved = 'Bonus por paquete actualizado.';
+  static const String spinAdminPackageValidation =
+      'Cada paquete debe tener nombre y tickets ≥ 0.';
+  static const String spinAdminStandCodesTag = 'QR de stands y sponsors';
+  static const String spinAdminNewStandCode = '+ Crear QR de stand';
+  static const String spinAdminEditStandCode = 'Editar QR de stand';
+  static const String spinAdminNoStandCodes =
+      'No hay códigos QR de stand creados.';
+  static const String spinAdminCodeLabel = 'Nombre del stand / sponsor';
+  static const String spinAdminCodeValue = 'Código (ej. CLOUD26)';
+  static const String spinAdminCodeReward = 'Tickets otorgados';
+  static const String spinAdminCodeMaxUses = 'Usos totales máx.';
+  static const String spinAdminCodeMaxPerUser = 'Usos por usuario';
+  static String spinAdminCodeUses(int used, int max) => '$used / $max usos';
+  static const String spinAdminViewQr = 'Ver QR';
+  static const String spinAdminShareQr = 'Compartir QR';
+  static String spinAdminQrShareText(String label, String code) =>
+      'Escanea este QR de $label en GDG SPIN (código: $code)';
+  static const String spinAdminCodeSaved = 'Código de stand guardado.';
+  static const String spinAdminCodeValidation =
+      'Código inválido (mín. 3 caracteres A-Z, 0-9, _ o -) o fechas inválidas.';
+  static const String spinAdminManualGrantTag = 'Entrega manual de tickets';
+  static const String spinAdminSearchAttendee = 'Buscar asistente por nombre';
+  static const String spinAdminScanAttendeeQr = 'Escanear QR de asistente';
+  static const String spinAdminScanAttendeeMsg =
+      'Escanea el código QR del perfil del asistente';
+  static const String spinAdminSelectedAttendee = 'Asistente seleccionado';
+  static const String spinAdminGrantAmountLabel = 'Cantidad de tickets';
+  static const String spinAdminGrantReasonLabel = 'Motivo obligatorio';
+  static const String spinAdminGrantReasonHint =
+      'Ej. Ganador de dinámica en vivo';
+  static const String spinAdminGrantAction = 'Otorgar tickets';
+  static String spinAdminGrantSuccess(int amount, int after) =>
+      'Se otorgaron ${spinTicketCount(amount)} (saldo actual: $after).';
+  static const String spinAdminAttendeeNotFound =
+      'No se encontró un asistente con ese QR.';
+  static const String spinAdminGrantValidation =
+      'Selecciona un asistente y escribe el motivo.';
+
+  // admin tab 5 - stand redemption
+  static const String spinAdminRedeemScanQr = 'Escanear QR de premio';
+  static const String spinAdminRedeemScanMsg =
+      'Escanea el QR del premio ganado para verificarlo';
+  static const String spinAdminRedeemCodeLabel = 'Código (ej. GDG-7K9P2M)';
+  static const String spinAdminRedeemSearch = 'Buscar';
+  static const String spinAdminConfirmRedeem = 'Confirmar entrega';
+  static const String spinAdminRevokeAction = 'Revocar';
+  static const String spinAdminAlreadyRedeemedBanner = 'YA CANJEADO';
+  static const String spinAdminRedeemedSuccess =
+      'Premio marcado como canjeado.';
+  static const String spinAdminRevokeConfirmTitle = 'Revocar premio';
+  static const String spinAdminRevokeConfirmBody =
+      'Anula este premio pendiente y registra el motivo en auditoría.';
+  static const String spinAdminRevokeReturnToStock =
+      'Devolver +1 unidad al stock';
+  static const String spinAdminRevokeReasonLabel = 'Motivo de revocación';
+  static const String spinAdminRevokeReasonHint =
+      'Ej. Código emitido por error / duplicado';
+  static const String spinAdminRevokedSuccess = 'Premio revocado.';
+  static const String spinAdminFilterAll = 'Todos';
+  static const String spinAdminFilterPending = 'Pendientes';
+  static const String spinAdminFilterRedeemed = 'Canjeados';
+  static const String spinAdminFilterRevoked = 'Revocados';
+  static const String spinAdminWinsListTag = 'Historial de premios';
+  static const String spinAdminNoWins =
+      'No hay premios registrados con este filtro.';
+  static String spinAdminRedeemedBy(String staff, String dateText) =>
+      'Entregado por $staff · $dateText';
+  static String spinAdminRevokeDetails(String reason, bool returned) =>
+      returned ? 'Motivo: $reason · +1 devuelto al stock' : 'Motivo: $reason';
+
+  // registration parser default & header aliases
+  static const String spinDefaultPackage = 'Entrada libre';
+  static const List<String> spinCsvHeaderEmailAliases = [
+    'email',
+    'correo',
+    'e-mail',
+    'mail',
+  ];
+  static const List<String> spinCsvHeaderNameAliases = [
+    'nombre',
+    'fullname',
+    'full_name',
+    'name',
+    'nombre completo',
+    'nombrecompleto',
+    'asistente',
+  ];
+  static const List<String> spinCsvHeaderPackageAliases = [
+    'paquete',
+    'package',
+    'entrada',
+    'ticket',
+    'tipo',
+    'tier',
+  ];
+  static const List<String> spinCsvHeaderCheckedInAliases = [
+    'checkedin',
+    'checked_in',
+    'checkin',
+    'asistio',
+    'asistencia',
+  ];
 }
