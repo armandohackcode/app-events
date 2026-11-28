@@ -1,0 +1,696 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model (gdgsucre-events — app_events + GDG SPIN Phase 2)
+// ===============================================================
+//
+// Collection: users-admin
+// Document ID: {uid} (normalized so docId == Firebase Auth UID; legacy auto-IDs migrated via bootstrap-spin)
+// Fields:
+//   - uuid: string (required, immutable, matches admin UID)
+//   - name: string (required)
+// Access: Client writes strictly denied (Console / Admin SDK only).
+//
+// Collection: competitors
+// Document ID: {uid} (Firebase Auth UID)
+// Fields:
+//   - uuid: string (required, immutable, 1..128 chars, equals docId)
+//   - name: string (required, 0..150 chars)
+//   - photoUrl: string (required on create, 0..2048 chars)
+//   - profession: string (required on create, 0..150 chars)
+//   - aboutMe: string (required on create, 0..1000 chars)
+//   - tokenAuthorization: string (required on create, 0..512 chars — FCM device token)
+//   - score: int (required, 0 on create, 0..1000000; owner updates bounded [-50, +100])
+//   - scoreProfile: bool (required on create)
+//   - currentEventId: string | null (optional, 0..128 chars)
+//   - socialNetwork: list (required on create, max 20 items)
+//   - friends: list (required on create, empty on create, max 500 items)
+//   - treasures: list (required on create, empty on create, max 100 items)
+//   - badges: list (required on create, empty on create, max 100 items, immutable for non-admins)
+//
+// Collection: events
+// Document ID: {eventId}
+// Fields:
+//   - id: string (optional, 0..128 chars)
+//   - title: string (required on create, 1..200 chars)
+//   - description: string (optional, 0..5000 chars)
+//   - startDate: string | timestamp (ISO-8601 string or Timestamp)
+//   - endDate: string | timestamp (ISO-8601 string or Timestamp)
+//   - locationUrl: string (optional, 0..2048 chars)
+//   - imageUrl: string (optional, 0..2048 chars)
+//   - status: string (required on create, enum: 'upcoming' | 'active' | 'finished')
+//
+// Subcollection: events/{eventId}/schedule
+// Document ID: {speakerId}
+// Fields:
+//   - uuid: string (optional, 0..128 chars)
+//   - limit: int (optional, 0..100000)
+//   - current: int (optional, 0..100000; non-admin may increment by +1 up to limit once per user)
+//   - title: string (optional, 0..300 chars)
+//   - description: string (optional, 0..5000 chars)
+//   - name: string (optional, 0..150 chars)
+//   - profession: string (optional, 0..200 chars)
+//   - aboutMe: string (optional, 0..2000 chars)
+//   - photoUrl: string (optional, 0..2048 chars)
+//   - technologyType: string (optional, 0..100 chars)
+//   - type: string (optional, 0..100 chars)
+//   - color: string (optional, 0..50 chars)
+//   - schedule: string (optional, 0..100 chars)
+//   - position: int (optional, 0..10000)
+//   - openDate: string | null (optional, 0..64 chars)
+//   - SocialNetwork: list (optional, max 20 items)
+//   - isLive: bool (optional)
+//
+// Subcollection: events/{eventId}/schedule/{speakerId}/workshow
+// Document ID: {uid} (Firebase Auth UID; prevents duplicate workshop enrollments)
+// Fields:
+//   - uuid: string (required, 1..128 chars, equals request.auth.uid on create)
+//   - name: string (required, 0..150 chars)
+//   - token: string (required, 0..512 chars)
+//   - photoUrl: string (required, 0..2048 chars)
+//
+// Subcollection: events/{eventId}/schedule/{speakerId}/questions
+// Document ID: {qId} (Cloud Functions only)
+// Fields: id, uid, authorName, authorPhotoUrl, text, answered, hidden, createdAt
+//
+// Subcollection: events/{eventId}/schedule/{speakerId}/ratings
+// Document ID: {uid} (Cloud Functions only)
+// Fields: uid, stars, comment, createdAt, updatedAt
+//
+// GDG SPIN Subcollections under events/{eventId}/ (ALL client writes denied; Cloud Functions only):
+//   - spinConfig/{docId}: public game config for signed-in users
+//   - spinPrizes/{prizeId}: prize catalog and stock counters (signed-in read)
+//   - spinMissions/{missionId}: public missions & trivia questions (signed-in read)
+//   - spinMissionSecrets/{missionId}: trivia answers (100% hidden from all clients & admins)
+//   - spinPlayers/{uid}: player wallet & PII email (owner or admin read)
+//   - spinWins/{winId}: won prizes & redemption codes (owner by data.uid or admin read)
+//   - spinMissionClaims/{uid}_{missionId}: mission idempotency records (owner or admin read)
+//   - spinCodeClaims/{uid}_{codeId}: stand code idempotency records (owner or admin read)
+//   - ticketLedger/{entryId}: immutable ticket credit/debit ledger (owner by data.uid or admin read)
+//   - spinTicketCodes/{codeId}: sponsor/stand QR campaigns (admin read only)
+//   - spinRegistrations/{hash}: imported web attendee emails/packages (admin read only)
+//   - spinStats/{shard}: distributed spin counter shards (admin read only)
+//   - spinLogs/{logId}: immutable spin idempotency & audit logs (admin read only)
+//   - spinAuditLogs/{auditId}: admin action audit trail (admin read only)
+//
+// Legacy Root Collections:
+//   - organizers/{docId}: public read, admin write
+//   - sponsors/{docId}: public read, admin write (createdAt immutable on update)
+//   - resource-library/{docId}: public read, admin write
+//   - treasure-hunt/{docId}: signed-in read, admin write
+//   - speedRunBuild/{docId}: public read, admin write
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions — Authentication & Authorization
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isSignedIn() {
+      return isAuthenticated();
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // O(1) admin lookup against normalized users-admin/{uid} collection
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users-admin/$(request.auth.uid));
+    }
+
+    // Exact prefix check for composite IDs shaped as "{uid}_{entityId}".
+    // Avoids regex evaluation and is immune to regex metacharacters in UIDs.
+    function isUserPrefixedId(docId) {
+      return isSignedIn() &&
+        docId.size() > request.auth.uid.size() + 1 &&
+        docId[0 : request.auth.uid.size() + 1] == request.auth.uid + '_';
+    }
+
+    // ===============================================================
+    // Helper Functions — Schema & Data Validation
+    // ===============================================================
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function uidUnchanged(field, expectedUid) {
+      return field in request.resource.data &&
+        request.resource.data[field] == expectedUid;
+    }
+
+    function uidNotModified(field) {
+      return field in request.resource.data &&
+        request.resource.data[field] == resource.data[field];
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidOptionalString(data, field, minLen, maxLen) {
+      return !(field in data) || isValidString(data[field], minLen, maxLen);
+    }
+
+    function isValidNullableString(data, field, minLen, maxLen) {
+      return !(field in data) ||
+        data[field] == null ||
+        isValidString(data[field], minLen, maxLen);
+    }
+
+    function isValidOptionalInt(data, field, minVal, maxVal) {
+      return !(field in data) ||
+        (data[field] is int && data[field] >= minVal && data[field] <= maxVal);
+    }
+
+    function isValidOptionalBool(data, field) {
+      return !(field in data) || data[field] is bool;
+    }
+
+    function isValidOptionalList(data, field, maxSize) {
+      return !(field in data) ||
+        (data[field] is list && data[field].size() <= maxSize);
+    }
+
+    function isValidDateOrTimestamp(val) {
+      return val is timestamp || isValidString(val, 1, 64);
+    }
+
+    // ===============================================================
+    // Domain Validators (Applied on BOTH create and update)
+    // ===============================================================
+
+    function competitorAllowedKeys() {
+      return [
+        'uuid',
+        'name',
+        'photoUrl',
+        'profession',
+        'aboutMe',
+        'tokenAuthorization',
+        'score',
+        'scoreProfile',
+        'currentEventId',
+        'socialNetwork',
+        'friends',
+        'treasures',
+        'badges'
+      ];
+    }
+
+    function isValidCompetitor(data) {
+      return hasOnlyAllowedFields(data, competitorAllowedKeys()) &&
+        hasRequiredFields(data, ['uuid', 'name', 'score']) &&
+        isValidString(data.uuid, 1, 128) &&
+        isValidString(data.name, 0, 150) &&
+        isValidOptionalString(data, 'photoUrl', 0, 2048) &&
+        isValidOptionalString(data, 'profession', 0, 150) &&
+        isValidOptionalString(data, 'aboutMe', 0, 1000) &&
+        isValidOptionalString(data, 'tokenAuthorization', 0, 512) &&
+        data.score is int && data.score >= 0 && data.score <= 1000000 &&
+        isValidOptionalBool(data, 'scoreProfile') &&
+        isValidNullableString(data, 'currentEventId', 0, 128) &&
+        isValidOptionalList(data, 'socialNetwork', 20) &&
+        isValidOptionalList(data, 'friends', 500) &&
+        isValidOptionalList(data, 'treasures', 100) &&
+        isValidOptionalList(data, 'badges', 100);
+    }
+
+    function isValidCompetitorCreate(uid, data) {
+      return isValidCompetitor(data) &&
+        hasRequiredFields(data, [
+          'uuid',
+          'name',
+          'photoUrl',
+          'profession',
+          'aboutMe',
+          'tokenAuthorization',
+          'score',
+          'scoreProfile',
+          'socialNetwork',
+          'friends',
+          'treasures',
+          'badges'
+        ]) &&
+        data.uuid == uid &&
+        data.score == 0 &&
+        data.friends.size() == 0 &&
+        data.treasures.size() == 0 &&
+        data.badges.size() == 0;
+    }
+
+    function isValidCompetitorOwnerUpdate(uid, data) {
+      let prevScore = resource.data.get('score', 0);
+      return isValidCompetitor(data) &&
+        data.uuid == resource.data.uuid &&
+        data.uuid == uid &&
+        // Prevent owners from deleting existing keys via FieldValue.delete()
+        data.keys().hasAll(resource.data.keys()) &&
+        // Badges are immutable for non-admin users (handles legacy docs lacking 'badges')
+        data.get('badges', []) == resource.data.get('badges', []) &&
+        // Bound single-operation score deltas: EditProfile (-32..+32), addNewFriend (+10), addItemTreasure (+100)
+        data.score >= prevScore - 50 &&
+        data.score <= prevScore + 100;
+    }
+
+    function eventAllowedKeys() {
+      return [
+        'id',
+        'title',
+        'description',
+        'startDate',
+        'endDate',
+        'locationUrl',
+        'imageUrl',
+        'status'
+      ];
+    }
+
+    function isValidEvent(data) {
+      return isValidOptionalString(data, 'id', 0, 128) &&
+        isValidOptionalString(data, 'title', 1, 200) &&
+        isValidOptionalString(data, 'description', 0, 5000) &&
+        (!('startDate' in data) || isValidDateOrTimestamp(data.startDate)) &&
+        (!('endDate' in data) || isValidDateOrTimestamp(data.endDate)) &&
+        isValidOptionalString(data, 'locationUrl', 0, 2048) &&
+        isValidOptionalString(data, 'imageUrl', 0, 2048) &&
+        (!('status' in data) || data.status in ['upcoming', 'active', 'finished']);
+    }
+
+    function scheduleAllowedKeys() {
+      return [
+        'uuid',
+        'limit',
+        'current',
+        'title',
+        'description',
+        'name',
+        'profession',
+        'aboutMe',
+        'photoUrl',
+        'technologyType',
+        'type',
+        'color',
+        'schedule',
+        'position',
+        'openDate',
+        'SocialNetwork',
+        'isLive'
+      ];
+    }
+
+    function isValidSchedule(data) {
+      return isValidOptionalString(data, 'uuid', 0, 128) &&
+        isValidOptionalInt(data, 'limit', 0, 100000) &&
+        isValidOptionalInt(data, 'current', 0, 100000) &&
+        isValidOptionalString(data, 'title', 0, 300) &&
+        isValidOptionalString(data, 'description', 0, 5000) &&
+        isValidOptionalString(data, 'name', 0, 150) &&
+        isValidOptionalString(data, 'profession', 0, 200) &&
+        isValidOptionalString(data, 'aboutMe', 0, 2000) &&
+        isValidOptionalString(data, 'photoUrl', 0, 2048) &&
+        isValidOptionalString(data, 'technologyType', 0, 100) &&
+        isValidOptionalString(data, 'type', 0, 100) &&
+        isValidOptionalString(data, 'color', 0, 50) &&
+        isValidOptionalString(data, 'schedule', 0, 100) &&
+        isValidOptionalInt(data, 'position', 0, 10000) &&
+        isValidNullableString(data, 'openDate', 0, 64) &&
+        isValidOptionalList(data, 'SocialNetwork', 20) &&
+        isValidOptionalBool(data, 'isLive');
+    }
+
+    function isValidWorkshopSeatIncrement(eventId, speakerId) {
+      return isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['current']) &&
+        request.resource.data.current is int &&
+        resource.data.current is int &&
+        request.resource.data.current == resource.data.current + 1 &&
+        request.resource.data.current <= 100000 &&
+        (
+          !('limit' in resource.data) ||
+          !(resource.data.limit is int) ||
+          resource.data.limit <= 0 ||
+          request.resource.data.current <= resource.data.limit
+        ) &&
+        !exists(/databases/$(database)/documents/events/$(eventId)/schedule/$(speakerId)/workshow/$(request.auth.uid));
+    }
+
+    function workshowAllowedKeys() {
+      return ['uuid', 'name', 'token', 'photoUrl'];
+    }
+
+    function isValidWorkshowEntry(data) {
+      return hasOnlyAllowedFields(data, workshowAllowedKeys()) &&
+        hasRequiredFields(data, workshowAllowedKeys()) &&
+        isValidString(data.uuid, 1, 128) &&
+        isValidString(data.name, 0, 150) &&
+        isValidString(data.token, 0, 512) &&
+        isValidString(data.photoUrl, 0, 2048);
+    }
+
+    function organizerAllowedKeys() {
+      return ['id', 'type', 'name', 'photoUrl', 'link', 'team', 'lead'];
+    }
+
+    function isValidOrganizer(data) {
+      return isValidOptionalInt(data, 'id', 0, 1000000) &&
+        isValidOptionalInt(data, 'type', 0, 100) &&
+        isValidOptionalString(data, 'name', 1, 150) &&
+        isValidOptionalString(data, 'photoUrl', 0, 2048) &&
+        isValidOptionalString(data, 'link', 0, 2048) &&
+        isValidOptionalList(data, 'team', 30) &&
+        isValidOptionalBool(data, 'lead');
+    }
+
+    function sponsorAllowedKeys() {
+      return ['id', 'name', 'photoUrl', 'link', 'createdAt'];
+    }
+
+    function isValidSponsor(data) {
+      return isValidNullableString(data, 'id', 0, 128) &&
+        isValidOptionalString(data, 'name', 1, 150) &&
+        isValidOptionalString(data, 'photoUrl', 0, 2048) &&
+        isValidOptionalString(data, 'link', 0, 2048) &&
+        (!('createdAt' in data) || isValidDateOrTimestamp(data.createdAt));
+    }
+
+    function resourceLibraryAllowedKeys() {
+      return ['title', 'link', 'type', 'keywords'];
+    }
+
+    function isValidResourceLibrary(data) {
+      return isValidOptionalString(data, 'title', 1, 200) &&
+        isValidOptionalString(data, 'link', 0, 2048) &&
+        isValidOptionalString(data, 'type', 0, 100) &&
+        isValidOptionalList(data, 'keywords', 50);
+    }
+
+    function treasureHuntAllowedKeys() {
+      return ['uuid', 'title', 'imgPath', 'question', 'answer', 'description'];
+    }
+
+    function isValidTreasureHunt(data) {
+      return isValidOptionalString(data, 'uuid', 0, 128) &&
+        isValidOptionalString(data, 'title', 1, 200) &&
+        isValidOptionalString(data, 'imgPath', 0, 2048) &&
+        isValidOptionalString(data, 'question', 0, 1000) &&
+        isValidOptionalString(data, 'answer', 0, 500) &&
+        isValidOptionalString(data, 'description', 0, 2000);
+    }
+
+    function speedRunAllowedKeys() {
+      return ['id', 'imageUrl', 'title', 'challenge', 'state', 'position'];
+    }
+
+    function isValidSpeedRunChallenge(data) {
+      return isValidOptionalString(data, 'id', 0, 128) &&
+        isValidOptionalString(data, 'imageUrl', 0, 2048) &&
+        isValidOptionalString(data, 'title', 1, 200) &&
+        isValidOptionalString(data, 'challenge', 0, 5000) &&
+        (!('state' in data) || data.state in ['active', 'inactive']) &&
+        isValidOptionalInt(data, 'position', 0, 10000);
+    }
+
+    // ===============================================================
+    // Admin Registry
+    // ===============================================================
+
+    match /users-admin/{docId} {
+      // Owners can check their own admin doc; admins can read any admin doc.
+      allow get: if isOwner(docId) || isAdmin();
+      // Supports validateIsAdmin query: .where('uuid', isEqualTo: request.auth.uid).get()
+      // while blocking non-admins from enumerating the admin list.
+      allow list: if isSignedIn() && (resource.data.uuid == request.auth.uid || isAdmin());
+      // Strictly server/Console managed to prevent self-promotion.
+      allow write: if false;
+    }
+
+    // ===============================================================
+    // Competitors (Attendees & Profiles)
+    // ===============================================================
+
+    match /competitors/{uid} {
+      // Required for ranking, attendees directory, and QR friend lookup.
+      allow read: if isSignedIn();
+      allow create: if isOwner(uid) &&
+        uidUnchanged('uuid', uid) &&
+        isValidCompetitorCreate(uid, request.resource.data);
+      allow update: if
+        (isAdmin() && uidNotModified('uuid') && isValidCompetitor(request.resource.data)) ||
+        (isOwner(uid) && uidNotModified('uuid') && isValidCompetitorOwnerUpdate(uid, request.resource.data));
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Events, Schedule & Event-Scoped GDG SPIN Collections
+    // ===============================================================
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, eventAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['title', 'status']) &&
+        isValidEvent(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(eventAllowedKeys()) &&
+        isValidEvent(request.resource.data);
+      allow delete: if isAdmin();
+
+      // -------------------------------------------------------------
+      // Schedule, Workshops, Q&A & Talk Ratings
+      // -------------------------------------------------------------
+
+      match /schedule/{speakerId} {
+        allow read: if true;
+        allow create: if isAdmin() &&
+          hasOnlyAllowedFields(request.resource.data, scheduleAllowedKeys()) &&
+          isValidSchedule(request.resource.data);
+        allow update: if
+          (isAdmin() &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(scheduleAllowedKeys()) &&
+            isValidSchedule(request.resource.data)) ||
+          isValidWorkshopSeatIncrement(eventId, speakerId);
+        allow delete: if isAdmin();
+
+        // Legacy subcollection name ("workshow") preserved for compatibility.
+        match /workshow/{docId} {
+          allow read: if isSignedIn();
+          allow create: if isOwner(docId) &&
+            uidUnchanged('uuid', request.auth.uid) &&
+            isValidWorkshowEntry(request.resource.data);
+          allow update: if isAdmin() &&
+            uidNotModified('uuid') &&
+            isValidWorkshowEntry(request.resource.data);
+          allow delete: if isAdmin();
+        }
+
+        // Speaker Q&A — written exclusively via Cloud Function (spinSubmitTalkQuestion).
+        match /questions/{qId} {
+          allow read: if isSignedIn();
+          allow write: if false;
+        }
+
+        // Talk Ratings — 1 doc per user (docId == uid), written via spinSubmitTalkRating.
+        match /ratings/{uid} {
+          allow get: if isOwner(uid) || isAdmin();
+          allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+          allow write: if false;
+        }
+      }
+
+      // -------------------------------------------------------------
+      // GDG SPIN — Signed-in Read-Only Views (Cloud Functions Only Writes)
+      // -------------------------------------------------------------
+
+      match /spinConfig/{docId} {
+        allow read: if isSignedIn();
+        allow write: if false;
+      }
+
+      match /spinPrizes/{prizeId} {
+        allow read: if isSignedIn();
+        allow write: if false;
+      }
+
+      match /spinMissions/{missionId} {
+        allow read: if isSignedIn();
+        allow write: if false;
+      }
+
+      // Trivia answers — 100% hidden from all clients (including admins on client SDK).
+      match /spinMissionSecrets/{missionId} {
+        allow read, write: if false;
+      }
+
+      // -------------------------------------------------------------
+      // GDG SPIN — Player-Scoped Views (Owner or Admin Read, Functions Only Writes)
+      // -------------------------------------------------------------
+
+      match /spinPlayers/{uid} {
+        // Contains player email and wallet balance; restricted to owner or admin.
+        allow get: if isOwner(uid) || isAdmin();
+        allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+        allow write: if false;
+      }
+
+      match /spinWins/{winId} {
+        allow get: if isSignedIn() &&
+          ((resource != null && resource.data.uid == request.auth.uid) || isAdmin());
+        allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+        allow write: if false;
+      }
+
+      match /spinMissionClaims/{claimId} {
+        // Supports both .where('uid', isEqualTo: uid) list queries and direct get() on
+        // unclaimed "{uid}_{missionId}" document paths without leaking other users' docs.
+        allow get: if isAdmin() || (
+          isSignedIn() && (
+            (resource != null && resource.data.uid == request.auth.uid) ||
+            (resource == null && isUserPrefixedId(claimId))
+          )
+        );
+        allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+        allow write: if false;
+      }
+
+      match /spinCodeClaims/{claimId} {
+        // Supports both .where('uid', isEqualTo: uid) list queries and direct get() on
+        // unclaimed "{uid}_{codeId}" document paths.
+        allow get: if isAdmin() || (
+          isSignedIn() && (
+            (resource != null && resource.data.uid == request.auth.uid) ||
+            (resource == null && isUserPrefixedId(claimId))
+          )
+        );
+        allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+        allow write: if false;
+      }
+
+      match /ticketLedger/{entryId} {
+        allow get: if isSignedIn() &&
+          ((resource != null && resource.data.uid == request.auth.uid) || isAdmin());
+        allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+        allow write: if false;
+      }
+
+      // -------------------------------------------------------------
+      // GDG SPIN — Admin-Only Read Views (Cloud Functions Only Writes)
+      // -------------------------------------------------------------
+
+      match /spinTicketCodes/{codeId} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+
+      match /spinRegistrations/{hash} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+
+      match /spinStats/{shard} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+
+      match /spinLogs/{logId} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+
+      match /spinAuditLogs/{auditId} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+    }
+
+    // ===============================================================
+    // Legacy Root Collections
+    // ===============================================================
+
+    match /organizers/{docId} {
+      allow read: if true;
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, organizerAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['name']) &&
+        isValidOrganizer(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(organizerAllowedKeys()) &&
+        isValidOrganizer(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /sponsors/{docId} {
+      allow read: if true;
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, sponsorAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['name']) &&
+        isValidSponsor(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(sponsorAllowedKeys()) &&
+        areImmutableFieldsUnchanged(['createdAt']) &&
+        isValidSponsor(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /resource-library/{docId} {
+      allow read: if true;
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, resourceLibraryAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['title', 'link', 'type']) &&
+        isValidResourceLibrary(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(resourceLibraryAllowedKeys()) &&
+        isValidResourceLibrary(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /treasure-hunt/{docId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, treasureHuntAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['title']) &&
+        isValidTreasureHunt(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(treasureHuntAllowedKeys()) &&
+        isValidTreasureHunt(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /speedRunBuild/{docId} {
+      allow read: if true;
+      allow create: if isAdmin() &&
+        hasOnlyAllowedFields(request.resource.data, speedRunAllowedKeys()) &&
+        hasRequiredFields(request.resource.data, ['title', 'state']) &&
+        isValidSpeedRunChallenge(request.resource.data);
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(speedRunAllowedKeys()) &&
+        isValidSpeedRunChallenge(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Explicit Default Deny Catch-All
+    // ===============================================================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

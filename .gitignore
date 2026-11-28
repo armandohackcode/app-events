@@ -58,3 +58,7 @@ test/coverage_helper_test.dart
 /macos/
 /windows/
 /linux/
+
+# Local planning docs and exports
+/docs/gdg-spin/
+*.docx

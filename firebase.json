@@ -1,1 +1,70 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"gdgsucre-events","appId":"1:567592938140:android:baf8e2941dc9c6387bdb59","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"gdgsucre-events","appId":"1:567592938140:ios:d333f697350c9afc7bdb59","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"gdgsucre-events","configurations":{"android":"1:567592938140:android:baf8e2941dc9c6387bdb59","ios":"1:567592938140:ios:d333f697350c9afc7bdb59"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "gdgsucre-events",
+          "appId": "1:567592938140:android:baf8e2941dc9c6387bdb59",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "gdgsucre-events",
+          "appId": "1:567592938140:ios:d333f697350c9afc7bdb59",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "gdgsucre-events",
+          "configurations": {
+            "android": "1:567592938140:android:baf8e2941dc9c6387bdb59",
+            "ios": "1:567592938140:ios:d333f697350c9afc7bdb59"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local",
+        "test",
+        "scripts"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "firestore": {
+      "host": "0.0.0.0",
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}
