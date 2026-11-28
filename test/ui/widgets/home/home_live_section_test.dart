@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/domain/models/event.dart';
 import 'package:app_events/domain/models/speaker.dart';
+import 'package:app_events/domain/models/talk_question.dart';
 import 'package:app_events/domain/repositories/event_repository.dart';
 import 'package:app_events/domain/repositories/schedule_repository.dart';
+import 'package:app_events/domain/repositories/talk_interaction_repository.dart';
 import 'package:app_events/domain/repositories/user_repository.dart';
 import 'package:app_events/ui/providers/live_activity_provider.dart';
 import 'package:app_events/ui/providers/schedule_provider.dart';
+import 'package:app_events/ui/providers/talk_interaction_provider.dart';
 import 'package:app_events/ui/providers/user_provider.dart';
 import 'package:app_events/ui/screens/schedule/schedule_detail.dart';
 import 'package:app_events/ui/widgets/home/home_live_section.dart';
@@ -25,6 +28,9 @@ class _MockEventRepository extends Mock implements EventRepository {}
 class _MockScheduleRepository extends Mock implements ScheduleRepository {}
 
 class _MockUserRepository extends Mock implements UserRepository {}
+
+class _MockTalkInteractionRepository extends Mock
+    implements TalkInteractionRepository {}
 
 void main() {
   late _MockEventRepository eventRepository;
@@ -152,6 +158,76 @@ void main() {
       find.text('${AppStrings.homeLiveQuestionHintPrefix}Grace...'),
       findsOne,
     );
+    final box = tester.widget<QuestionBox>(find.byType(QuestionBox));
+    expect(box.eventId, 'e1');
+    expect(box.speakerUuid, 'spk-1');
+  });
+
+  testWidgets('forwards live question submission to TalkInteractionProvider', (
+    tester,
+  ) async {
+    final talkRepo = _MockTalkInteractionRepository();
+    when(
+      () => talkRepo.submitQuestion(
+        eventId: 'e1',
+        speakerUuid: 'spk-live',
+        text: 'How does live activity sync work?',
+      ),
+    ).thenAnswer(
+      (_) async => const TalkQuestionSubmitResult(
+        questionId: 'q-1',
+        missionRewarded: false,
+        ticketsAwarded: 0,
+        ticketsAfter: 0,
+      ),
+    );
+    final talkProvider = TalkInteractionProvider(talkRepo);
+    addTearDown(talkProvider.dispose);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) =>
+                LiveActivityProvider(eventRepository, scheduleRepository),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ScheduleProvider(scheduleRepository),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => UserProvider(_MockUserRepository()),
+          ),
+          ChangeNotifierProvider.value(value: talkProvider),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(body: SingleChildScrollView(child: HomeLiveSection())),
+        ),
+      ),
+    );
+    await tester.pump();
+    await showActivities(tester, [
+      makeSpeaker(
+        uuid: 'spk-live',
+        title: 'Live talk',
+        name: 'Grace Hopper',
+        isLive: true,
+      ),
+    ]);
+
+    await tester.enterText(
+      find.byType(TextField),
+      'How does live activity sync work?',
+    );
+    await tester.tap(find.byIcon(Icons.send_outlined));
+    await tester.pump();
+
+    verify(
+      () => talkRepo.submitQuestion(
+        eventId: 'e1',
+        speakerUuid: 'spk-live',
+        text: 'How does live activity sync work?',
+      ),
+    ).called(1);
   });
 
   testWidgets('a live break has no question box', (tester) async {

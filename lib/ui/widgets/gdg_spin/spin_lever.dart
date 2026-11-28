@@ -80,9 +80,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
 
   void _jiggle() {
     setState(() => _jiggleCount++);
-    if (widget.tickets == 0) {
-      widget.onBlockedPull();
-    }
+    widget.onBlockedPull();
   }
 
   void _handleDragStart(DragStartDetails details) {
@@ -187,6 +185,10 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
       builder: (context, _) {
         final p = _pullController.value.clamp(-0.1, 1.0);
         final arrowOpacity = widget.canPull ? (1 - p * 4).clamp(0.0, 1.0) : 0.0;
+        final armLength = widget.height < 170
+            ? (widget.height * 0.45).clamp(48.0, 82.0)
+            : 82.0;
+        final chevronOffset = 30.0 * (armLength / 82.0);
 
         return SizedBox(
           width: 50,
@@ -223,7 +225,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
               // Downward help chevrons
               if (arrowOpacity > 0)
                 Positioned(
-                  top: widget.height / 2 + 30,
+                  top: widget.height / 2 + chevronOffset,
                   child: Opacity(
                     opacity: arrowOpacity,
                     child: const _HelpChevrons(),
@@ -231,7 +233,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
                 ),
               // Rotating stick and knob
               Positioned(
-                top: widget.height / 2 - 82,
+                top: widget.height / 2 - armLength,
                 child: Transform(
                   alignment: Alignment.bottomCenter,
                   transform: Matrix4.identity()
@@ -239,7 +241,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
                     ..rotateX(-p * math.pi),
                   child: SizedBox(
                     width: 44,
-                    height: 82,
+                    height: armLength,
                     child: Stack(
                       clipBehavior: Clip.none,
                       alignment: Alignment.topCenter,
@@ -248,7 +250,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
                           bottom: 0,
                           child: Container(
                             width: 10,
-                            height: 82,
+                            height: armLength,
                             decoration: BoxDecoration(
                               color: AppStyles.spinLeverStickColor,
                               border: Border.all(
@@ -260,7 +262,7 @@ class _SpinLeverState extends State<SpinLever> with TickerProviderStateMixin {
                           ),
                         ),
                         Positioned(
-                          top: -18,
+                          top: -18 * (armLength / 82.0),
                           child: Transform(
                             alignment: Alignment.center,
                             transform: Matrix4.rotationX(p * math.pi),

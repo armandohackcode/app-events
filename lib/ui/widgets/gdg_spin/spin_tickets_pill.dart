@@ -25,12 +25,18 @@ class SpinTicketsPill extends StatelessWidget {
         children: [
           SvgPicture.asset(AppAssetsPath.spinIconTicket, width: 14, height: 14),
           const SizedBox(width: 5),
-          Text(
-            AppStrings.spinTicketCount(tickets),
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w800,
-              color: AppStyles.fontColor,
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                AppStrings.spinTicketCount(tickets),
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppStyles.fontColor,
+                ),
+              ),
             ),
           ),
         ],

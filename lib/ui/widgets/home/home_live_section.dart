@@ -50,7 +50,11 @@ class _HomeLiveSectionState extends State<HomeLiveSection> {
       ),
       footer: isGeneral || speakerName.isEmpty
           ? null
-          : QuestionBox(speakerName: speakerName),
+          : QuestionBox(
+              speakerName: speakerName,
+              eventId: eventId,
+              speakerUuid: activity.uuid,
+            ),
     );
   }
 }

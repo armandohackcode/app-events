@@ -4,6 +4,7 @@ import 'package:app_events/config/theme/app_assets_path.dart';
 import 'package:app_events/config/theme/app_strings.dart';
 import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/spin_symbol.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -77,6 +78,49 @@ class SpinSymbolArt extends StatelessWidget {
       );
     }
     return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
+  }
+}
+
+/// Renders an optional network prize image with fallback to [SpinSymbolArt].
+class SpinPrizeThumbnail extends StatelessWidget {
+  final SpinSymbol symbol;
+  final String? imageUrl;
+  final double size;
+  final double fallbackSize;
+  final double borderRadius;
+  final BoxFit fit;
+
+  const SpinPrizeThumbnail({
+    super.key,
+    required this.symbol,
+    required this.size,
+    double? fallbackSize,
+    this.imageUrl,
+    this.borderRadius = 8,
+    this.fit = BoxFit.cover,
+  }) : fallbackSize = fallbackSize ?? size * 0.78;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmed = imageUrl?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      return SpinSymbolArt(symbol: symbol, size: fallbackSize);
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: CachedNetworkImage(
+        imageUrl: trimmed,
+        width: size,
+        height: size,
+        fit: fit,
+        placeholder: (_, _) => Center(
+          child: SpinSymbolArt(symbol: symbol, size: fallbackSize),
+        ),
+        errorWidget: (_, _, _) => Center(
+          child: SpinSymbolArt(symbol: symbol, size: fallbackSize),
+        ),
+      ),
+    );
   }
 }
 

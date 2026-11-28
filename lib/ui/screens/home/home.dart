@@ -34,79 +34,96 @@ class Home extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
             children: [
-              const HomeHeaderDecoration(child: HomeHeader()),
-              const HomeLiveSection(),
-              const SizedBox(height: 16),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.computerIcon),
-                iconBackground: AppStyles.colorCardBlue,
-                title: AppStrings.scheduleSchedule,
-                subtitle: AppStrings.homeScheduleSubtitle,
-                onTap: () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const EventsScreen()),
-                ),
-              ),
-              // No delete
-              // ButtonActivity(
-              //   onPressed: () => Navigator.of(context).push(
-              //     CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
-              //   ),
-              //   text: AppStrings.homeSpeedRunBuild,
-              //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
-              // ),
-              const SizedBox(height: _rowGap),
-              ActivityRow(
-                icon: Image.asset(AppAssetsPath.logoGdg),
-                iconBackground: AppStyles.colorCardYellow,
-                title: AppStrings.homeMeetCommunity,
-                subtitle: AppStrings.homeMeetCommunitySubtitle,
-                onTap: () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (_) => const OrganizersScreen()),
-                ),
-              ),
-              if (dataCenter.isAdmin) ...[
-                const SizedBox(height: _rowGap),
-                ActivityRow(
-                  icon: Image.asset(AppAssetsPath.dinoWriteIcon),
-                  iconBackground: AppStyles.colorCardYellow,
-                  title: AppStrings.commonWordAttendees,
-                  onTap: () => Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => const AttendeesScreen()),
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 540),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const HomeHeaderDecoration(child: HomeHeader()),
+                      const HomeLiveSection(),
+                      const SizedBox(height: 16),
+                      ActivityRow(
+                        icon: Image.asset(AppAssetsPath.computerIcon),
+                        iconBackground: AppStyles.colorCardBlue,
+                        title: AppStrings.scheduleSchedule,
+                        subtitle: AppStrings.homeScheduleSubtitle,
+                        onTap: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (_) => const EventsScreen(),
+                          ),
+                        ),
+                      ),
+                      // No delete
+                      // ButtonActivity(
+                      //   onPressed: () => Navigator.of(context).push(
+                      //     CupertinoPageRoute(builder: (_) => const SpeedRunScreen()),
+                      //   ),
+                      //   text: AppStrings.homeSpeedRunBuild,
+                      //   icon: Image.asset(AppAssetsPath.dinoRunIcon, height: 80),
+                      // ),
+                      const SizedBox(height: _rowGap),
+                      ActivityRow(
+                        icon: Image.asset(AppAssetsPath.logoGdg),
+                        iconBackground: AppStyles.colorCardYellow,
+                        title: AppStrings.homeMeetCommunity,
+                        subtitle: AppStrings.homeMeetCommunitySubtitle,
+                        onTap: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (_) => const OrganizersScreen(),
+                          ),
+                        ),
+                      ),
+                      if (dataCenter.isAdmin) ...[
+                        const SizedBox(height: _rowGap),
+                        ActivityRow(
+                          icon: Image.asset(AppAssetsPath.dinoWriteIcon),
+                          iconBackground: AppStyles.colorCardYellow,
+                          title: AppStrings.commonWordAttendees,
+                          onTap: () => Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (_) => const AttendeesScreen(),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: _rowGap),
+                      const ChannelsCard(),
+                      const SponsorsContent(),
+                      const SizedBox(height: 20),
+                      FutureBuilder(
+                        future: PackageInfo.fromPlatform(),
+                        builder:
+                            (
+                              BuildContext context,
+                              AsyncSnapshot<PackageInfo> snapshot,
+                            ) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox();
+                              }
+                              return Text(
+                                "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppStyles.fontFaintColor,
+                                ),
+                              );
+                            },
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        onPressed: () async {
+                          await launcherUrlInfo(AppLinks.developerLinkedIn);
+                        },
+                        child: const Text(AppStrings.developedBy),
+                      ),
+                      const SizedBox(height: 60),
+                    ],
                   ),
                 ),
-              ],
-              const SizedBox(height: _rowGap),
-              const ChannelsCard(),
-              const SponsorsContent(),
-              const SizedBox(height: 20),
-              FutureBuilder(
-                future: PackageInfo.fromPlatform(),
-                builder:
-                    (
-                      BuildContext context,
-                      AsyncSnapshot<PackageInfo> snapshot,
-                    ) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox();
-                      }
-                      return Text(
-                        "${AppStrings.versionApp}: ${snapshot.data?.version ?? ""}",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppStyles.fontFaintColor,
-                        ),
-                      );
-                    },
               ),
-              TextButton(
-                style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                onPressed: () async {
-                  await launcherUrlInfo(AppLinks.developerLinkedIn);
-                },
-                child: const Text(AppStrings.developedBy),
-              ),
-              const SizedBox(height: 60),
             ],
           ),
         ),

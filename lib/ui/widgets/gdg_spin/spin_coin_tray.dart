@@ -6,79 +6,20 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/ui/providers/gdg_spin_provider.dart';
 import 'package:app_events/ui/widgets/shared/chunky_button.dart';
 import 'package:app_events/ui/widgets/shared/hard_shadow_box.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// Coin tray at the bottom of the cabinet, plus demo reload and pay-table jump.
-class SpinCoinTray extends StatefulWidget {
+/// Coin tray at the bottom of the cabinet and pay-table jump button.
+class SpinCoinTray extends StatelessWidget {
   final List<CoinDrop> coins;
-  final int tickets;
   final VoidCallback onCollectCoins;
-  final VoidCallback onAddDemoTickets;
   final VoidCallback onScrollToPayTable;
 
   const SpinCoinTray({
     super.key,
     required this.coins,
-    required this.tickets,
     required this.onCollectCoins,
-    required this.onAddDemoTickets,
     required this.onScrollToPayTable,
   });
-
-  @override
-  State<SpinCoinTray> createState() => _SpinCoinTrayState();
-}
-
-class _SpinCoinTrayState extends State<SpinCoinTray>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _demoPulseController;
-  late final Animation<double> _demoScale;
-
-  bool get _showDemoButton => widget.tickets == 0 && kDebugMode;
-
-  @override
-  void initState() {
-    super.initState();
-    _demoPulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _demoScale = Tween<double>(begin: 1.0, end: 1.06).animate(
-      CurvedAnimation(parent: _demoPulseController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _syncDemoPulse();
-  }
-
-  @override
-  void didUpdateWidget(covariant SpinCoinTray oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.tickets != widget.tickets) {
-      _syncDemoPulse();
-    }
-  }
-
-  void _syncDemoPulse() {
-    if (_showDemoButton && !MediaQuery.disableAnimationsOf(context)) {
-      if (!_demoPulseController.isAnimating) {
-        _demoPulseController.repeat(reverse: true);
-      }
-    } else {
-      _demoPulseController.stop();
-      _demoPulseController.value = 0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _demoPulseController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +39,7 @@ class _SpinCoinTrayState extends State<SpinCoinTray>
             button: true,
             label: AppStrings.spinTraySemantic,
             child: GestureDetector(
-              onTap: widget.onCollectCoins,
+              onTap: onCollectCoins,
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(8),
@@ -108,7 +49,7 @@ class _SpinCoinTrayState extends State<SpinCoinTray>
                   height: 44,
                   width: double.infinity,
                   color: AppStyles.borderColor,
-                  child: widget.coins.isEmpty
+                  child: coins.isEmpty
                       ? const Center(
                           child: Text(
                             AppStrings.spinCoinTray,
@@ -129,12 +70,10 @@ class _SpinCoinTrayState extends State<SpinCoinTray>
                             return Stack(
                               clipBehavior: Clip.hardEdge,
                               children: [
-                                for (var i = 0; i < widget.coins.length; i++)
+                                for (var i = 0; i < coins.length; i++)
                                   _CoinSprite(
-                                    coin: widget.coins[i],
-                                    left:
-                                        widget.coins[i].leftFraction *
-                                        usableWidth,
+                                    coin: coins[i],
+                                    left: coins[i].leftFraction * usableWidth,
                                     reducedMotion: reducedMotion,
                                   ),
                               ],
@@ -151,47 +90,30 @@ class _SpinCoinTrayState extends State<SpinCoinTray>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
+                const Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: _showDemoButton
-                        ? ScaleTransition(
-                            scale: _demoScale,
-                            child: ChunkyButton(
-                              label: AppStrings.spinDemoReload,
-                              color: AppStyles.spinDemoButtonColor,
-                              onPressed: widget.onAddDemoTickets,
-                              minHeight: 40,
-                              minTapHeight: 44,
-                              radius: 999,
-                              fontSize: 12,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                            ),
-                          )
-                        : const FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              AppStrings.spinFooterBrand,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.6,
-                                color: AppStyles.fontColor,
-                              ),
-                            ),
-                          ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        AppStrings.spinFooterBrand,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.6,
+                          color: AppStyles.fontColor,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 ChunkyButton(
                   label: AppStrings.spinPayTableLink,
                   color: AppStyles.spinBezelColor,
-                  onPressed: widget.onScrollToPayTable,
+                  onPressed: onScrollToPayTable,
                   minHeight: 40,
                   minTapHeight: 44,
                   radius: 999,

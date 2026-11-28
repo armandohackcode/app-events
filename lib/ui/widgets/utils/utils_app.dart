@@ -4,7 +4,17 @@ import 'package:app_events/config/theme/app_styles.dart';
 import 'package:app_events/domain/models/speaker.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Reads an ancestor provider without throwing when absent in isolated tests.
+T? maybeProvider<T>(BuildContext context, {bool listen = true}) {
+  try {
+    return Provider.of<T>(context, listen: listen);
+  } on ProviderNotFoundException {
+    return null;
+  }
+}
 
 /// Si es Lead, es 1, si es Organizer, es 2
 const int leadValue = 2;
@@ -25,8 +35,7 @@ void customSnackbar(
       content: Row(
         children: [
           Image.asset(AppAssetsPath.firePedIcon, width: 45, height: 45),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.65,
+          Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(text),

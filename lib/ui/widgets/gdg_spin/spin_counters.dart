@@ -14,6 +14,7 @@ class SpinCounters extends StatelessWidget {
   final SpinPhase phase;
   final SpinOutcome? lastOutcome;
   final SpinSymbol? lastWinSymbol;
+  final String? customStatusMessage;
 
   const SpinCounters({
     super.key,
@@ -23,10 +24,17 @@ class SpinCounters extends StatelessWidget {
     required this.phase,
     this.lastOutcome,
     this.lastWinSymbol,
+    this.customStatusMessage,
   });
+
+  String? _custom() {
+    final trimmed = customStatusMessage?.trim();
+    return (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+  }
 
   String _resolveMessage() => switch (message) {
     SpinMessage.pullHint => AppStrings.spinPullHint,
+    SpinMessage.connecting => AppStrings.spinConnecting,
     SpinMessage.spinning => AppStrings.spinSpinning,
     SpinMessage.tease => AppStrings.spinTease,
     SpinMessage.win => AppStrings.spinWinMessage(_prizeName()),
@@ -34,12 +42,25 @@ class SpinCounters extends StatelessWidget {
     SpinMessage.lose => AppStrings.spinLose(tickets),
     SpinMessage.outOfTickets => AppStrings.spinOutOfTickets,
     SpinMessage.noTickets => AppStrings.spinNoTickets,
-    SpinMessage.demoReloaded => AppStrings.spinDemoReloaded,
+    SpinMessage.paused => _custom() ?? AppStrings.spinPaused,
+    SpinMessage.closed => AppStrings.spinClosed,
+    SpinMessage.soldOut => AppStrings.spinSoldOutMessage,
+    SpinMessage.cooldown => AppStrings.spinCooldown,
+    SpinMessage.prizeCapReached => AppStrings.spinPrizeCapReached,
+    SpinMessage.networkError => AppStrings.spinNetworkError,
+    SpinMessage.noActiveEvent => AppStrings.spinNoActiveEvent,
     SpinMessage.trayHint => AppStrings.spinTrayHint,
     SpinMessage.coinsCollected => AppStrings.spinCoinsCollected,
     SpinMessage.missionDone => AppStrings.spinMissionDone(tickets),
-    SpinMessage.triviaRight => AppStrings.spinTriviaRight,
-    SpinMessage.triviaWrong => AppStrings.spinTriviaWrong,
+    SpinMessage.triviaRight => _custom() ?? AppStrings.spinTriviaRight,
+    SpinMessage.triviaWrong => _custom() ?? AppStrings.spinTriviaWrong,
+    SpinMessage.codeRedeemed =>
+      _custom() ?? AppStrings.spinCodeRedeemed('', tickets),
+    SpinMessage.codeError => AppStrings.spinCodeError,
+    SpinMessage.requirementNotMet => AppStrings.spinMissionRequirementNotMet,
+    SpinMessage.ticketCapReached => AppStrings.spinTicketCapReached,
+    SpinMessage.triviaClosed => AppStrings.spinTriviaClosed,
+    SpinMessage.missionInactive => AppStrings.spinMissionInactive,
   };
 
   String _prizeName() {
@@ -57,7 +78,19 @@ class SpinCounters extends StatelessWidget {
   Color _lcdColor() {
     if (message == SpinMessage.outOfTickets ||
         message == SpinMessage.noTickets ||
-        message == SpinMessage.triviaWrong) {
+        message == SpinMessage.triviaWrong ||
+        message == SpinMessage.paused ||
+        message == SpinMessage.closed ||
+        message == SpinMessage.soldOut ||
+        message == SpinMessage.cooldown ||
+        message == SpinMessage.prizeCapReached ||
+        message == SpinMessage.networkError ||
+        message == SpinMessage.noActiveEvent ||
+        message == SpinMessage.codeError ||
+        message == SpinMessage.requirementNotMet ||
+        message == SpinMessage.ticketCapReached ||
+        message == SpinMessage.triviaClosed ||
+        message == SpinMessage.missionInactive) {
       return AppStyles.spinWarnColor;
     }
     if (phase == SpinPhase.win || phase == SpinPhase.bonus) {
@@ -134,25 +167,32 @@ class _CounterBox extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.6,
-                color: AppStyles.fontSecondaryColor,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                  color: AppStyles.fontSecondaryColor,
+                ),
               ),
             ),
             const SizedBox(height: 2),
-            Text(
-              value.toString(),
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                height: 1,
-                color: AppStyles.fontColor,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value.toString(),
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                  color: AppStyles.fontColor,
+                ),
               ),
             ),
           ],

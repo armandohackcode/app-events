@@ -39,12 +39,19 @@ class UserProvider with ChangeNotifier {
   Future<void> validateIsAdmin(String uuid) async {
     try {
       var res = await _repository.validateIsAdmin(uuid);
-      if (res) isAdmin = true;
+      isAdmin = res;
       var data = await _repository.getUserInfo(uuid);
       if (data != null) userCompetitor = data;
     } catch (e) {
       rethrow;
     }
+  }
+
+  /// Clears authenticated user and admin session state on logout or deletion.
+  void clearSession() {
+    _isAdmin = false;
+    _userCompetitor = null;
+    notifyListeners();
   }
 
   Future<void> updateToken(String token) async {

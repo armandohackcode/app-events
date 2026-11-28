@@ -69,10 +69,23 @@ class SpinPayTableCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          for (var i = 0; i < prizes.length; i++) ...[
-            if (i > 0) const SizedBox(height: 8),
-            _buildPrizeRow(prizes[i]),
-          ],
+          if (prizes.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text(
+                AppStrings.spinPayTableEmpty,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppStyles.fontSecondaryColor,
+                ),
+              ),
+            )
+          else
+            for (var i = 0; i < prizes.length; i++) ...[
+              if (i > 0) const SizedBox(height: 8),
+              _buildPrizeRow(prizes[i]),
+            ],
           const SizedBox(height: 8),
           const _PayTableRowLayout(
             symbols: [
@@ -112,6 +125,7 @@ class SpinPayTableCard extends StatelessWidget {
 
     final row = _PayTableRowLayout(
       symbols: [prize.symbol, prize.symbol, prize.symbol],
+      imageUrl: prize.imageUrl,
       name: prize.name,
       note: note,
       tagText: tagText,
@@ -126,6 +140,7 @@ class SpinPayTableCard extends StatelessWidget {
 
 class _PayTableRowLayout extends StatelessWidget {
   final List<SpinSymbol> symbols;
+  final String? imageUrl;
   final String name;
   final String note;
   final String tagText;
@@ -138,11 +153,14 @@ class _PayTableRowLayout extends StatelessWidget {
     required this.note,
     required this.tagText,
     required this.tagColor,
+    this.imageUrl,
     this.grayscaleMatrix,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
+
     Widget symbolsWidget = FittedBox(
       fit: BoxFit.scaleDown,
       child: Row(
@@ -161,17 +179,43 @@ class _PayTableRowLayout extends StatelessWidget {
       ),
     );
 
+    Widget? thumbnailWidget = hasImage
+        ? Container(
+            width: 32,
+            height: 32,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppStyles.gamesBackgroundColor,
+              border: Border.all(color: AppStyles.borderColor, width: 1.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SpinPrizeThumbnail(
+              symbol: symbols.first,
+              imageUrl: imageUrl,
+              size: 28,
+              fallbackSize: 20,
+              borderRadius: 6,
+            ),
+          )
+        : null;
+
     if (grayscaleMatrix != null) {
       symbolsWidget = ColorFiltered(
         colorFilter: ColorFilter.matrix(grayscaleMatrix!),
         child: symbolsWidget,
       );
+      if (thumbnailWidget != null) {
+        thumbnailWidget = ColorFiltered(
+          colorFilter: ColorFilter.matrix(grayscaleMatrix!),
+          child: thumbnailWidget,
+        );
+      }
     }
 
     return Row(
       children: [
         Container(
-          width: 80,
+          width: 76,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: AppStyles.gamesBackgroundColor,
@@ -180,13 +224,19 @@ class _PayTableRowLayout extends StatelessWidget {
           ),
           child: symbolsWidget,
         ),
-        const SizedBox(width: 10),
+        if (thumbnailWidget != null) ...[
+          const SizedBox(width: 6),
+          thumbnailWidget,
+        ],
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -195,6 +245,8 @@ class _PayTableRowLayout extends StatelessWidget {
               ),
               Text(
                 note,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
@@ -205,7 +257,16 @@ class _PayTableRowLayout extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        _RarityBadge(text: tagText, color: tagColor),
+        Flexible(
+          flex: 0,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 96),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: _RarityBadge(text: tagText, color: tagColor),
+            ),
+          ),
+        ),
       ],
     );
   }

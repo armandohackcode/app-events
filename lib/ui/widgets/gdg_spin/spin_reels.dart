@@ -43,7 +43,13 @@ class SpinReels extends StatefulWidget {
 
 class _SpinReelsState extends State<SpinReels> {
   final Map<int, List<SpinSymbol>> _stoppedReels = {};
-  int _currentSpinId = 0;
+  late int _currentSpinId;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentSpinId = widget.spinId;
+  }
 
   @override
   void didUpdateWidget(covariant SpinReels oldWidget) {
